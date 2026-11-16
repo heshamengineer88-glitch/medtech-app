@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MedTech FSM - إدارة الصيانة الميدانية للأجهزة الطبية والمعملية</title>
+    <title>MedTech FSM - إدارة صيانة الأجهزة الطبية والمعملية</title>
     <style>
         body { font-family: Tahoma, sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; color: #333; }
         
@@ -180,7 +180,8 @@
     </div>
 
     <script>
-        const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbyWVc97vDaKGLj3KVLhf4d1MWGcWcHXqOa7a9zeQVZnd-l4SRNE9MUaYXPfHOsDE2SeWQ/exec";
+        // رابط الـ Web App المحدث والنهائي الخاص بك
+        const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbwvvbg-iJpg_D98pREp0dnLr0ye5WjIT-38_VXHzG6bRj_L1rYsCecg79nA7kLw9UQ0cw/exec";
         let globalAppData = { users: [], devices: [], visits: [], parts: [], leaves: [] };
 
         window.onload = function() {
@@ -205,7 +206,6 @@
                 .then(data => {
                     globalAppData = data;
                     
-                    // تحديث مؤشر الاتصال ليكون أخضر (متصل بنجاح)
                     loginBadge.style.background = "#d4edda";
                     loginBadge.style.color = "#155724";
                     loginBadge.style.borderColor = "#c3e6cb";
@@ -228,7 +228,6 @@
                 })
                 .catch(err => {
                     console.error("خطأ في الاتصال بالشيت:", err);
-                    // تحديث مؤشر الاتصال ليكون أحمر (فشل الاتصال)
                     loginBadge.style.background = "#f8d7da";
                     loginBadge.style.color = "#721c24";
                     loginBadge.style.borderColor = "#f5c6cb";
@@ -273,4 +272,65 @@
 
         function populateParts(parts) {
             const tbody = document.getElementById('sparesTableBody');
-            if (parts.length === 0) { tbody.innerHTML = '<tr><td colspan="8" style
+            if (parts.length === 0) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">لا توجد طلبات قطع غيار</td></tr>'; return; }
+            tbody.innerHTML = parts.map(p => `<tr><td>${p.date}</td><td><b>${p.engineer}</b></td><td>${p.region}</td><td>${p.client}</td><td>${p.device}</td><td>${p.part}</td><td>${p.qty}</td><td>${p.status}</td></tr>`).join('');
+        }
+
+        function populateLeaves(leaves) {
+            const tbody = document.getElementById('vacationsTableBody');
+            if (leaves.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">لا توجد طلبات إجازات</td></tr>'; return; }
+            tbody.innerHTML = leaves.map(l => `<tr><td><b>${l.engineer}</b></td><td>${l.region}</td><td>${l.from}</td><td>${l.to}</td><td>${l.reason}</td><td>${l.status}</td></tr>`).join('');
+        }
+
+        function searchDevicesTable() {
+            const q = document.getElementById('deviceSearchInput').value.toLowerCase();
+            const filtered = (globalAppData.devices || []).filter(d => (d.client && d.client.toLowerCase().includes(q)) || (d.sn && d.sn.toLowerCase().includes(q)));
+            populateDevices(filtered);
+        }
+
+        function filterDevicesByRegion() {
+            const reg = document.getElementById('regionDeviceFilter').value;
+            const box = document.getElementById('regionDeviceResults');
+            if (!reg) { box.style.display = 'none'; return; }
+            const regionDevs = (globalAppData.devices || []).filter(d => d.region === reg);
+            let counts = {};
+            regionDevs.forEach(d => { let m = d.model || 'غير محدد'; counts[m] = (counts[m] || 0) + 1; });
+            let html = `<b>إجمالي أجهزة منطقة (${reg}):</b> ${regionDevs.length} جهازاً<br><ul style="margin:5px 0 0 20px; padding:0;">`;
+            for (let m in counts) { html += `<li>${m}: <b>${counts[m]}</b></li>`; }
+            html += `</ul>`;
+            box.style.display = 'block';
+            box.innerHTML = html;
+        }
+
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; document.getElementById('install-pwa-btn').style.display = 'block'; });
+        function installPWAApp() { if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; } }
+
+        function handleLogin(isAuto = false) {
+            let userName = "", role = "";
+            if (isAuto) {
+                userName = localStorage.getItem('medtech_saved_user');
+                role = localStorage.getItem('medtech_saved_role');
+            } else {
+                const val = document.getElementById('userSelect').value;
+                if (!val) { alert('اختر المستخدم أولاً'); return; }
+                const parts = val.split('|');
+                userName = parts[0]; role = parts[1];
+                localStorage.setItem('medtech_saved_user', userName);
+                localStorage.setItem('medtech_saved_role', role);
+            }
+            document.getElementById('loggedUserName').innerText = userName;
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('main-app-container').style.display = 'block';
+        }
+
+        function handleLogout() { localStorage.clear(); location.reload(); }
+        function switchTab(id) {
+            document.querySelectorAll('.app-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-tabs button').forEach(b => b.classList.remove('active'));
+            document.getElementById('section-' + id).classList.add('active');
+            document.getElementById('btn-' + id).classList.add('active');
+        }
+    </script>
+</body>
+</html>
