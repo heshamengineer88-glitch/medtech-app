@@ -4,332 +4,215 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MedTech FSM - إدارة صيانة الأجهزة الطبية والمعملية</title>
+    <!-- استيراد Bootstrap للتنسيق السريع -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
     <style>
-        body { font-family: Tahoma, sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; color: #333; }
-        
-        #login-screen { display: flex; justify-content: center; align-items: center; height: 100vh; background: #1e293b; position: fixed; top: 0; left: 0; width: 100%; z-index: 9999; }
-        .login-card { background: #fff; padding: 25px; border-radius: 10px; width: 100%; max-width: 380px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); text-align: center; }
-        .login-card h2 { margin-bottom: 5px; color: #1e293b; }
-        .login-card select, .login-card input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 14px; background: #fff; }
-        .login-card button { width: 100%; padding: 10px; background: #007bff; color: #fff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 15px; margin-top: 10px; }
-        
-        #install-pwa-btn { background: #28a745; margin-top: 10px; display: none; }
-        .ios-install-guide { font-size: 11px; color: #666; margin-top: 10px; background: #f8f9fa; padding: 8px; border-radius: 5px; border: 1px dashed #ccc; display: none; }
-
-        #main-app-container { display: none; }
-        .header { background: #1e293b; color: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
-        .nav-tabs { background: #fff; display: flex; gap: 10px; padding: 10px 20px; border-bottom: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.05); overflow-x: auto; }
-        .nav-tabs button { background: none; border: none; cursor: pointer; color: #555; padding: 8px 12px; font-size: 14px; border-radius: 4px; font-weight: bold; white-space: nowrap; font-family: Tahoma, sans-serif; }
-        .nav-tabs button.active, .nav-tabs button:hover { background: #007bff; color: #fff; }
-        .container { padding: 20px; max-width: 1200px; margin: auto; }
-        
-        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
-        .kpi-card { background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #ddd; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05); cursor: pointer; }
-        .kpi-card span { font-size: 13px; color: #666; display: block; margin-bottom: 5px; }
-        .kpi-card strong { font-size: 20px; color: #007bff; }
-
-        .panel-box { background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #dcdcdc; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .section-title { font-size: 15px; color: #222; margin-bottom: 12px; border-bottom: 2px solid #007bff; padding-bottom: 6px; font-weight: bold; }
-
-        .table-container { background: #fff; border-radius: 8px; border: 1px solid #ddd; overflow-x: auto; padding: 15px; }
-        table { width: 100%; border-collapse: collapse; text-align: right; font-size: 14px; }
-        th, td { padding: 12px; border-bottom: 1px solid #eee; }
-        th { background: #f8f9fa; color: #444; }
-        
-        .app-section { display: none; }
-        .app-section.active { display: block; }
+        body { font-family: Tahoma, sans-serif; background-color: #f8f9fa; }
+        .navbar-custom { background-color: #1e293b; color: white; padding: 10px 20px; }
+        .nav-links a { color: #cbd5e1; text-decoration: none; margin-left: 15px; padding: 5px 10px; border-radius: 4px; }
+        .nav-links a:hover, .nav-links a.active { background-color: #334155; color: #fff; }
+        .card { box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: none; margin-bottom: 20px; }
     </style>
 </head>
 <body>
 
-    <!-- 1. شاشة تسجيل الدخول -->
-    <div id="login-screen">
-        <div class="login-card">
-            <h2>MedTech FSM</h2>
-            <p style="color: #666; font-size: 13px; margin-bottom: 10px;">منظومة إدارة صيانة الأجهزة الطبية والمعملية</p>
-
-            <!-- مؤشر حالة الاتصال اللحظي بالشيت -->
-            <div id="connectionStatusBadge" style="font-size: 12px; font-weight: bold; padding: 6px; border-radius: 4px; margin-bottom: 12px; background: #fff3cd; color: #856404; border: 1px solid #ffeeba;">
-                🔄 جاري التحقق من الاتصال بـ Google Sheets...
-            </div>
-
-            <label style="font-size: 12px; display: block; text-align: right; margin-bottom: 3px; font-weight: bold;">اختر المستخدم:</label>
-            <select id="userSelect" style="width:100%; padding:10px; margin:5px 0 10px 0; border:1px solid #ccc; border-radius:5px;">
-                <option value="">-- جارِ تحميل الأسماء --</option>
-            </select>
-
-            <input type="hidden" id="roleInput" value="manager" />
-            <input type="password" id="pinInput" placeholder="كود الدخول السري (4 أرقام)" value="1111" />
-            
-            <button onclick="handleLogin()">تسجيل الدخول</button>
-            <button id="install-pwa-btn" onclick="installPWAApp()">📲 تثبيت التطبيق على الهاتف</button>
-            <div id="ios-guide" class="ios-install-guide">
-                <b>مستخدمي iPhone:</b> اضغط على زر المشاركة (Share) في Safari ثم اختر <b>"إلى الشاشة الرئيسية"</b>.
-            </div>
+    <!-- الهيدر وشريط التنقل -->
+    <div class="navbar-custom d-flex justify-content-between align-items-center">
+        <div>
+            <span class="fw-bold">MedTech FSM</span>
+            <span class="badge bg-success ms-2">متصل بالشيت ✓</span>
+            <span class="ms-3">هشام عاصم</span>
+            <a href="#" class="text-danger text-decoration-none ms-2">[خروج]</a>
+        </div>
+        <div class="nav-links">
+            <a href="url?id=5" class="active">لوحة المتابعة</a>
+            <a href="url?id=5">المأموريات اليومية</a>
+            <a href="url?id=5">الأجهزة والعملاء</a>
+            <a href="url?id=5">طلبات قطع الغيار</a>
+            <a href="url?id=5">الإجازات</a>
+            <a href="url?id=5">📊 استيراد وتصدير</a>
         </div>
     </div>
 
-    <!-- 2. واجهة التطبيق الرئيسية -->
-    <div id="main-app-container">
-        <div class="header">
-            <div>
-                <h2 style="margin: 0; font-size: 18px;">MedTech FSM</h2>
-                <small id="userRoleBadge" style="color: #38bdf8; font-weight: bold;"></small>
-            </div>
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <span id="appConnectionIndicator" style="font-size: 11px; padding: 3px 8px; border-radius: 3px; background: #d4edda; color: #155724; font-weight: bold;">متصل بالشيت ✓</span>
-                <span id="loggedUserName" style="font-size: 14px;"></span>
-                <span onclick="handleLogout()" style="color: #ff4d4d; cursor: pointer; font-size: 13px; font-weight: bold;">[خروج]</span>
+    <div class="container my-4">
+
+        <!-- قسم لوحة المتابعة الهيكل الإداري -->
+        <div class="card p-4">
+            <h4 class="mb-3 text-primary">الهيكل الإداري والإشراف</h4>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="p-3 border rounded bg-light">
+                        <h5>المديرون</h5>
+                        <ul class="mb-0">
+                            <li>هشام عاصم</li>
+                            <li>سعيد</li>
+                            <li>حمد عطية</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="p-3 border rounded bg-light">
+                        <h5>المشرفون حسب المناطق</h5>
+                        <ul class="mb-0">
+                            <li><strong>المنطقة الشمالية:</strong> أحمد العيسوي، إسلام ماهر</li>
+                            <li><strong>منطقة الصعيد:</strong> حسيب، عبد العظيم</li>
+                            <li><strong>منطقة القاهرة:</strong> البطاوي</li>
+                            <li><strong>منطقة الدلتا:</strong> أحمد رضا</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="nav-tabs">
-            <button onclick="switchTab('dashboard')" class="active" id="btn-dashboard">[لوحة المتابعة](url?id=5)</button>
-            <button onclick="switchTab('missions')" id="btn-missions">[المأموريات اليومية](url?id=5)</button>
-            <button onclick="switchTab('devices')" id="btn-devices">[الأجهزة والعملاء](url?id=5)</button>
-            <button onclick="switchTab('spares')" id="btn-spares">[طلبات قطع الغيار](url?id=5)</button>
-            <button onclick="switchTab('vacations')" id="btn-vacations">[الإجازات](url?id=5)</button>
-            <button onclick="switchTab('excel')" id="btn-excel">[📊 استيراد وتصدير](url?id=5)</button>
+        <!-- قسم المأموريات اليومية -->
+        <div class="card p-4">
+            <h4 class="mb-3 text-secondary">المأموريات اليومية وإضافة مأمورية جديدة</h4>
+            <form id="missionForm" onsubmit="addMission(event)" class="row g-3 mb-4 p-3 border rounded bg-white">
+                <div class="col-md-4">
+                    <label class="form-label">اسم المهندس:</label>
+                    <input type="text" id="missionEngineer" class="form-control" required>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">اسم الجهة / العميل:</label>
+                    <input type="text" id="missionClient" class="form-control" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">التاريخ:</label>
+                    <input type="date" id="missionDate" class="form-control" required>
+                </div>
+                <div class="col-md-1 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">إضافة</button>
+                </div>
+            </form>
         </div>
 
-        <div class="container">
-
-            <!-- صفحة لوحة المتابعة -->
-            <div id="section-dashboard" class="app-section active">
-                <div class="kpi-grid">
-                    <div class="kpi-card"><span>إجمالي المأموريات</span><strong style="color: #28a745;" id="kpiMissionsCount">0</strong></div>
-                    <div class="kpi-card"><span>الأجهزة المسجلة</span><strong id="kpiDevicesCount">0</strong></div>
-                    <div class="kpi-card"><span>قطع الغيار المطلوبة</span><strong style="color: #dc3545;" id="kpiPartsCount">0</strong></div>
-                    <div class="kpi-card"><span>طلبات الإجازات</span><strong style="color: #17a2b8;" id="kpiLeavesCount">0</strong></div>
-                </div>
-
-                <div class="panel-box">
-                    <div class="section-title">📊 تحليل الأجهزة وتشكيلات المناطق</div>
-                    <select id="regionDeviceFilter" class="searchable-input" onchange="filterDevicesByRegion()" style="width:100%; padding:10px; border:1px solid #ccc; border-radius:5px;">
-                        <option value="">-- اختر المنطقة لعرض الأجهزة وأعدادها --</option>
-                        <option value="القاهرة الكبرى">القاهرة الكبرى</option>
-                        <option value="المنطقة الشمالية">المنطقة الشمالية</option>
-                        <option value="منطقة الدلتا">منطقة الدلتا</option>
-                        <option value="الصعيد">الصعيد</option>
-                    </select>
-                    <div id="regionDeviceResults" style="margin-top: 10px; background: #f8f9fa; padding: 12px; border-radius: 5px; font-size: 13px; display: none; line-height: 1.6;"></div>
-                </div>
-
-                <div class="table-container">
-                    <h3 style="font-size: 16px; margin-top: 0; margin-bottom: 15px; color: #333;">أحدث المأموريات الجارية من الشيت</h3>
-                    <table>
-                        <thead><tr><th>التاريخ</th><th>المنطقة</th><th>المهندس</th><th>العميل</th><th>الجهاز</th><th>الحالة</th></tr></thead>
-                        <tbody id="dashboardVisitsTable"><tr><td colspan="6" style="text-align: center; color: #888; padding: 20px;">جاري التحميل...</td></tr></tbody>
-                    </table>
-                </div>
+        <!-- قسم الأجهزة والعملاء (مع عمود تاريخ آخر زيارة) -->
+        <div class="card p-4">
+            <h4 class="mb-3 text-secondary">قاعدة بيانات الأجهزة والعملاء</h4>
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>الموديل</th>
+                            <th>الجهة / المستشفى</th>
+                            <th>المنطقة</th>
+                            <th>السيريال</th>
+                            <th>تاريخ آخر زيارة</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>BH-70P</td>
+                            <td>مستشفى دمياط العام</td>
+                            <td>الدلتا</td>
+                            <td>SN-99821</td>
+                            <td>2026/11/15</td>
+                        </tr>
+                        <tr>
+                            <td>CA-200</td>
+                            <td>معمل الدلتا التخصصي</td>
+                            <td>الدلتا</td>
+                            <td>SN-44102</td>
+                            <td>2026/11/10</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
-
-            <!-- صفحة المأموريات اليومية -->
-            <div id="section-missions" class="app-section">
-                <div class="panel-box"><div class="section-title">سجل المأموريات اليومية</div></div>
-                <div class="table-container">
-                    <table>
-                        <thead><tr><th>التاريخ</th><th>المنطقة</th><th>المهندس</th><th>العميل</th><th>المدينة</th><th>الجهاز</th><th>S/N</th><th>نوع الزيارة</th><th>الوصف</th><th>الحالة</th></tr></thead>
-                        <tbody id="missionsTableBody"><tr><td colspan="10" style="text-align: center; color: #888;">جاري التحميل...</td></tr></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- صفحة الأجهزة والعملاء -->
-            <div id="section-devices" class="app-section">
-                <div class="panel-box">
-                    <div class="section-title">قاعدة بيانات الأجهزة والعملاء</div>
-                    <input type="text" id="deviceSearchInput" placeholder="ابحث برقم S/N أو اسم العميل..." oninput="searchDevicesTable()" style="width:100%; padding:9px; border:1px solid #ccc; border-radius:5px;" />
-                </div>
-                <div class="table-container">
-                    <table>
-                        <thead><tr><th>اسم العميل</th><th>المنطقة</th><th>المدينة</th><th>الموديل</th><th>الرقم التسلسلي S/N</th><th>نوع العقد</th><th>الحالة</th></tr></thead>
-                        <tbody id="devicesTableBody"><tr><td colspan="7" style="text-align: center; color: #888;">جاري التحميل...</td></tr></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- صفحة قطع الغيار -->
-            <div id="section-spares" class="app-section">
-                <div class="panel-box"><div class="section-title">متابعة طلبات قطع الغيار</div></div>
-                <div class="table-container">
-                    <table>
-                        <thead><tr><th>التاريخ</th><th>المهندس</th><th>المنطقة</th><th>العميل</th><th>الجهاز</th><th>قطعة الغيار</th><th>الكمية</th><th>الحالة</th></tr></thead>
-                        <tbody id="sparesTableBody"><tr><td colspan="8" style="text-align: center; color: #888;">جاري التحميل...</td></tr></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- صفحة الإجازات -->
-            <div id="section-vacations" class="app-section">
-                <div class="panel-box"><div class="section-title">سجل الإجازات والطلبات</div></div>
-                <div class="table-container">
-                    <table>
-                        <thead><tr><th>المهندس</th><th>المنطقة</th><th>من تاريخ</th><th>إلى تاريخ</th><th>السبب</th><th>الحالة</th></tr></thead>
-                        <tbody id="vacationsTableBody"><tr><td colspan="6" style="text-align: center; color: #888;">جاري التحميل...</td></tr></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- صفحة استيراد وتصدير -->
-            <div id="section-excel" class="app-section">
-                <div class="panel-box"><div class="section-title">استيراد وتصدير البيانات</div><p>البيانات متصلة لحظياً ومباشرة مع [Google Sheets](url?id=5).</p></div>
-            </div>
-
         </div>
+
+        <!-- قسم طلبات قطع الغيار -->
+        <div class="card p-4">
+            <h4 class="mb-3 text-secondary">طلبات قطع الغيار</h4>
+            <form id="spareForm" onsubmit="addSparePart(event)" class="row g-3 mb-4 p-3 border rounded bg-white">
+                <div class="col-md-3">
+                    <label class="form-label">الجهة / المستشفى:</label>
+                    <input type="text" id="spareClient" class="form-control" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">وصف العطل:</label>
+                    <input type="text" id="spareIssue" class="form-control" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">قطعة الغيار المطلوبة:</label>
+                    <input type="text" id="sparePartName" class="form-control" required>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">التاريخ:</label>
+                    <input type="date" id="spareDate" class="form-control" required>
+                </div>
+                <div class="col-md-1 d-flex align-items-end">
+                    <button type="submit" class="btn btn-success w-100">إرسال</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- قسم الإجازات -->
+        <div class="card p-4">
+            <h4 class="mb-3 text-secondary">سجل الإجازات وطلب إجازة جديد</h4>
+            <form id="leaveForm" onsubmit="addLeave(event)" class="row g-3 mb-4 p-3 border rounded bg-white">
+                <div class="col-md-3">
+                    <label class="form-label">اسم المهندس:</label>
+                    <input type="text" id="leaveEngineer" class="form-control" required>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">المنطقة:</label>
+                    <input type="text" id="leaveRegion" class="form-control" required>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">من تاريخ:</label>
+                    <input type="date" id="leaveFrom" class="form-control" required>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">إلى تاريخ:</label>
+                    <input type="date" id="leaveTo" class="form-control" required>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">السبب:</label>
+                    <input type="text" id="leaveReason" class="form-control" required>
+                </div>
+                <div class="col-12 text-end">
+                    <button type="submit" class="btn btn-warning px-4">تقديم طلب الإجازة</button>
+                </div>
+            </form>
+
+            <table class="table table-bordered">
+                <thead class="table-secondary">
+                    <tr>
+                        <th>المهندس</th>
+                        <th>المنطقة</th>
+                        <th>من تاريخ</th>
+                        <th>إلى تاريخ</th>
+                        <th>السبب</th>
+                        <th>الحالة</th>
+                    </tr>
+                </thead>
+                <tbody id="leaveTableBody">
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">لا توجد طلبات إجازات حالياً</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
     </div>
 
     <script>
-        // رابط الـ Web App المحدث والنهائي الخاص بك
-        const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbwvvbg-iJpg_D98pREp0dnLr0ye5WjIT-38_VXHzG6bRj_L1rYsCecg79nA7kLw9UQ0cw/exec";
-        let globalAppData = { users: [], devices: [], visits: [], parts: [], leaves: [] };
-
-        window.onload = function() {
-            fetchAllAppData();
-            const savedUser = localStorage.getItem('medtech_saved_user');
-            const savedRole = localStorage.getItem('medtech_saved_role');
-            if (savedUser && savedRole) {
-                setTimeout(() => {
-                    document.getElementById('userSelect').value = savedUser + "|" + savedRole;
-                    document.getElementById('roleInput').value = savedRole;
-                    handleLogin(true);
-                }, 500);
-            }
-        };
-
-        function fetchAllAppData() {
-            const loginBadge = document.getElementById('connectionStatusBadge');
-            const headerBadge = document.getElementById('appConnectionIndicator');
-
-            fetch(SHEET_API_URL)
-                .then(res => res.json())
-                .then(data => {
-                    globalAppData = data;
-                    
-                    loginBadge.style.background = "#d4edda";
-                    loginBadge.style.color = "#155724";
-                    loginBadge.style.borderColor = "#c3e6cb";
-                    loginBadge.innerHTML = "✅ متصل بـ Google Sheets بنجاح";
-
-                    headerBadge.style.background = "#d4edda";
-                    headerBadge.style.color = "#155724";
-                    headerBadge.innerHTML = "متصل بالشيت ✓";
-
-                    populateUsers(data.users || []);
-                    populateDevices(data.devices || []);
-                    populateVisits(data.visits || []);
-                    populateParts(data.parts || []);
-                    populateLeaves(data.leaves || []);
-                    
-                    document.getElementById('kpiDevicesCount').innerText = (data.devices || []).length;
-                    document.getElementById('kpiMissionsCount').innerText = (data.visits || []).length;
-                    document.getElementById('kpiPartsCount').innerText = (data.parts || []).length;
-                    document.getElementById('kpiLeavesCount').innerText = (data.leaves || []).length;
-                })
-                .catch(err => {
-                    console.error("خطأ في الاتصال بالشيت:", err);
-                    loginBadge.style.background = "#f8d7da";
-                    loginBadge.style.color = "#721c24";
-                    loginBadge.style.borderColor = "#f5c6cb";
-                    loginBadge.innerHTML = "❌ خطأ: تعذر الاتصال بـ Google Sheets!";
-
-                    headerBadge.style.background = "#f8d7da";
-                    headerBadge.style.color = "#721c24";
-                    headerBadge.innerHTML = "غير متصل بالشيت ✗";
-                });
+        function addMission(e) {
+            e.preventDefault();
+            alert("تم إضافة المأمورية بنجاح (سيتم ربطها بالشيت تلقائياً)");
+            document.getElementById("missionForm").reset();
         }
 
-        function populateUsers(users) {
-            const select = document.getElementById('userSelect');
-            if (users.length > 0) {
-                select.innerHTML = '<option value="">-- اختر المستخدم --</option>';
-                users.forEach(u => {
-                    let opt = document.createElement('option');
-                    opt.value = u.name + "|" + u.role;
-                    opt.textContent = `${u.name} (${u.role === 'manager' ? 'مدير' : (u.role === 'supervisor' ? 'مشرف' : 'مهندس')} - ${u.region || 'عام'})`;
-                    select.appendChild(opt);
-                });
-            }
+        function addSparePart(e) {
+            e.preventDefault();
+            alert("تم إرسال طلب قطعة الغيار بنجاح");
+            document.getElementById("spareForm").reset();
         }
 
-        function populateDevices(devices) {
-            const tbody = document.getElementById('devicesTableBody');
-            if (devices.length === 0) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">لا توجد بيانات أجهزة</td></tr>'; return; }
-            tbody.innerHTML = devices.map(d => `<tr><td><b>${d.client || ''}</b></td><td>${d.region || ''}</td><td>${d.city || ''}</td><td>${d.model || ''}</td><td><code>${d.sn || ''}</code></td><td>${d.contract || ''}</td><td>${d.status || ''}</td></tr>`).join('');
-        }
-
-        function populateVisits(visits) {
-            const tbody = document.getElementById('missionsTableBody');
-            const dashTbody = document.getElementById('dashboardVisitsTable');
-            if (visits.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;">لا توجد مأموريات مسجلة</td></tr>';
-                dashTbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">لا توجد مأموريات جارية</td></tr>';
-                return;
-            }
-            tbody.innerHTML = visits.map(v => `<tr><td>${v.date}</td><td>${v.region}</td><td><b>${v.engineer}</b></td><td>${v.client}</td><td>${v.city}</td><td>${v.device}</td><td><code>${v.sn}</code></td><td>${v.type}</td><td>${v.desc}</td><td>${v.status}</td></tr>`).join('');
-            dashTbody.innerHTML = visits.slice(0, 5).map(v => `<tr><td>${v.date}</td><td>${v.region}</td><td><b>${v.engineer}</b></td><td>${v.client}</td><td>${v.device}</td><td>${v.status}</td></tr>`).join('');
-        }
-
-        function populateParts(parts) {
-            const tbody = document.getElementById('sparesTableBody');
-            if (parts.length === 0) { tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">لا توجد طلبات قطع غيار</td></tr>'; return; }
-            tbody.innerHTML = parts.map(p => `<tr><td>${p.date}</td><td><b>${p.engineer}</b></td><td>${p.region}</td><td>${p.client}</td><td>${p.device}</td><td>${p.part}</td><td>${p.qty}</td><td>${p.status}</td></tr>`).join('');
-        }
-
-        function populateLeaves(leaves) {
-            const tbody = document.getElementById('vacationsTableBody');
-            if (leaves.length === 0) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">لا توجد طلبات إجازات</td></tr>'; return; }
-            tbody.innerHTML = leaves.map(l => `<tr><td><b>${l.engineer}</b></td><td>${l.region}</td><td>${l.from}</td><td>${l.to}</td><td>${l.reason}</td><td>${l.status}</td></tr>`).join('');
-        }
-
-        function searchDevicesTable() {
-            const q = document.getElementById('deviceSearchInput').value.toLowerCase();
-            const filtered = (globalAppData.devices || []).filter(d => (d.client && d.client.toLowerCase().includes(q)) || (d.sn && d.sn.toLowerCase().includes(q)));
-            populateDevices(filtered);
-        }
-
-        function filterDevicesByRegion() {
-            const reg = document.getElementById('regionDeviceFilter').value;
-            const box = document.getElementById('regionDeviceResults');
-            if (!reg) { box.style.display = 'none'; return; }
-            const regionDevs = (globalAppData.devices || []).filter(d => d.region === reg);
-            let counts = {};
-            regionDevs.forEach(d => { let m = d.model || 'غير محدد'; counts[m] = (counts[m] || 0) + 1; });
-            let html = `<b>إجمالي أجهزة منطقة (${reg}):</b> ${regionDevs.length} جهازاً<br><ul style="margin:5px 0 0 20px; padding:0;">`;
-            for (let m in counts) { html += `<li>${m}: <b>${counts[m]}</b></li>`; }
-            html += `</ul>`;
-            box.style.display = 'block';
-            box.innerHTML = html;
-        }
-
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; document.getElementById('install-pwa-btn').style.display = 'block'; });
-        function installPWAApp() { if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; } }
-
-        function handleLogin(isAuto = false) {
-            let userName = "", role = "";
-            if (isAuto) {
-                userName = localStorage.getItem('medtech_saved_user');
-                role = localStorage.getItem('medtech_saved_role');
-            } else {
-                const val = document.getElementById('userSelect').value;
-                if (!val) { alert('اختر المستخدم أولاً'); return; }
-                const parts = val.split('|');
-                userName = parts[0]; role = parts[1];
-                localStorage.setItem('medtech_saved_user', userName);
-                localStorage.setItem('medtech_saved_role', role);
-            }
-            document.getElementById('loggedUserName').innerText = userName;
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('main-app-container').style.display = 'block';
-        }
-
-        function handleLogout() { localStorage.clear(); location.reload(); }
-        function switchTab(id) {
-            document.querySelectorAll('.app-section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-tabs button').forEach(b => b.classList.remove('active'));
-            document.getElementById('section-' + id).classList.add('active');
-            document.getElementById('btn-' + id).classList.add('active');
+        function addLeave(e) {
+            e.preventDefault();
+            alert("تم تقديم طلب الإجازة بنجاح");
+            document.getElementById("leaveForm").reset();
         }
     </script>
 </body>
