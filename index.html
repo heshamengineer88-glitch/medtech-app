@@ -13,7 +13,7 @@
         .login-card select, .login-card input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 14px; background: #fff; }
         .login-card button { width: 100%; padding: 10px; background: #007bff; color: #fff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 15px; margin-top: 10px; }
         
-        #install-pwa-btn { background: #28a745; margin-bottom: 15px; display: none; }
+        #install-pwa-btn { background: #28a745; margin-top: 10px; display: none; }
         .ios-install-guide { font-size: 11px; color: #666; margin-top: 10px; background: #f8f9fa; padding: 8px; border-radius: 5px; border: 1px dashed #ccc; display: none; }
 
         #main-app-container { display: none; }
@@ -38,12 +38,6 @@
         
         .app-section { display: none; }
         .app-section.active { display: block; }
-        
-        .searchable-dropdown-container { position: relative; width: 100%; }
-        .searchable-input { width: 100%; padding: 9px; border-radius: 5px; border: 1px solid #ccc; font-size: 14px; box-sizing: border-box; background: #fff; }
-        .dropdown-results { display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid #ccc; max-height: 160px; overflow-y: auto; z-index: 1000; border-radius: 0 0 5px 5px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .dropdown-item { padding: 8px 10px; cursor: pointer; font-size: 13px; border-bottom: 1px solid #f1f1f1; }
-        .dropdown-item:hover { background: #f1f1f1; }
     </style>
 </head>
 <body>
@@ -52,22 +46,22 @@
     <div id="login-screen">
         <div class="login-card">
             <h2>MedTech FSM</h2>
-            <p style="color: #666; font-size: 13px; margin-bottom: 15px;">نظام إدارة الصيانة الميدانية</p>
-            
-            <button id="install-pwa-btn" onclick="installPWAApp()">📥 تثبيت التطبيق على جهازك</button>
-            <div id="ios-guide" class="ios-install-guide">
-                <b>مستخدمي iPhone:</b> اضغط على زر المشاركة (Share) في متصفح Safari ثم اختر <b>"إلى الشاشة الرئيسية" (Add to Home Screen)</b>.
-            </div>
+            <p style="color: #666; font-size: 13px; margin-bottom: 15px;">منظومة إدارة صيانة الأجهزة الطبية والمعملية</p>
 
-            <label style="font-size: 12px; display: block; text-align: right; margin-bottom: 3px; font-weight: bold;">اختر اسم المستخدم من الشيت:</label>
-            <select id="userSelect" onchange="autoFillRole()">
+            <label style="font-size: 12px; display: block; text-align: right; margin-bottom: 3px; font-weight: bold;">اختر المستخدم:</label>
+            <select id="userSelect" class="searchable-input" onchange="autoFillRole()" style="width:100%; padding:10px; margin:5px 0 10px 0; border:1px solid #ccc; border-radius:5px;">
                 <option value="">-- جارِ تحميل الأسماء من الشيت... --</option>
             </select>
 
             <input type="hidden" id="roleInput" value="manager" />
-            <input type="password" id="pinInput" placeholder="كود الدخول السريع" value="1111" />
+            <input type="password" id="pinInput" placeholder="كود الدخول السري (4 أرقام)" value="1111" />
             
-            <button onclick="handleLogin()">دخول للبرنامج</button>
+            <button onclick="handleLogin()">تسجيل الدخول</button>
+            <button id="install-pwa-btn" onclick="installPWAApp()">📲 تثبيت التطبيق على الهاتف</button>
+            <div id="ios-guide" class="ios-install-guide">
+                <b>مستخدمي iPhone:</b> اضغط على زر المشاركة (Share) في متصفح Safari ثم اختر <b>"إلى الشاشة الرئيسية"</b>.
+            </div>
+
             <div style="margin-top: 12px; font-size: 11px; color: #888;">[🔄 متصل بـ Google Sheets ✓](url?id=5)</div>
         </div>
     </div>
@@ -81,7 +75,7 @@
             </div>
             <div>
                 <span id="loggedUserName" style="font-size: 14px; margin-left: 10px;"></span>
-                <span onclick="handleLogout()" style="color: #ff4d4d; cursor: pointer; font-size: 13px; font-weight: bold;">[تبديل المستخدم / خروج]</span>
+                <span onclick="handleLogout()" style="color: #ff4d4d; cursor: pointer; font-size: 13px; font-weight: bold;">[خروج]</span>
             </div>
         </div>
 
@@ -91,7 +85,7 @@
             <button onclick="switchTab('devices')" id="btn-devices">[الأجهزة والعملاء](url?id=5)</button>
             <button onclick="switchTab('spares')" id="btn-spares">[طلبات قطع الغيار](url?id=5)</button>
             <button onclick="switchTab('vacations')" id="btn-vacations">[الإجازات](url?id=5)</button>
-            <button onclick="switchTab('excel')" id="btn-excel">[📊 استيراد وتصدير Excel](url?id=5)</button>
+            <button onclick="switchTab('excel')" id="btn-excel">[📊 استيراد وتصدير](url?id=5)</button>
         </div>
 
         <div class="container">
@@ -99,54 +93,26 @@
             <!-- صفحة لوحة المتابعة -->
             <div id="section-dashboard" class="app-section active">
                 <div class="kpi-grid">
-                    <div class="kpi-card" onclick="toggleMissionDetails()">
-                        <span>إجمالي المأموريات</span>
-                        <strong style="color: #28a745;">0</strong>
-                        <div id="missionDetailsBox" style="display: none; margin-top: 8px; font-size: 11px; text-align: right; border-top: 1px dashed #eee; padding-top: 6px; color: #444;">
-                            • زيارات دورية منتظمة: 0<br>• بلاغات أعطال طارئة: 0
-                        </div>
-                    </div>
-                    <div class="kpi-card" onclick="toggleRegionDetails()">
-                        <span>الأجهزة المسجلة</span>
-                        <strong>1470</strong>
-                        <div id="regionDetailsBox" style="display: none; margin-top: 8px; font-size: 11px; text-align: right; border-top: 1px dashed #eee; padding-top: 6px; color: #444;">
-                            • القاهرة الكبرى والصعيد: 550 جهازاً<br>• المنطقة الشمالية والدلتا: 920 جهازاً
-                        </div>
-                    </div>
+                    <div class="kpi-card"><span>إجمالي المأموريات</span><strong style="color: #28a745;">0</strong></div>
+                    <div class="kpi-card"><span>الأجهزة المسجلة</span><strong>1470</strong></div>
                     <div class="kpi-card"><span>تنبيهات الزيارة الدورية</span><strong style="color: #ffc107;">0</strong></div>
                     <div class="kpi-card"><span>طلبات قطع الغيار</span><strong style="color: #dc3545;">0</strong></div>
                     <div class="kpi-card"><span>طلبات الإجازات</span><strong style="color: #17a2b8;">0</strong></div>
                 </div>
 
-                <!-- لوحة التحكم والبحث المنسدل -->
+                <!-- لوحة التحكم والبحث المنسدل للأجهزة -->
                 <div class="panel-box">
-                    <div class="section-title">📊 لوحة التحكم والبحث المباشر (اكتب أو اختر من القائمة)</div>
+                    <div class="section-title">📊 البحث الذكي الشامل للأجهزة وتشكيلات المناطق</div>
                     <div style="margin-bottom: 15px;">
-                        <label style="font-size: 13px; font-weight: bold; display: block; margin-bottom: 5px; color: #444;">بحث ذكي شامل (العملاء، الأجهزة، قطع الغيار):</label>
-                        <div class="searchable-dropdown-container">
-                            <input type="text" id="globalSearchInput" placeholder="اكتب للبحث أو اختر من القائمة..." class="searchable-input" oninput="filterDropdown('globalSearchInput', 'globalResults')" onclick="showDropdown('globalResults')" />
-                            <div id="globalResults" class="dropdown-results"></div>
-                        </div>
-                    </div>
-
-                    <!-- قسم متابعة أداء المهندسين -->
-                    <div id="supervisorEngineersSection" style="background: #f9f9f9; padding: 12px; border-radius: 6px; border: 1px solid #dcdcdc; display: none;">
-                        <h4 id="perfSectionTitle" style="font-size: 14px; color: #333; margin: 0 0 10px 0; border-bottom: 1px solid #eee; padding-bottom: 4px;">👨‍💻 متابعة أداء المهندسين</h4>
-                        <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px;">
-                            <div>
-                                <label style="font-size: 12px; display: block; margin-bottom: 3px;">اختر المهندس (بحث أو اختيار):</label>
-                                <div class="searchable-dropdown-container">
-                                    <input type="text" id="engSearchInput" placeholder="اختر أو ابحث عن اسم المهندس..." class="searchable-input" oninput="filterDropdown('engSearchInput', 'engResults')" onclick="showDropdown('engResults')" />
-                                    <div id="engResults" class="dropdown-results"></div>
-                                </div>
-                            </div>
-                            <div style="display: flex; gap: 5px;">
-                                <div style="flex: 1;"><label style="font-size: 11px;">من تاريخ:</label><input type="date" id="perfStartDate" style="width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px;" /></div>
-                                <div style="flex: 1;"><label style="font-size: 11px;">إلى تاريخ:</label><input type="date" id="perfEndDate" style="width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px;" /></div>
-                            </div>
-                            <button onclick="calculateEngineerPerformance()" style="background: #007bff; color: #fff; border: none; padding: 8px; border-radius: 4px; cursor: pointer; font-weight: bold;">عرض تحليل الأداء للفترة المحددة</button>
-                        </div>
-                        <div id="engineerPerfResult" style="font-size: 12px; color: #555; background: #fff; padding: 8px; border-radius: 4px; display: none; line-height: 1.5; border: 1px solid #eee;"></div>
+                        <label style="font-size: 13px; font-weight: bold; display: block; margin-bottom: 5px; color: #444;">اختر المنطقة لعرض تفاصيل وأعداد الأجهزة:</label>
+                        <select id="regionDeviceFilter" class="searchable-input" onchange="filterDevicesByRegion()" style="width:100%; padding:10px; border:1px solid #ccc; border-radius:5px;">
+                            <option value="">-- اختر المنطقة لعرض الأجهزة وأعدادها --</option>
+                            <option value="القاهرة الكبرى">القاهرة الكبرى</option>
+                            <option value="المنطقة الشمالية">المنطقة الشمالية</option>
+                            <option value="منطقة الدلتا">منطقة الدلتا</option>
+                            <option value="الصعيد">الصعيد (أعالي مصر)</option>
+                        </select>
+                        <div id="regionDeviceResults" style="margin-top: 10px; background: #f8f9fa; padding: 12px; border-radius: 5px; font-size: 13px; display: none; line-height: 1.6;"></div>
                     </div>
                 </div>
 
@@ -159,85 +125,18 @@
                 </div>
             </div>
 
-            <!-- صفحة المأموريات اليومية -->
-            <div id="section-missions" class="app-section">
-                <div class="panel-box">
-                    <div class="section-title">تسجيل وبحث المأموريات اليومية</div>
-                    <label style="font-size: 13px; font-weight: bold; display: block; margin-bottom: 5px;">اختر أو ابحث عن العميل:</label>
-                    <div class="searchable-dropdown-container">
-                        <input type="text" id="clientSearchInput" placeholder="اكتب أول حروف العميل أو المعمل..." class="searchable-input" oninput="filterDropdown('clientSearchInput', 'clientResults')" onclick="showDropdown('clientResults')" />
-                        <div id="clientResults" class="dropdown-results"></div>
-                    </div>
-                </div>
-                <div class="table-container">
-                    <h3>سجل المأموريات الكامل</h3>
-                    <table>
-                        <thead><tr><th>رقم المأمورية</th><th>المهندس المسؤول</th><th>العميل</th><th>نوع البلاغ</th><th>حالة الإنجاز</th></tr></thead>
-                        <tbody><tr><td colspan="5" style="text-align: center; color: #888;">لا توجد سجلات بعد</td></tr></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- صفحة الأجهزة والعملاء -->
-            <div id="section-devices" class="app-section">
-                <div class="panel-box">
-                    <div class="section-title">إدارة قواعد بيانات الأجهزة والعملاء</div>
-                    <input type="text" placeholder="ابحث برقم السلسلة (Serial Number)..." class="searchable-input" />
-                </div>
-                <div class="table-container">
-                    <h3>قائمة الأجهزة والمعامل</h3>
-                    <table>
-                        <thead><tr><th>اسم العميل</th><th>المنطقة</th><th>نوع الجهاز / الموديل</th><th>الرقم التسلسلي</th><th>آخر زيارة</th></tr></thead>
-                        <tbody><tr><td>مستشفى الجمهورية</td><td>المنطقة الشمالية</td><td>CA-200 Chemistry</td><td>SN-99281</td><td>2026-10-20</td></tr></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- صفحة طلبات قطع الغيار -->
-            <div id="section-spares" class="app-section">
-                <div class="panel-box">
-                    <div class="section-title">إدارة ومتابعة طلبات قطع الغيار</div>
-                    <label style="font-size: 13px; font-weight: bold; display: block; margin-bottom: 5px;">اختر أو ابحث عن قطعة الغيار:</label>
-                    <div class="searchable-dropdown-container">
-                        <input type="text" id="spareSearchInput" placeholder="اكتب للبحث في قطع الغيار..." class="searchable-input" oninput="filterDropdown('spareSearchInput', 'spareResults')" onclick="showDropdown('spareResults')" />
-                        <div id="spareResults" class="dropdown-results"></div>
-                    </div>
-                </div>
-                <div class="table-container">
-                    <h3>سجل القطع المطلوبة</h3>
-                    <table>
-                        <thead><tr><th>رقم الطلب</th><th>المهندس</th><th>الجهاز المرتبط</th><th>قطعة الغيار</th><th>الحالة</th></tr></thead>
-                        <tbody><tr><td>#SP-102</td><td>خالد الضوي</td><td>BH-3300P</td><td>أنبوب تفريغ هيماتولوجي</td><td>قيد المراجعة</td></tr></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- صفحة الإجازات -->
-            <div id="section-vacations" class="app-section">
-                <div class="panel-box"><div class="section-title">طلبات الإجازات والمأموريات الاستثنائية</div></div>
-                <div class="table-container">
-                    <h3>جدول الإجازات المسجلة</h3>
-                    <table>
-                        <thead><tr><th>المهندس</th><th>نوع الإجازة</th><th>من تاريخ</th><th>إلى تاريخ</th><th>حالة الاعتماد</th></tr></thead>
-                        <tbody><tr><td colspan="5" style="text-align: center; color: #888;">لا توجد طلبات إجازات</td></tr></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <!-- صفحة استيراد وتصدير Excel -->
-            <div id="section-excel" class="app-section">
-                <div class="panel-box">
-                    <div class="section-title">📊 استيراد وتصدير قواعد البيانات (Excel / Google Sheets)</div>
-                    <button style="background: #28a745; color: #fff; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;">تصدير البيانات الحالية (Excel)</button>
-                </div>
-            </div>
+            <div id="section-missions" class="app-section"><div class="panel-box"><h3>المأموريات اليومية</h3></div></div>
+            <div id="section-devices" class="app-section"><div class="panel-box"><h3>الأجهزة والعملاء</h3></div></div>
+            <div id="section-spares" class="app-section"><div class="panel-box"><h3>طلبات قطع الغيار</h3></div></div>
+            <div id="section-vacations" class="app-section"><div class="panel-box"><h3>الإجازات</h3></div></div>
+            <div id="section-excel" class="app-section"><div class="panel-box"><h3>استيراد وتصدير</h3></div></div>
 
         </div>
     </div>
 
     <script>
-        // رابط الـ Web App الخاص بك المُتصل بشيت الجداول
-        const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbwQg520OFkn-gA9UQ7t10-tm2IcCvZlCDDC4XA1isJ_AVbXMNRuB2o3jUpEBM81IobiCQ/exec";
+        // رابط الـ Web App المحدث الخاص بك
+        const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbyWVc97vDaKGLj3KVLhf4d1MWGcWcHXqOa7a9zeQVZnd-l4SRNE9MUaYXPfHOsDE2SeWQ/exec";
 
         window.onload = function() {
             loadUsersFromGoogleSheets();
@@ -251,15 +150,9 @@
                     handleLogin(true);
                 }, 500);
             }
-
-            const isIos = /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
-            if (isIos && !window.navigator.standalone) {
-                document.getElementById('ios-guide').style.display = 'block';
-                document.getElementById('install-pwa-btn').style.display = 'none';
-            }
         };
 
-        // دالة سحب أسماء المهندسين والصلاحيات من شيت "المهندسين" تلقائياً
+        // دالة سحب الأسماء والصلاحيات أوتوماتيكياً من شيت "المهندسين"
         function loadUsersFromGoogleSheets() {
             const select = document.getElementById('userSelect');
             fetch(SHEET_API_URL)
@@ -271,17 +164,14 @@
                         users.forEach(u => {
                             let opt = document.createElement('option');
                             opt.value = u.name + "|" + u.role;
-                            let roleName = u.role === 'manager' ? 'مدير عام' : (u.role === 'supervisor' ? 'مشرف' : 'مهندس صيانة');
+                            let roleName = u.role === 'manager' ? 'مدير عام' : (u.role === 'supervisor' ? 'مشرف منطقة' : 'مهندس صيانة');
                             opt.textContent = `${u.name} (${roleName} - ${u.region || 'عام'})`;
                             select.appendChild(opt);
                         });
-                    } else {
-                        select.innerHTML = '<option value="">-- لا توجد بيانات في شيت المهندسين --</option>';
                     }
                 })
                 .catch(err => {
-                    console.error("خطأ في جلب بيانات المستخدمين:", err);
-                    select.innerHTML = '<option value="">-- تعذر جلب الأسماء من الشيت --</option>';
+                    console.error("خطأ في الاتصال بقاعدة البيانات:", err);
                 });
         }
 
@@ -295,9 +185,7 @@
         function installPWAApp() {
             if (deferredPrompt) {
                 deferredPrompt.prompt();
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    deferredPrompt = null;
-                });
+                deferredPrompt.userChoice.then(() => { deferredPrompt = null; });
             }
         }
 
@@ -309,153 +197,54 @@
             }
         }
 
-        const dataSources = {
-            globalSearchInput: [
-                "مستشفى الجمهورية - كيمياء الدم CA-200",
-                "مستشفى صدر المعمورة - هيماتولوجي BH-3300P",
-                "مستشفى مطروح العام - Phototron HC80",
-                "معمل أطلس - CA-430",
-                "طلب قطعة غيار: أنبوب تفريغ هيماتولوجي",
-                "طلب قطعة غيار: فلتر ضوء Phototron",
-                "مستشفى دسوق العام - DH-33"
-            ],
-            engSearchInput: [
-                "د. محمد عطية", "د. سعيد", "م. وليد", "م. تامر", "م. مصطفى",
-                "م. رجب", "م. عادل", "م. هاني", "أحمد العيسوي", "خالد الضوي", "إسلام ماهر", "مينا فوزي",
-                "أحمد رضا", "بهجت أيمن", "مهند أيمن", "محمد صلاح", "عماد عباس", "حسام صلاح", "محمد خالد"
-            ],
-            clientSearchInput: [
-                "مستشفي الجمهورية", "مستشفي صدر المعمورة", "مستشفى العلمين النموذجى", "مستشفى مطروح العام", 
-                "مستشفى حوش عيسى المركزى", "مستشفى ايتاى البارود العام", "مستشفى دسوق العام", "معمل أطلس", "معمل يوكير"
-            ],
-            spareSearchInput: [
-                "أنبوب تفريغ هيماتولوجي", "فلتر ضوء Phototron", "محلول غسيل كيمياء الدم", "إبرة عينات هيماتولوجي", "بور سبلاي رئيسي"
-            ]
+        const regionDeviceData = {
+            "القاهرة الكبرى": "• محلل كيمياء الدم CA-200: 120 جهازاً<br>• هيماتولوجي BH-3300P: 85 جهازاً<br>• Phototron HC80: 45 جهازاً",
+            "المنطقة الشمالية": "• محلل كيمياء الدم CA-430: 210 جهازاً<br>• هيماتولوجي 3-Diff: 150 جهازاً<br>• توريد أجهزة معملية متقدمة: 90 جهازاً",
+            "منطقة الدلتا": "• هيماتولوجي سيستمز Sysmex: 320 جهازاً<br>• الكيمياء الحيوية الأوتوماتيكية: 180 جهازاً<br>• أجهزة التخثر Coagulation: 110 جهازاً",
+            "الصعيد": "• محلل الهيماتولوجي الأساسي: 140 جهازاً<br>• أجهزة الكيمياء الطبية: 95 جهازاً"
         };
 
-        function showDropdown(resultsId) {
-            const resultsBox = document.getElementById(resultsId);
-            resultsBox.style.display = 'block';
-            const inputId = resultsId.replace('Results', 'SearchInput');
-            const list = dataSources[inputId] || [];
-            renderDropdownItems(resultsId, list, inputId);
-        }
-
-        function filterDropdown(inputId, resultsId) {
-            const query = document.getElementById(inputId).value.toLowerCase().trim();
-            const resultsBox = document.getElementById(resultsId);
-            const list = dataSources[inputId] || [];
-            
-            const filtered = list.filter(item => item.toLowerCase().includes(query));
-            renderDropdownItems(resultsId, filtered, inputId);
-            resultsBox.style.display = 'block';
-        }
-
-        function renderDropdownItems(resultsId, items, inputId) {
-            const resultsBox = document.getElementById(resultsId);
-            if (items.length > 0) {
-                resultsBox.innerHTML = items.map(item => `<div class="dropdown-item" onclick="selectDropdownItem('${inputId}', '${resultsId}', '${item}')">${item}</div>`).join('');
+        function filterDevicesByRegion() {
+            const reg = document.getElementById('regionDeviceFilter').value;
+            const box = document.getElementById('regionDeviceResults');
+            if (reg && regionDeviceData[reg]) {
+                box.style.display = 'block';
+                box.innerHTML = `<b>أجهزة وتشكيلات منطقة (${reg}):</b><br>` + regionDeviceData[reg];
             } else {
-                resultsBox.innerHTML = `<div class="dropdown-item" style="color: #999;">لا توجد مطابقة</div>`;
+                box.style.display = 'none';
             }
         }
-
-        function selectDropdownItem(inputId, resultsId, value) {
-            document.getElementById(inputId).value = value;
-            document.getElementById(resultsId).style.display = 'none';
-        }
-
-        window.onclick = function(event) {
-            if (!event.target.matches('.searchable-input')) {
-                document.querySelectorAll('.dropdown-results').forEach(el => el.style.display = 'none');
-            }
-        };
 
         function handleLogin(isAuto = false) {
-            let userName = "";
-            let role = "";
-
+            let userName = "", role = "";
             if (isAuto) {
                 userName = localStorage.getItem('medtech_saved_user');
                 role = localStorage.getItem('medtech_saved_role');
             } else {
                 const selectVal = document.getElementById('userSelect').value;
-                if (!selectVal) {
-                    alert('الرجاء اختيار اسمك من القائمة أولاً.');
-                    return;
-                }
+                if (!selectVal) { alert('الرجاء اختيار اسم المستخدم من القائمة.'); return; }
                 const parts = selectVal.split('|');
                 userName = parts[0];
                 role = parts[1];
-
                 localStorage.setItem('medtech_saved_user', userName);
                 localStorage.setItem('medtech_saved_role', role);
             }
 
             document.getElementById('loggedUserName').innerText = userName;
-            
-            const supSection = document.getElementById('supervisorEngineersSection');
-            const tableTitle = document.getElementById('tableTitle');
-
-            if (role === 'engineer') {
-                supSection.style.display = 'none';
-                tableTitle.innerText = "مأموريات منطقتي الخاصة";
-            } else if (role === 'supervisor') {
-                supSection.style.display = 'block';
-                document.getElementById('perfSectionTitle').innerText = "👨‍💻 متابعة أداء مهندسي المنطقة";
-                tableTitle.innerText = "مأموريات وتقارير مهندسي المنطقة";
-            } else {
-                supSection.style.display = 'block';
-                document.getElementById('perfSectionTitle').innerText = "👨‍💻 متابعة أداء مهندسي الجمهورية";
-                tableTitle.innerText = "أحدث المأموريات الجارية بجميع المناطق";
-            }
-            
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('main-app-container').style.display = 'block';
         }
 
         function handleLogout() {
-            localStorage.removeItem('medtech_saved_user');
-            localStorage.removeItem('medtech_saved_role');
-            document.getElementById('main-app-container').style.display = 'none';
-            document.getElementById('login-screen').style.display = 'flex';
+            localStorage.clear();
+            location.reload();
         }
 
-        function switchTab(sectionId) {
-            document.querySelectorAll('.app-section').forEach(sec => sec.classList.remove('active'));
-            document.querySelectorAll('.nav-tabs button').forEach(btn => btn.classList.remove('active'));
-
-            document.getElementById('section-' + sectionId).classList.add('active');
-            document.getElementById('btn-' + sectionId).classList.add('active');
-        }
-
-        function toggleRegionDetails() {
-            const box = document.getElementById('regionDetailsBox');
-            box.style.display = box.style.display === 'none' ? 'block' : 'none';
-        }
-
-        function toggleMissionDetails() {
-            const box = document.getElementById('missionDetailsBox');
-            box.style.display = box.style.display === 'none' ? 'block' : 'none';
-        }
-
-        function calculateEngineerPerformance() {
-            const eng = document.getElementById('engSearchInput').value;
-            const start = document.getElementById('perfStartDate').value;
-            const end = document.getElementById('perfEndDate').value;
-            const resultDiv = document.getElementById('engineerPerfResult');
-
-            if (!eng || !start || !end) {
-                alert('الرجاء اختيار المهندس وتحديد الفترات الزمنية بدقة.');
-                return;
-            }
-
-            resultDiv.style.display = 'block';
-            resultDiv.innerHTML = `
-                <b>المهندس المختار:</b> ${eng}<br>
-                <b>فترة المتابعة:</b> من ${start} إلى ${end}<br>
-                <b>حالة الأداء:</b> السجلات منتظمة والزيارات تمت في مواعيدها (🟢)
-            `;
+        function switchTab(id) {
+            document.querySelectorAll('.app-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-tabs button').forEach(b => b.classList.remove('active'));
+            document.getElementById('section-' + id).classList.add('active');
+            document.getElementById('btn-' + id).classList.add('active');
         }
     </script>
 </body>
