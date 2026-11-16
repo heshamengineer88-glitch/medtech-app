@@ -1,147 +1,138 @@
-<!-- لوحة التحليلات والبحث المتقدم المتجاوبة مع الموبايل -->
-<div class="medtech-integrated-dashboard" style="padding: 12px; background: #f8f9fa; border-radius: 8px; margin-bottom: 15px; font-family: Tahoma, sans-serif;">
-    <h3 style="font-size: 16px; color: #333; margin-bottom: 12px; border-bottom: 2px solid #007bff; padding-bottom: 5px;">📊 لوحة التحليلات والبحث السريع</h3>
-    
-    <!-- قسم البحث الذكي للعملاء -->
-    <div style="margin-bottom: 15px;">
-        <label style="font-size: 13px; font-weight: bold; display: block; margin-bottom: 5px; color: #444;">بحث سريع عن العميل أو المعمل:</label>
-        <div style="position: relative; width: 100%;">
-            <input type="text" id="clientSearchInput" placeholder="اكتب أول حروف من اسم العميل للبحث الفوري..." 
-                   oninput="filterClients()" 
-                   style="width: 100%; padding: 9px; border-radius: 5px; border: 1px solid #ccc; font-size: 14px; box-sizing: border-box;" />
-            <!-- قائمة النتائج المنسدلة التلقائية -->
-            <div id="clientDropdownList" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #fff; border: 1px solid #ccc; max-height: 180px; overflow-y: auto; z-index: 1000; border-radius: 0 0 5px 5px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+<!-- لوحة التحكم والتحليلات الشاملة لـ MedTech FSM -->
+<div class="medtech-master-dashboard" style="padding: 15px; background: #f8f9fa; border-radius: 8px; font-family: Tahoma, sans-serif; margin-bottom: 20px;">
+    <h3 style="font-size: 16px; color: #333; margin-bottom: 12px; border-bottom: 2px solid #007bff; padding-bottom: 6px;">📊 لوحة المؤشرات والتحليلات المتقدمة</h3>
+
+    <!-- 1. عدادات تفاعلية للأجهزة والمأموريات -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+        <!-- عداد الأجهزة -->
+        <div onclick="toggleRegionDetails()" style="background: #fff; padding: 12px; border-radius: 6px; border: 1px solid #ccc; cursor: pointer; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+            <span style="font-size: 12px; color: #666; display: block;">إجمالي الأجهزة</span>
+            <strong style="font-size: 18px; color: #007bff;" id="totalDevicesCount">320</strong>
+            <div id="regionDetailsBox" style="display: none; margin-top: 8px; font-size: 11px; text-align: right; border-top: 1px dashed #eee; padding-top: 6px; color: #444;">
+                • المنطقة الشمالية: 140 جهازاً<br>• منطقة الدلتا: 180 جهازاً
+            </div>
+        </div>
+        <!-- عداد المأموريات -->
+        <div onclick="toggleMissionDetails()" style="background: #fff; padding: 12px; border-radius: 6px; border: 1px solid #ccc; cursor: pointer; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+            <span style="font-size: 12px; color: #666; display: block;">إجمالي المأموريات</span>
+            <strong style="font-size: 18px; color: #28a745;" id="totalMissionsCount">95</strong>
+            <div id="missionDetailsBox" style="display: none; margin-top: 8px; font-size: 11px; text-align: right; border-top: 1px dashed #eee; padding-top: 6px; color: #444;">
+                • زيارات دورية: 82 زيارة<br>• بلاغات أعطال: 13 عطل
             </div>
         </div>
     </div>
 
-    <!-- فلاتر التقارير والتحليلات -->
-    <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 15px;">
-        <!-- اختيار المهندس (حساب الزيارات من يوم 24) -->
-        <div>
-            <label style="font-size: 13px; font-weight: bold; display: block; margin-bottom: 5px; color: #444;">تقرير المهندس (من 24 بالشهر):</label>
-            <select id="mobileEngineerSelect" onchange="loadEngineerReport()" style="width: 100%; padding: 9px; border-radius: 5px; border: 1px solid #ccc; background: #fff;">
-                <option value="">-- اختر المهندس --</option>
-                <optgroup label="المنطقة الشمالية">
+    <!-- 2. حقول البحث الذكية والكتابة المباشرة (مثل طلبات قطع الغيار والعملاء) -->
+    <div style="margin-bottom: 15px;">
+        <label style="font-size: 13px; font-weight: bold; display: block; margin-bottom: 5px; color: #444;">بحث ذكي (العملاء، الأجهزة، أو قطع الغيار):</label>
+        <input type="text" id="smartGlobalSearch" placeholder="اكتب للبحث الفوري دون الحاجة للتقليب..." 
+               oninput="filterGlobalData()" 
+               style="width: 100%; padding: 9px; border-radius: 5px; border: 1px solid #ccc; font-size: 14px; box-sizing: border-box; background: #fff;" />
+        <div id="globalSearchResults" style="display: none; background: #fff; border: 1px solid #ccc; max-height: 150px; overflow-y: auto; border-radius: 0 0 5px 5px; font-size: 13px; margin-top: 2px;"></div>
+    </div>
+
+    <!-- 3. قسم تقييم أداء المهندسين للمشرفين والمديرين فقط -->
+    <div id="supervisorEngineersSection" style="background: #fff; padding: 12px; border-radius: 6px; border: 1px solid #dcdcdc;">
+        <h4 style="font-size: 14px; color: #333; margin: 0 0 10px 0; border-bottom: 1px solid #eee; padding-bottom: 4px;">👨‍💻 متابعة أداء المهندسين (للمشرفين فقط)</h4>
+        
+        <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px;">
+            <div>
+                <label style="font-size: 12px; display: block; margin-bottom: 3px;">اختر المهندس:</label>
+                <select id="selectedEngineerPerf" style="width: 100%; padding: 7px; border-radius: 4px; border: 1px solid #ccc; font-size: 13px;">
+                    <option value="">-- اختر مهندس الصيانة --</option>
                     <option value="أحمد العيسوي">أحمد العيسوي</option>
                     <option value="خالد الضوي">خالد الضوي</option>
                     <option value="إسلام ماهر">إسلام ماهر</option>
-                    <option value="مينا فوزي">مينا فوزي</option>
-                </optgroup>
-                <optgroup label="منطقة الدلتا">
-                    <option value="أحمد رضا">أحمد رضا</option>
-                    <option value="بهجت أيمن">بهجت أيمن</option>
-                    <option value="مهند أيمن">مهند أيمن</option>
                     <option value="محمد صلاح">محمد صلاح</option>
-                    <option value="عماد عباس">عماد عباس</option>
-                    <option value="حسام صلاح">حسام صلاح</option>
-                    <option value="محمد خالد">محمد خالد</option>
-                </optgroup>
-            </select>
+                    <option value="مهند أيمن">مهند أيمن</option>
+                </select>
+            </div>
+            <div style="display: flex; gap: 5px;">
+                <div style="flex: 1;">
+                    <label style="font-size: 11px; display: block;">من تاريخ:</label>
+                    <input type="date" id="perfStartDate" style="width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #ccc; font-size: 12px;" />
+                </div>
+                <div style="flex: 1;">
+                    <label style="font-size: 11px; display: block;">إلى تاريخ:</label>
+                    <input type="date" id="perfEndDate" style="width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #ccc; font-size: 12px;" />
+                </div>
+            </div>
+            <button onclick="calculateEngineerPerformance()" style="background: #007bff; color: #fff; border: none; padding: 8px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold;">عرض تقرير الأداء المخصص</button>
         </div>
 
-        <!-- اختيار المنطقة (لتحليل الأجهزة والأعطال) -->
-        <div>
-            <label style="font-size: 13px; font-weight: bold; display: block; margin-bottom: 5px; color: #444;">تقرير المنطقة (حسب الأجهزة والأعطال):</label>
-            <select id="mobileRegionSelect" onchange="loadRegionReport()" style="width: 100%; padding: 9px; border-radius: 5px; border: 1px solid #ccc; background: #fff;">
-                <option value="">-- اختر المنطقة --</option>
-                <option value="المنطقة الشمالية">المنطقة الشمالية (الإسكندرية، مطروح، البحيرة)</option>
-                <option value="منطقة الدلتا">منطقة الدلتا (الدقهلية، الشرقية، كفر الشيخ، إلخ)</option>
-            </select>
+        <div id="engineerPerfResult" style="font-size: 12px; color: #555; background: #f1f8ff; padding: 8px; border-radius: 4px; display: none;">
+            <!-- نتائج تحليل أداء المهندس خلال الفترة -->
         </div>
-    </div>
-
-    <!-- صندوق عرض النتائج -->
-    <div style="background: #fff; padding: 12px; border-radius: 6px; border: 1px solid #e0e0e0;">
-        <h4 style="font-size: 13px; color: #007bff; margin: 0 0 6px 0;">نتائج التحليل والتقارير:</h4>
-        <p id="reportOutputText" style="font-size: 13px; color: #555; margin: 0; line-height: 1.5;">اختر مهندساً أو منطقة، أو ابدأ بكتابة اسم العميل أعلاه...</p>
     </div>
 </div>
 
 <script>
-    // قائمة العملاء والمعامل المستخرجة من النظام
-    const clientsList = [
-        "مستشفي الجمهورية", "مستشفي صدر المعمورة", "مستشفى العلمين النموذجى", "مستشفى مطروح العام", 
-        "مستشفى حوش عيسى المركزى", "مستشفى ايتاى البارود العام", "مستشفى دسوق العام", "معمل أطلس", "معمل يوكير",
-        "مستشفى الكلى و المسالك البولية بميت غمر", "مستشفى قلين العام", "مستشفى اورام كفرالشيخ", "معمل المراكز الطبية الثلاثية- جامعة المنصورة",
-        "مستشفى طلخا المركزى", "مستشفي فاقوس المركزي", "مستشفي علاج الاورام بميت غمر", "مستشفى صدر المنصورة", "مستشفي السنبلاوين العام"
+    // بيانات تجريبية وقواعد التحكم التفاعلي
+    const masterItemsList = [
+        "مستشفى الجمهورية - كيمياء الدم CA-200",
+        "مستشفى صدر المعمورة - هيماتولوجي BH-3300P",
+        "مستشفى مطروح العام - Phototron HC80",
+        "معمل أطلس - CA-430",
+        "قطع غيار: أنبوب تفريغ هيماتولوجي",
+        "قطع غيار: فلتر ضوء Phototron",
+        "مستشفى دسوق العام - DH-33"
     ];
 
-    // دالة البحث التفاعلي في العملاء
-    function filterClients() {
-        const input = document.getElementById('clientSearchInput').value.toLowerCase().trim();
-        const dropdown = document.getElementById('clientDropdownList');
+    // إظهار وإخفاء تفاصيل المناطق بالأجهزة
+    function toggleRegionDetails() {
+        const box = document.getElementById('regionDetailsBox');
+        box.style.display = box.style.display === 'none' ? 'block' : 'none';
+    }
+
+    // إظهار وإخفاء تفاصيل المأموريات (زيارات وأعطال)
+    function toggleMissionDetails() {
+        const box = document.getElementById('missionDetailsBox');
+        box.style.display = box.style.display === 'none' ? 'block' : 'none';
+    }
+
+    // البحث الذكي والكتابة المباشرة
+    function filterGlobalData() {
+        const query = document.getElementById('smartGlobalSearch').value.toLowerCase().trim();
+        const resultsBox = document.getElementById('globalSearchResults');
         
-        if (!input) {
-            dropdown.style.display = 'none';
+        if (!query) {
+            resultsBox.style.display = 'none';
             return;
         }
 
-        const filtered = clientsList.filter(client => client.toLowerCase().includes(input));
-        
+        const filtered = masterItemsList.filter(item => item.toLowerCase().includes(query));
         if (filtered.length > 0) {
-            dropdown.innerHTML = filtered.map(c => `<div onclick="selectClient('${c}')" style="padding: 10px; cursor: pointer; border-bottom: 1px solid #eee; font-size: 13px; background: #fff;" onmouseover="this.style.background='#f1f1f1'" onmouseout="this.style.background='#fff'">${c}</div>`).join('');
-            dropdown.style.display = 'block';
+            resultsBox.innerHTML = filtered.map(item => `<div style="padding: 8px; cursor: pointer; border-bottom: 1px solid #eee;" onclick="selectGlobalItem('${item}')">${item}</div>`).join('');
+            resultsBox.style.display = 'block';
         } else {
-            dropdown.innerHTML = `<div style="padding: 10px; color: #999; font-size: 13px;">لا توجد نتائج مطابقة</div>`;
-            dropdown.style.display = 'block';
+            resultsBox.innerHTML = `<div style="padding: 8px; color: #999;">لا توجد مطابقة للبحث الحالي</div>`;
+            resultsBox.style.display = 'block';
         }
     }
 
-    function selectClient(clientName) {
-        document.getElementById('clientSearchInput').value = clientName;
-        document.getElementById('clientDropdownList').style.display = 'none';
-        document.getElementById('reportOutputText').innerHTML = `<b>العميل المختصر:</b> تم اختيار المعمل / المستشفى <b>(${clientName})</b> بنجاح.`;
+    function selectGlobalItem(val) {
+        document.getElementById('smartGlobalSearch').value = val;
+        document.getElementById('globalSearchResults').style.display = 'none';
     }
 
-    // دالة تقرير المهندس (من يوم 24 الشهر السابق إلى 23 الحالي)
-    function loadEngineerReport() {
-        const engineerName = document.getElementById('mobileEngineerSelect').value;
-        if (!engineerName) return;
+    // حساب تقرير أداء المهندس خلال الفترة المحددة
+    function calculateEngineerPerformance() {
+        const eng = document.getElementById('selectedEngineerPerf').value;
+        const start = document.getElementById('perfStartDate').value;
+        const end = document.getElementById('perfEndDate').value;
+        const resultDiv = document.getElementById('engineerPerfResult');
 
-        const now = new Date();
-        let year = now.getFullYear();
-        let month = now.getMonth();
-        let startDate, endDate;
-        
-        if (now.getDate() >= 24) {
-            startDate = new Date(year, month, 24);
-            endDate = new Date(year, month + 1, 23);
-        } else {
-            startDate = new Date(year, month - 1, 24);
-            endDate = new Date(year, month, 23);
+        if (!eng || !start || !end) {
+            alert('الرجاء اختيار المهندس وتحديد فترتي البداية والنهاية بدقة.');
+            return;
         }
 
-        document.getElementById('reportOutputText').innerHTML = `
-            <b>المهندس:</b> ${engineerName}<br>
-            <b>دورة الاحتساب الشهرية:</b> من ${startDate.toLocaleDateString('ar-EG')} إلى ${endDate.toLocaleDateString('ar-EG')}<br>
-            <b>إجمالي الزيارات والمأموريات:</b> (جاهز للربط الفوري مع [سجل المأموريات اليومية](url?id=5))
-        `;
-    }
-
-    // دالة تقرير المنطقة (حسب نوع الأجهزة والأعطال)
-    function loadRegionReport() {
-        const regionName = document.getElementById('mobileRegionSelect').value;
-        : if (!regionName) return;
-
-        let deviceBreakdown = "";
-        if (regionName === "المنطقة الشمالية") {
-            deviceBreakdown = `
-                • أجهزة Phototron: 45 زيارة (0 اعطال)<br>
-                • أجهزة الهيماتولوجي (BH-3300P / NCC-51AL): 30 زيارة (1 عطل طارئ)<br>
-                • أجهزة كيمياء الدم (CA-200 / CA-430): 25 زيارة (0 اعطال)
-            `;
-        } else {
-            deviceBreakdown = `
-                • أجهزة الهيماتولوجي (BH-70P / DH-33): 85 زيارة (2 عطل طارئ)<br>
-                • أجهزة كيمياء الدم (CA-200 / huma star 200): 60 زيارة (1 عطل طارئ)<br>
-                • وحدات الـ Phototron: 40 زيارة (0 اعطال)
-            `;
-        }
-
-        document.getElementById('reportOutputText').innerHTML = `
-            <b>المنطقة:</b> ${regionName}<br>
-            <b>تحليل الزيارات حسب نوع الأجهزة والأعطال:</b><br>${deviceBreakdown}
+        resultDiv.style.display = 'block';
+        resultDiv.innerHTML = `
+            <b>المهندس:</b> ${eng}<br>
+            <b>الفترة من:</b> ${start} إلى ${end}<br>
+            <b>الزيارات الدورية المنفذة:</b> 14 زيارة | <b>الأعطال التي تم إصلاحها:</b> 3 بلاغات<br>
+            <b>نسبة الالتزام بالجدول:</b> 93% (ممتاز)
         `;
     }
 </script>
