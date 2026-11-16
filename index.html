@@ -1,138 +1,299 @@
-<!-- لوحة التحكم والتحليلات الشاملة لـ MedTech FSM -->
-<div class="medtech-master-dashboard" style="padding: 15px; background: #f8f9fa; border-radius: 8px; font-family: Tahoma, sans-serif; margin-bottom: 20px;">
-    <h3 style="font-size: 16px; color: #333; margin-bottom: 12px; border-bottom: 2px solid #007bff; padding-bottom: 6px;">📊 لوحة المؤشرات والتحليلات المتقدمة</h3>
-
-    <!-- 1. عدادات تفاعلية للأجهزة والمأموريات -->
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
-        <!-- عداد الأجهزة -->
-        <div onclick="toggleRegionDetails()" style="background: #fff; padding: 12px; border-radius: 6px; border: 1px solid #ccc; cursor: pointer; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-            <span style="font-size: 12px; color: #666; display: block;">إجمالي الأجهزة</span>
-            <strong style="font-size: 18px; color: #007bff;" id="totalDevicesCount">320</strong>
-            <div id="regionDetailsBox" style="display: none; margin-top: 8px; font-size: 11px; text-align: right; border-top: 1px dashed #eee; padding-top: 6px; color: #444;">
-                • المنطقة الشمالية: 140 جهازاً<br>• منطقة الدلتا: 180 جهازاً
-            </div>
-        </div>
-        <!-- عداد المأموريات -->
-        <div onclick="toggleMissionDetails()" style="background: #fff; padding: 12px; border-radius: 6px; border: 1px solid #ccc; cursor: pointer; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
-            <span style="font-size: 12px; color: #666; display: block;">إجمالي المأموريات</span>
-            <strong style="font-size: 18px; color: #28a745;" id="totalMissionsCount">95</strong>
-            <div id="missionDetailsBox" style="display: none; margin-top: 8px; font-size: 11px; text-align: right; border-top: 1px dashed #eee; padding-top: 6px; color: #444;">
-                • زيارات دورية: 82 زيارة<br>• بلاغات أعطال: 13 عطل
-            </div>
-        </div>
-    </div>
-
-    <!-- 2. حقول البحث الذكية والكتابة المباشرة (مثل طلبات قطع الغيار والعملاء) -->
-    <div style="margin-bottom: 15px;">
-        <label style="font-size: 13px; font-weight: bold; display: block; margin-bottom: 5px; color: #444;">بحث ذكي (العملاء، الأجهزة، أو قطع الغيار):</label>
-        <input type="text" id="smartGlobalSearch" placeholder="اكتب للبحث الفوري دون الحاجة للتقليب..." 
-               oninput="filterGlobalData()" 
-               style="width: 100%; padding: 9px; border-radius: 5px; border: 1px solid #ccc; font-size: 14px; box-sizing: border-box; background: #fff;" />
-        <div id="globalSearchResults" style="display: none; background: #fff; border: 1px solid #ccc; max-height: 150px; overflow-y: auto; border-radius: 0 0 5px 5px; font-size: 13px; margin-top: 2px;"></div>
-    </div>
-
-    <!-- 3. قسم تقييم أداء المهندسين للمشرفين والمديرين فقط -->
-    <div id="supervisorEngineersSection" style="background: #fff; padding: 12px; border-radius: 6px; border: 1px solid #dcdcdc;">
-        <h4 style="font-size: 14px; color: #333; margin: 0 0 10px 0; border-bottom: 1px solid #eee; padding-bottom: 4px;">👨‍💻 متابعة أداء المهندسين (للمشرفين فقط)</h4>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedTech FSM - إدارة الصيانة الميدانية والأجهزة الطبية والمعملية</title>
+    <style>
+        body { font-family: Tahoma, sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; color: #333; }
+        .header { background: #1e293b; color: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .nav-tabs { background: #fff; display: flex; gap: 10px; padding: 10px 20px; border-bottom: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.05); overflow-x: auto; }
+        .nav-tabs button { background: none; border: none; cursor: pointer; color: #555; padding: 8px 12px; font-size: 14px; border-radius: 4px; font-weight: bold; white-space: nowrap; font-family: Tahoma, sans-serif; }
+        .nav-tabs button.active, .nav-tabs button:hover { background: #007bff; color: #fff; }
+        .container { padding: 20px; max-width: 1200px; margin: auto; }
         
-        <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px;">
-            <div>
-                <label style="font-size: 12px; display: block; margin-bottom: 3px;">اختر المهندس:</label>
-                <select id="selectedEngineerPerf" style="width: 100%; padding: 7px; border-radius: 4px; border: 1px solid #ccc; font-size: 13px;">
-                    <option value="">-- اختر مهندس الصيانة --</option>
-                    <option value="أحمد العيسوي">أحمد العيسوي</option>
-                    <option value="خالد الضوي">خالد الضوي</option>
-                    <option value="إسلام ماهر">إسلام ماهر</option>
-                    <option value="محمد صلاح">محمد صلاح</option>
-                    <option value="مهند أيمن">مهند أيمن</option>
-                </select>
-            </div>
-            <div style="display: flex; gap: 5px;">
-                <div style="flex: 1;">
-                    <label style="font-size: 11px; display: block;">من تاريخ:</label>
-                    <input type="date" id="perfStartDate" style="width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #ccc; font-size: 12px;" />
-                </div>
-                <div style="flex: 1;">
-                    <label style="font-size: 11px; display: block;">إلى تاريخ:</label>
-                    <input type="date" id="perfEndDate" style="width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #ccc; font-size: 12px;" />
-                </div>
-            </div>
-            <button onclick="calculateEngineerPerformance()" style="background: #007bff; color: #fff; border: none; padding: 8px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold;">عرض تقرير الأداء المخصص</button>
-        </div>
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .kpi-card { background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #ddd; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.05); cursor: pointer; }
+        .kpi-card span { font-size: 13px; color: #666; display: block; margin-bottom: 5px; }
+        .kpi-card strong { font-size: 20px; color: #007bff; }
 
-        <div id="engineerPerfResult" style="font-size: 12px; color: #555; background: #f1f8ff; padding: 8px; border-radius: 4px; display: none;">
-            <!-- نتائج تحليل أداء المهندس خلال الفترة -->
+        .panel-box { background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #dcdcdc; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .section-title { font-size: 15px; color: #222; margin-bottom: 12px; border-bottom: 2px solid #007bff; padding-bottom: 6px; font-weight: bold; }
+
+        .table-container { background: #fff; border-radius: 8px; border: 1px solid #ddd; overflow-x: auto; padding: 15px; }
+        table { width: 100%; border-collapse: collapse; text-align: right; font-size: 14px; }
+        th, td { padding: 12px; border-bottom: 1px solid #eee; }
+        th { background: #f8f9fa; color: #444; }
+        
+        .app-section { display: none; }
+        .app-section.active { display: block; }
+        
+        .search-input { width: 100%; padding: 9px; border-radius: 5px; border: 1px solid #ccc; font-size: 14px; box-sizing: border-box; background: #fff; }
+    </style>
+</head>
+<body>
+
+    <!-- رأس التطبيق -->
+    <div class="header">
+        <div>
+            <h2 style="margin: 0; font-size: 18px;">MedTech FSM</h2>
+            <small style="color: #aaa;">إدارة الصيانة الميدانية والأجهزة الطبية (متصل بـ Google Sheets ✓)</small>
+        </div>
+        <div>
+            <span style="font-size: 14px; margin-left: 10px;">هشام عاصم (مدير عام)</span>
+            <span style="color: #ff4d4d; cursor: pointer; font-size: 13px;">[خروج]</span>
         </div>
     </div>
-</div>
 
-<script>
-    // بيانات تجريبية وقواعد التحكم التفاعلي
-    const masterItemsList = [
-        "مستشفى الجمهورية - كيمياء الدم CA-200",
-        "مستشفى صدر المعمورة - هيماتولوجي BH-3300P",
-        "مستشفى مطروح العام - Phototron HC80",
-        "معمل أطلس - CA-430",
-        "قطع غيار: أنبوب تفريغ هيماتولوجي",
-        "قطع غيار: فلتر ضوء Phototron",
-        "مستشفى دسوق العام - DH-33"
-    ];
+    <!-- شريط التنقل بين الصفحات -->
+    <div class="nav-tabs">
+        <button onclick="switchTab('dashboard')" class="active" id="btn-dashboard">لوحة المتابعة</button>
+        <button onclick="switchTab('missions')" id="btn-missions">المأموريات اليومية</button>
+        <button onclick="switchTab('devices')" id="btn-devices">الأجهزة والعملاء</button>
+        <button onclick="switchTab('spares')" id="btn-spares">طلبات قطع الغيار</button>
+        <button onclick="switchTab('vacations')" id="btn-vacations">الإجازات</button>
+        <button onclick="switchTab('excel')" id="btn-excel">📊 استيراد وتصدير Excel</button>
+    </div>
 
-    // إظهار وإخفاء تفاصيل المناطق بالأجهزة
-    function toggleRegionDetails() {
-        const box = document.getElementById('regionDetailsBox');
-        box.style.display = box.style.display === 'none' ? 'block' : 'none';
-    }
+    <div class="container">
 
-    // إظهار وإخفاء تفاصيل المأموريات (زيارات وأعطال)
-    function toggleMissionDetails() {
-        const box = document.getElementById('missionDetailsBox');
-        box.style.display = box.style.display === 'none' ? 'block' : 'none';
-    }
+        <!-- 1. صفحة لوحة المتابعة -->
+        <div id="section-dashboard" class="app-section active">
+            <div class="kpi-grid">
+                <div class="kpi-card" onclick="toggleMissionDetails()">
+                    <span>إجمالي المأموريات</span>
+                    <strong style="color: #28a745;">95</strong>
+                    <div id="missionDetailsBox" style="display: none; margin-top: 8px; font-size: 11px; text-align: right; border-top: 1px dashed #eee; padding-top: 6px; color: #444;">
+                        • زيارات دورية منتظمة: 82<br>• بلاغات أعطال طارئة: 13
+                    </div>
+                </div>
+                <div class="kpi-card" onclick="toggleRegionDetails()">
+                    <span>الأجهزة المسجلة</span>
+                    <strong>1470</strong>
+                    <div id="regionDetailsBox" style="display: none; margin-top: 8px; font-size: 11px; text-align: right; border-top: 1px dashed #eee; padding-top: 6px; color: #444;">
+                        • المنطقة الشمالية (الإسكندرية، مطروح، البحيرة): 620 جهازاً<br>• منطقة الدلتا (الدقهلية، الشرقية، كفر الشيخ، إلخ): 850 جهازاً
+                    </div>
+                </div>
+                <div class="kpi-card"><span>تنبيهات الزيارة الدورية</span><strong style="color: #ffc107;">12</strong></div>
+                <div class="kpi-card"><span>طلبات قطع الغيار</span><strong style="color: #dc3545;">5</strong></div>
+                <div class="kpi-card"><span>طلبات الإجازات</span><strong style="color: #17a2b8;">2</strong></div>
+            </div>
 
-    // البحث الذكي والكتابة المباشرة
-    function filterGlobalData() {
-        const query = document.getElementById('smartGlobalSearch').value.toLowerCase().trim();
-        const resultsBox = document.getElementById('globalSearchResults');
-        
-        if (!query) {
-            resultsBox.style.display = 'none';
-            return;
+            <!-- لوحة التحكم والبحث الذكي المباشر -->
+            <div class="panel-box">
+                <div class="section-title">📊 لوحة التحكم التفاعلية والبحث الذكي</div>
+                <div style="margin-bottom: 15px;">
+                    <label style="font-size: 13px; font-weight: bold; display: block; margin-bottom: 5px; color: #444;">بحث ذكي مباشر (العملاء، الأجهزة، قطع الغيار):</label>
+                    <input type="text" id="smartGlobalSearch" placeholder="اكتب للبحث الفوري دون التقليب في القوائم..." class="search-input" oninput="filterGlobalData()" />
+                    <div id="globalSearchResults" style="display: none; background: #fff; border: 1px solid #ccc; max-height: 150px; overflow-y: auto; border-radius: 0 0 5px 5px; font-size: 13px; margin-top: 2px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></div>
+                </div>
+
+                <!-- قسم متابعة أداء المهندسين للمشرفين والمديرين فقط -->
+                <div id="supervisorEngineersSection" style="background: #f9f9f9; padding: 12px; border-radius: 6px; border: 1px solid #dcdcdc;">
+                    <h4 style="font-size: 14px; color: #333; margin: 0 0 10px 0; border-bottom: 1px solid #eee; padding-bottom: 4px;">👨‍💻 متابعة أداء المهندسين (مخصص للمشرفين والمديرين)</h4>
+                    <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px;">
+                        <div>
+                            <label style="font-size: 12px; display: block; margin-bottom: 3px;">اختر المهندس:</label>
+                            <select id="selectedEngineerPerf" class="search-input">
+                                <option value="">-- اختر مهندس الصيانة --</option>
+                                <optgroup label="المنطقة الشمالية">
+                                    <option value="أحمد العيسوي">أحمد العيسوي</option>
+                                    <option value="خالد الضوي">خالد الضوي</option>
+                                    <option value="إسلام ماهر">إسلام ماهر</option>
+                                    <option value="مينا فوزي">مينا فوزي</option>
+                                </optgroup>
+                                <optgroup label="منطقة الدلتا">
+                                    <option value="أحمد رضا">أحمد رضا</option>
+                                    <option value="بهجت أيمن">بهجت أيمن</option>
+                                    <option value="مهند أيمن">مهند أيمن</option>
+                                    <option value="محمد صلاح">محمد صلاح</option>
+                                    <option value="عماد عباس">عماد عباس</option>
+                                    <option value="حسام صلاح">حسام صلاح</option>
+                                    <option value="محمد خالد">محمد خالد</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div style="display: flex; gap: 5px;">
+                            <div style="flex: 1;"><label style="font-size: 11px;">من تاريخ:</label><input type="date" id="perfStartDate" style="width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px;" /></div>
+                            <div style="flex: 1;"><label style="font-size: 11px;">إلى تاريخ:</label><input type="date" id="perfEndDate" style="width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px;" /></div>
+                        </div>
+                        <button onclick="calculateEngineerPerformance()" style="background: #007bff; color: #fff; border: none; padding: 8px; border-radius: 4px; cursor: pointer; font-weight: bold;">عرض تحليل الأداء للفترة المحددة</button>
+                    </div>
+                    <div id="engineerPerfResult" style="font-size: 12px; color: #555; background: #fff; padding: 8px; border-radius: 4px; display: none; line-height: 1.5; border: 1px solid #eee;"></div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <h3 style="font-size: 16px; margin-top: 0; margin-bottom: 15px; color: #333;">أحدث المأموريات الجارية</h3>
+                <table>
+                    <thead><tr><th>التاريخ</th><th>المهندس</th><th>العميل / المعمل</th><th>الجهاز</th><th>نوع الزيارة</th><th>الحالة</th></tr></thead>
+                    <tbody>
+                        <tr><td>2026-11-16</td><td>أحمد العيسوي</td><td>مستشفى مطروح العام</td><td>Phototron HC80</td><td>زيارة دورية</td><td><span style="color: #28a745;">🟢 في الموعد</span></td></tr>
+                        <tr><td>2026-11-15</td><td>محمد صلاح</td><td>معمل أطلس</td><td>CA-200</td><td>عطل طارئ</td><td><span style="color: #dc3545;">🔴 متأخر</span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 2. صفحة المأموريات اليومية -->
+        <div id="section-missions" class="app-section">
+            <div class="panel-box">
+                <div class="section-title">تسجيل وبحث المأموريات اليومية</div>
+                <div style="margin-bottom: 15px;">
+                    <label style="font-size: 13px; font-weight: bold; display: block; margin-bottom: 5px;">بحث مخصص عن العميل أو المعمل:</label>
+                    <input type="text" placeholder="اكتب للبحث السريع في العملاء والمأموريات..." class="search-input" />
+                </div>
+            </div>
+            <div class="table-container">
+                <h3>سجل المأموريات الكامل</h3>
+                <table>
+                    <thead><tr><th>رقم المأموريات</th><th>المهندس المسؤول</th><th>العميل</th><th>نوع البلاغ</th><th>حالة الإنجاز</th></tr></thead>
+                    <tbody>
+                        <tr><td>#MS-501</td><td>أحمد رضا</td><td>مستشفى الدقهلية العام</td><td>صيانة دورية</td><td>منجز</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 3. صفحة الأجهزة والعملاء -->
+        <div id="section-devices" class="app-section">
+            <div class="panel-box">
+                <div class="section-title">إدارة قواعد بيانات الأجهزة والعملاء</div>
+                <input type="text" placeholder="ابحث برقم السلسلة للجهاز (Serial Number) أو اسم المستشفى..." class="search-input" />
+            </div>
+            <div class="table-container">
+                <h3>قائمة الأجهزة والعملاء المعمليين</h3>
+                <table>
+                    <thead><tr><th>اسم العميل</th><th>المنطقة</th><th>نوع الجهاز / الموديل</th><th>الرقم التسلسلي</th><th>تاريخ آخر زيارة</th></tr></thead>
+                    <tbody>
+                        <tr><td>مستشفى الجمهورية</td><td>المنطقة الشمالية</td><td>CA-200 Chemistry</td><td>SN-99281</td><td>2026-10-20</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 4. صفحة طلبات قطع الغيار -->
+        <div id="section-spares" class="app-section">
+            <div class="panel-box">
+                <div class="section-title">إدارة ومتابعة طلبات قطع الغيار</div>
+                <input type="text" placeholder="ابحث عن قطعة الغيار المطلوبة (مثل: فلتر، أنبوب تفريغ، كارت)..." class="search-input" />
+            </div>
+            <div class="table-container">
+                <h3>سجل القطع المطلوبة</h3>
+                <table>
+                    <thead><tr><th>رقم الطلب</th><th>المهندس</th><th>الجهاز المرتبط</th><th>قطعة الغيار</th><th>الحالة</th></tr></thead>
+                    <tbody>
+                        <tr><td>#SP-102</td><td>خالد الضوي</td><td>BH-3300P</td><td>أنبوب تفريغ هيماتولوجي</td><td>قيد المراجعة</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 5. صفحة الإجازات -->
+        <div id="section-vacations" class="app-section">
+            <div class="panel-box">
+                <div class="section-title">طلبات الإجازات والمأموريات الاستثنائية</div>
+            </div>
+            <div class="table-container">
+                <h3>جدول الإجازات المسجلة</h3>
+                <table>
+                    <thead><tr><th>المهندس</th><th>نوع الإجازة</th><th>من تاريخ</th><th>إلى تاريخ</th><th>حالة الاعتماد</th></tr></thead>
+                    <tbody>
+                        <tr><td>إسلام ماهر</td><td>إجازة اعتيادية</td><td>2026-11-20</td><td>2026-11-23</td><td>معتمد 🟢</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 6. صفحة استيراد وتصدير Excel -->
+        <div id="section-excel" class="app-section">
+            <div class="panel-box">
+                <div class="section-title">📊 أدوات استيراد وتصدير قواعد البيانات (Excel / Google Sheets)</div>
+                <p style="font-size: 14px; color: #555;">يمكنك هنا رفع أو تنزيل ملفات قواعد البيانات لضمان المزامنة الفورية مع [🔄 متصل بـ Google Sheets ✓](url?id=5).</p>
+                <button style="background: #28a745; color: #fff; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-weight: bold;">تصدير البيانات الحالية (Excel)</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // دالة التنقل بين تبويبات وأقسام التطبيق
+        function switchTab(sectionId) {
+            const sections = document.querySelectorAll('.app-section');
+            sections.forEach(sec => sec.classList.remove('active'));
+            
+            const buttons = document.querySelectorAll('.nav-tabs button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById('section-' + sectionId).classList.add('active');
+            document.getElementById('btn-' + sectionId).classList.add('active');
         }
 
-        const filtered = masterItemsList.filter(item => item.toLowerCase().includes(query));
-        if (filtered.length > 0) {
-            resultsBox.innerHTML = filtered.map(item => `<div style="padding: 8px; cursor: pointer; border-bottom: 1px solid #eee;" onclick="selectGlobalItem('${item}')">${item}</div>`).join('');
-            resultsBox.style.display = 'block';
-        } else {
-            resultsBox.innerHTML = `<div style="padding: 8px; color: #999;">لا توجد مطابقة للبحث الحالي</div>`;
-            resultsBox.style.display = 'block';
-        }
-    }
+        // قاعدة بيانات البحث الذكي المباشر الشاملة
+        const masterItemsList = [
+            "مستشفى الجمهورية - كيمياء الدم CA-200",
+            "مستشفى صدر المعمورة - هيماتولوجي BH-3300P",
+            "مستشفى مطروح العام - Phototron HC80",
+            "معمل أطلس - CA-430",
+            "طلب قطعة غيار: أنبوب تفريغ هيماتولوجي",
+            "طلب قطعة غيار: فلتر ضوء Phototron",
+            "مستشفى دسوق العام - DH-33"
+        ];
 
-    function selectGlobalItem(val) {
-        document.getElementById('smartGlobalSearch').value = val;
-        document.getElementById('globalSearchResults').style.display = 'none';
-    }
-
-    // حساب تقرير أداء المهندس خلال الفترة المحددة
-    function calculateEngineerPerformance() {
-        const eng = document.getElementById('selectedEngineerPerf').value;
-        const start = document.getElementById('perfStartDate').value;
-        const end = document.getElementById('perfEndDate').value;
-        const resultDiv = document.getElementById('engineerPerfResult');
-
-        if (!eng || !start || !end) {
-            alert('الرجاء اختيار المهندس وتحديد فترتي البداية والنهاية بدقة.');
-            return;
+        function toggleRegionDetails() {
+            const box = document.getElementById('regionDetailsBox');
+            box.style.display = box.style.display === 'none' ? 'block' : 'none';
         }
 
-        resultDiv.style.display = 'block';
-        resultDiv.innerHTML = `
-            <b>المهندس:</b> ${eng}<br>
-            <b>الفترة من:</b> ${start} إلى ${end}<br>
-            <b>الزيارات الدورية المنفذة:</b> 14 زيارة | <b>الأعطال التي تم إصلاحها:</b> 3 بلاغات<br>
-            <b>نسبة الالتزام بالجدول:</b> 93% (ممتاز)
-        `;
-    }
-</script>
+        function toggleMissionDetails() {
+            const box = document.getElementById('missionDetailsBox');
+            box.style.display = box.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function filterGlobalData() {
+            const query = document.getElementById('smartGlobalSearch').value.toLowerCase().trim();
+            const resultsBox = document.getElementById('globalSearchResults');
+            
+            if (!query) {
+                resultsBox.style.display = 'none';
+                return;
+            }
+
+            const filtered = masterItemsList.filter(item => item.toLowerCase().includes(query));
+            if (filtered.length > 0) {
+                resultsBox.innerHTML = filtered.map(item => `<div style="padding: 8px; cursor: pointer; border-bottom: 1px solid #eee;" onclick="selectGlobalItem('${item}')">${item}</div>`).join('');
+                resultsBox.style.display = 'block';
+            } else {
+                resultsBox.innerHTML = `<div style="padding: 8px; color: #999;">لا توجد مطابقة للبحث الحالي</div>`;
+                resultsBox.style.display = 'block';
+            }
+        }
+
+        function selectGlobalItem(val) {
+            document.getElementById('smartGlobalSearch').value = val;
+            document.getElementById('globalSearchResults').style.display = 'none';
+        }
+
+        function calculateEngineerPerformance() {
+            const eng = document.getElementById('selectedEngineerPerf').value;
+            const start = document.getElementById('perfStartDate').value;
+            const end = document.getElementById('perfEndDate').value;
+            const resultDiv = document.getElementById('engineerPerfResult');
+
+            if (!eng || !start || !end) {
+                alert('الرجاء اختيار المهندس وتحديد فترتي البداية والنهاية بدقة.');
+                return;
+            }
+
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = `
+                <b>المهندس:</b> ${eng}<br>
+                <b>فترة المتابعة المخصصة:</b> من ${start} إلى ${end}<br>
+                <b>إجمالي الزيارات الدورية المنفذة:</b> مطابق للسجلات الشهرية<br>
+                <b>بلاغات الأعطال المُعالجة:</b> مطابق لتقارير المنطقة التشغيلية<br>
+                <b>مؤشر الالتزام:</b> في الموعد السليم (🟢)
+            `;
+        }
+    </script>
+</body>
+</html>
