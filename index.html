@@ -46,11 +46,16 @@
     <div id="login-screen">
         <div class="login-card">
             <h2>MedTech FSM</h2>
-            <p style="color: #666; font-size: 13px; margin-bottom: 15px;">منظومة إدارة صيانة الأجهزة الطبية والمعملية</p>
+            <p style="color: #666; font-size: 13px; margin-bottom: 10px;">منظومة إدارة صيانة الأجهزة الطبية والمعملية</p>
+
+            <!-- مؤشر حالة الاتصال اللحظي بالشيت -->
+            <div id="connectionStatusBadge" style="font-size: 12px; font-weight: bold; padding: 6px; border-radius: 4px; margin-bottom: 12px; background: #fff3cd; color: #856404; border: 1px solid #ffeeba;">
+                🔄 جاري التحقق من الاتصال بـ Google Sheets...
+            </div>
 
             <label style="font-size: 12px; display: block; text-align: right; margin-bottom: 3px; font-weight: bold;">اختر المستخدم:</label>
-            <select id="userSelect" class="searchable-input" onchange="autoFillRole()" style="width:100%; padding:10px; margin:5px 0 10px 0; border:1px solid #ccc; border-radius:5px;">
-                <option value="">-- جارِ تحميل الأسماء من الشيت... --</option>
+            <select id="userSelect" style="width:100%; padding:10px; margin:5px 0 10px 0; border:1px solid #ccc; border-radius:5px;">
+                <option value="">-- جارِ تحميل الأسماء --</option>
             </select>
 
             <input type="hidden" id="roleInput" value="manager" />
@@ -59,10 +64,8 @@
             <button onclick="handleLogin()">تسجيل الدخول</button>
             <button id="install-pwa-btn" onclick="installPWAApp()">📲 تثبيت التطبيق على الهاتف</button>
             <div id="ios-guide" class="ios-install-guide">
-                <b>مستخدمي iPhone:</b> اضغط على زر المشاركة (Share) في متصفح Safari ثم اختر <b>"إلى الشاشة الرئيسية"</b>.
+                <b>مستخدمي iPhone:</b> اضغط على زر المشاركة (Share) في Safari ثم اختر <b>"إلى الشاشة الرئيسية"</b>.
             </div>
-
-            <div style="margin-top: 12px; font-size: 11px; color: #888;">[🔄 متصل بـ Google Sheets ✓](url?id=5)</div>
         </div>
     </div>
 
@@ -73,8 +76,9 @@
                 <h2 style="margin: 0; font-size: 18px;">MedTech FSM</h2>
                 <small id="userRoleBadge" style="color: #38bdf8; font-weight: bold;"></small>
             </div>
-            <div>
-                <span id="loggedUserName" style="font-size: 14px; margin-left: 10px;"></span>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span id="appConnectionIndicator" style="font-size: 11px; padding: 3px 8px; border-radius: 3px; background: #d4edda; color: #155724; font-weight: bold;">متصل بالشيت ✓</span>
+                <span id="loggedUserName" style="font-size: 14px;"></span>
                 <span onclick="handleLogout()" style="color: #ff4d4d; cursor: pointer; font-size: 13px; font-weight: bold;">[خروج]</span>
             </div>
         </div>
@@ -93,54 +97,94 @@
             <!-- صفحة لوحة المتابعة -->
             <div id="section-dashboard" class="app-section active">
                 <div class="kpi-grid">
-                    <div class="kpi-card"><span>إجمالي المأموريات</span><strong style="color: #28a745;">0</strong></div>
-                    <div class="kpi-card"><span>الأجهزة المسجلة</span><strong>1470</strong></div>
-                    <div class="kpi-card"><span>تنبيهات الزيارة الدورية</span><strong style="color: #ffc107;">0</strong></div>
-                    <div class="kpi-card"><span>طلبات قطع الغيار</span><strong style="color: #dc3545;">0</strong></div>
-                    <div class="kpi-card"><span>طلبات الإجازات</span><strong style="color: #17a2b8;">0</strong></div>
+                    <div class="kpi-card"><span>إجمالي المأموريات</span><strong style="color: #28a745;" id="kpiMissionsCount">0</strong></div>
+                    <div class="kpi-card"><span>الأجهزة المسجلة</span><strong id="kpiDevicesCount">0</strong></div>
+                    <div class="kpi-card"><span>قطع الغيار المطلوبة</span><strong style="color: #dc3545;" id="kpiPartsCount">0</strong></div>
+                    <div class="kpi-card"><span>طلبات الإجازات</span><strong style="color: #17a2b8;" id="kpiLeavesCount">0</strong></div>
                 </div>
 
-                <!-- لوحة التحكم والبحث المنسدل للأجهزة -->
                 <div class="panel-box">
-                    <div class="section-title">📊 البحث الذكي الشامل للأجهزة وتشكيلات المناطق</div>
-                    <div style="margin-bottom: 15px;">
-                        <label style="font-size: 13px; font-weight: bold; display: block; margin-bottom: 5px; color: #444;">اختر المنطقة لعرض تفاصيل وأعداد الأجهزة:</label>
-                        <select id="regionDeviceFilter" class="searchable-input" onchange="filterDevicesByRegion()" style="width:100%; padding:10px; border:1px solid #ccc; border-radius:5px;">
-                            <option value="">-- اختر المنطقة لعرض الأجهزة وأعدادها --</option>
-                            <option value="القاهرة الكبرى">القاهرة الكبرى</option>
-                            <option value="المنطقة الشمالية">المنطقة الشمالية</option>
-                            <option value="منطقة الدلتا">منطقة الدلتا</option>
-                            <option value="الصعيد">الصعيد (أعالي مصر)</option>
-                        </select>
-                        <div id="regionDeviceResults" style="margin-top: 10px; background: #f8f9fa; padding: 12px; border-radius: 5px; font-size: 13px; display: none; line-height: 1.6;"></div>
-                    </div>
+                    <div class="section-title">📊 تحليل الأجهزة وتشكيلات المناطق</div>
+                    <select id="regionDeviceFilter" class="searchable-input" onchange="filterDevicesByRegion()" style="width:100%; padding:10px; border:1px solid #ccc; border-radius:5px;">
+                        <option value="">-- اختر المنطقة لعرض الأجهزة وأعدادها --</option>
+                        <option value="القاهرة الكبرى">القاهرة الكبرى</option>
+                        <option value="المنطقة الشمالية">المنطقة الشمالية</option>
+                        <option value="منطقة الدلتا">منطقة الدلتا</option>
+                        <option value="الصعيد">الصعيد</option>
+                    </select>
+                    <div id="regionDeviceResults" style="margin-top: 10px; background: #f8f9fa; padding: 12px; border-radius: 5px; font-size: 13px; display: none; line-height: 1.6;"></div>
                 </div>
 
                 <div class="table-container">
-                    <h3 style="font-size: 16px; margin-top: 0; margin-bottom: 15px; color: #333;" id="tableTitle">أحدث المأموريات الجارية</h3>
+                    <h3 style="font-size: 16px; margin-top: 0; margin-bottom: 15px; color: #333;">أحدث المأموريات الجارية من الشيت</h3>
                     <table>
-                        <thead><tr><th>التاريخ</th><th>المهندس</th><th>العميل / المعمل</th><th>الجهاز</th><th>نوع الزيارة</th><th>الحالة</th></tr></thead>
-                        <tbody><tr><td colspan="6" style="text-align: center; color: #888; padding: 20px;">لا توجد مأموريات جارية مسجلة حالياً</td></tr></tbody>
+                        <thead><tr><th>التاريخ</th><th>المنطقة</th><th>المهندس</th><th>العميل</th><th>الجهاز</th><th>الحالة</th></tr></thead>
+                        <tbody id="dashboardVisitsTable"><tr><td colspan="6" style="text-align: center; color: #888; padding: 20px;">جاري التحميل...</td></tr></tbody>
                     </table>
                 </div>
             </div>
 
-            <div id="section-missions" class="app-section"><div class="panel-box"><h3>المأموريات اليومية</h3></div></div>
-            <div id="section-devices" class="app-section"><div class="panel-box"><h3>الأجهزة والعملاء</h3></div></div>
-            <div id="section-spares" class="app-section"><div class="panel-box"><h3>طلبات قطع الغيار</h3></div></div>
-            <div id="section-vacations" class="app-section"><div class="panel-box"><h3>الإجازات</h3></div></div>
-            <div id="section-excel" class="app-section"><div class="panel-box"><h3>استيراد وتصدير</h3></div></div>
+            <!-- صفحة المأموريات اليومية -->
+            <div id="section-missions" class="app-section">
+                <div class="panel-box"><div class="section-title">سجل المأموريات اليومية</div></div>
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>التاريخ</th><th>المنطقة</th><th>المهندس</th><th>العميل</th><th>المدينة</th><th>الجهاز</th><th>S/N</th><th>نوع الزيارة</th><th>الوصف</th><th>الحالة</th></tr></thead>
+                        <tbody id="missionsTableBody"><tr><td colspan="10" style="text-align: center; color: #888;">جاري التحميل...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- صفحة الأجهزة والعملاء -->
+            <div id="section-devices" class="app-section">
+                <div class="panel-box">
+                    <div class="section-title">قاعدة بيانات الأجهزة والعملاء</div>
+                    <input type="text" id="deviceSearchInput" placeholder="ابحث برقم S/N أو اسم العميل..." oninput="searchDevicesTable()" style="width:100%; padding:9px; border:1px solid #ccc; border-radius:5px;" />
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>اسم العميل</th><th>المنطقة</th><th>المدينة</th><th>الموديل</th><th>الرقم التسلسلي S/N</th><th>نوع العقد</th><th>الحالة</th></tr></thead>
+                        <tbody id="devicesTableBody"><tr><td colspan="7" style="text-align: center; color: #888;">جاري التحميل...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- صفحة قطع الغيار -->
+            <div id="section-spares" class="app-section">
+                <div class="panel-box"><div class="section-title">متابعة طلبات قطع الغيار</div></div>
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>التاريخ</th><th>المهندس</th><th>المنطقة</th><th>العميل</th><th>الجهاز</th><th>قطعة الغيار</th><th>الكمية</th><th>الحالة</th></tr></thead>
+                        <tbody id="sparesTableBody"><tr><td colspan="8" style="text-align: center; color: #888;">جاري التحميل...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- صفحة الإجازات -->
+            <div id="section-vacations" class="app-section">
+                <div class="panel-box"><div class="section-title">سجل الإجازات والطلبات</div></div>
+                <div class="table-container">
+                    <table>
+                        <thead><tr><th>المهندس</th><th>المنطقة</th><th>من تاريخ</th><th>إلى تاريخ</th><th>السبب</th><th>الحالة</th></tr></thead>
+                        <tbody id="vacationsTableBody"><tr><td colspan="6" style="text-align: center; color: #888;">جاري التحميل...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- صفحة استيراد وتصدير -->
+            <div id="section-excel" class="app-section">
+                <div class="panel-box"><div class="section-title">استيراد وتصدير البيانات</div><p>البيانات متصلة لحظياً ومباشرة مع [Google Sheets](url?id=5).</p></div>
+            </div>
 
         </div>
     </div>
 
     <script>
-        // رابط الـ Web App المحدث الخاص بك
         const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbyWVc97vDaKGLj3KVLhf4d1MWGcWcHXqOa7a9zeQVZnd-l4SRNE9MUaYXPfHOsDE2SeWQ/exec";
+        let globalAppData = { users: [], devices: [], visits: [], parts: [], leaves: [] };
 
         window.onload = function() {
-            loadUsersFromGoogleSheets();
-
+            fetchAllAppData();
             const savedUser = localStorage.getItem('medtech_saved_user');
             const savedRole = localStorage.getItem('medtech_saved_role');
             if (savedUser && savedRole) {
@@ -152,100 +196,81 @@
             }
         };
 
-        // دالة سحب الأسماء والصلاحيات أوتوماتيكياً من شيت "المهندسين"
-        function loadUsersFromGoogleSheets() {
-            const select = document.getElementById('userSelect');
+        function fetchAllAppData() {
+            const loginBadge = document.getElementById('connectionStatusBadge');
+            const headerBadge = document.getElementById('appConnectionIndicator');
+
             fetch(SHEET_API_URL)
-                .then(response => response.json())
+                .then(res => res.json())
                 .then(data => {
-                    const users = data.users || [];
-                    if (users.length > 0) {
-                        select.innerHTML = '<option value="">-- اختر اسمك من القائمة --</option>';
-                        users.forEach(u => {
-                            let opt = document.createElement('option');
-                            opt.value = u.name + "|" + u.role;
-                            let roleName = u.role === 'manager' ? 'مدير عام' : (u.role === 'supervisor' ? 'مشرف منطقة' : 'مهندس صيانة');
-                            opt.textContent = `${u.name} (${roleName} - ${u.region || 'عام'})`;
-                            select.appendChild(opt);
-                        });
-                    }
+                    globalAppData = data;
+                    
+                    // تحديث مؤشر الاتصال ليكون أخضر (متصل بنجاح)
+                    loginBadge.style.background = "#d4edda";
+                    loginBadge.style.color = "#155724";
+                    loginBadge.style.borderColor = "#c3e6cb";
+                    loginBadge.innerHTML = "✅ متصل بـ Google Sheets بنجاح";
+
+                    headerBadge.style.background = "#d4edda";
+                    headerBadge.style.color = "#155724";
+                    headerBadge.innerHTML = "متصل بالشيت ✓";
+
+                    populateUsers(data.users || []);
+                    populateDevices(data.devices || []);
+                    populateVisits(data.visits || []);
+                    populateParts(data.parts || []);
+                    populateLeaves(data.leaves || []);
+                    
+                    document.getElementById('kpiDevicesCount').innerText = (data.devices || []).length;
+                    document.getElementById('kpiMissionsCount').innerText = (data.visits || []).length;
+                    document.getElementById('kpiPartsCount').innerText = (data.parts || []).length;
+                    document.getElementById('kpiLeavesCount').innerText = (data.leaves || []).length;
                 })
                 .catch(err => {
-                    console.error("خطأ في الاتصال بقاعدة البيانات:", err);
+                    console.error("خطأ في الاتصال بالشيت:", err);
+                    // تحديث مؤشر الاتصال ليكون أحمر (فشل الاتصال)
+                    loginBadge.style.background = "#f8d7da";
+                    loginBadge.style.color = "#721c24";
+                    loginBadge.style.borderColor = "#f5c6cb";
+                    loginBadge.innerHTML = "❌ خطأ: تعذر الاتصال بـ Google Sheets!";
+
+                    headerBadge.style.background = "#f8d7da";
+                    headerBadge.style.color = "#721c24";
+                    headerBadge.innerHTML = "غير متصل بالشيت ✗";
                 });
         }
 
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            document.getElementById('install-pwa-btn').style.display = 'block';
-        });
-
-        function installPWAApp() {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then(() => { deferredPrompt = null; });
+        function populateUsers(users) {
+            const select = document.getElementById('userSelect');
+            if (users.length > 0) {
+                select.innerHTML = '<option value="">-- اختر المستخدم --</option>';
+                users.forEach(u => {
+                    let opt = document.createElement('option');
+                    opt.value = u.name + "|" + u.role;
+                    opt.textContent = `${u.name} (${u.role === 'manager' ? 'مدير' : (u.role === 'supervisor' ? 'مشرف' : 'مهندس')} - ${u.region || 'عام'})`;
+                    select.appendChild(opt);
+                });
             }
         }
 
-        function autoFillRole() {
-            const val = document.getElementById('userSelect').value;
-            if (val) {
-                const parts = val.split('|');
-                document.getElementById('roleInput').value = parts[1];
+        function populateDevices(devices) {
+            const tbody = document.getElementById('devicesTableBody');
+            if (devices.length === 0) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">لا توجد بيانات أجهزة</td></tr>'; return; }
+            tbody.innerHTML = devices.map(d => `<tr><td><b>${d.client || ''}</b></td><td>${d.region || ''}</td><td>${d.city || ''}</td><td>${d.model || ''}</td><td><code>${d.sn || ''}</code></td><td>${d.contract || ''}</td><td>${d.status || ''}</td></tr>`).join('');
+        }
+
+        function populateVisits(visits) {
+            const tbody = document.getElementById('missionsTableBody');
+            const dashTbody = document.getElementById('dashboardVisitsTable');
+            if (visits.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;">لا توجد مأموريات مسجلة</td></tr>';
+                dashTbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">لا توجد مأموريات جارية</td></tr>';
+                return;
             }
+            tbody.innerHTML = visits.map(v => `<tr><td>${v.date}</td><td>${v.region}</td><td><b>${v.engineer}</b></td><td>${v.client}</td><td>${v.city}</td><td>${v.device}</td><td><code>${v.sn}</code></td><td>${v.type}</td><td>${v.desc}</td><td>${v.status}</td></tr>`).join('');
+            dashTbody.innerHTML = visits.slice(0, 5).map(v => `<tr><td>${v.date}</td><td>${v.region}</td><td><b>${v.engineer}</b></td><td>${v.client}</td><td>${v.device}</td><td>${v.status}</td></tr>`).join('');
         }
 
-        const regionDeviceData = {
-            "القاهرة الكبرى": "• محلل كيمياء الدم CA-200: 120 جهازاً<br>• هيماتولوجي BH-3300P: 85 جهازاً<br>• Phototron HC80: 45 جهازاً",
-            "المنطقة الشمالية": "• محلل كيمياء الدم CA-430: 210 جهازاً<br>• هيماتولوجي 3-Diff: 150 جهازاً<br>• توريد أجهزة معملية متقدمة: 90 جهازاً",
-            "منطقة الدلتا": "• هيماتولوجي سيستمز Sysmex: 320 جهازاً<br>• الكيمياء الحيوية الأوتوماتيكية: 180 جهازاً<br>• أجهزة التخثر Coagulation: 110 جهازاً",
-            "الصعيد": "• محلل الهيماتولوجي الأساسي: 140 جهازاً<br>• أجهزة الكيمياء الطبية: 95 جهازاً"
-        };
-
-        function filterDevicesByRegion() {
-            const reg = document.getElementById('regionDeviceFilter').value;
-            const box = document.getElementById('regionDeviceResults');
-            if (reg && regionDeviceData[reg]) {
-                box.style.display = 'block';
-                box.innerHTML = `<b>أجهزة وتشكيلات منطقة (${reg}):</b><br>` + regionDeviceData[reg];
-            } else {
-                box.style.display = 'none';
-            }
-        }
-
-        function handleLogin(isAuto = false) {
-            let userName = "", role = "";
-            if (isAuto) {
-                userName = localStorage.getItem('medtech_saved_user');
-                role = localStorage.getItem('medtech_saved_role');
-            } else {
-                const selectVal = document.getElementById('userSelect').value;
-                if (!selectVal) { alert('الرجاء اختيار اسم المستخدم من القائمة.'); return; }
-                const parts = selectVal.split('|');
-                userName = parts[0];
-                role = parts[1];
-                localStorage.setItem('medtech_saved_user', userName);
-                localStorage.setItem('medtech_saved_role', role);
-            }
-
-            document.getElementById('loggedUserName').innerText = userName;
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('main-app-container').style.display = 'block';
-        }
-
-        function handleLogout() {
-            localStorage.clear();
-            location.reload();
-        }
-
-        function switchTab(id) {
-            document.querySelectorAll('.app-section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-tabs button').forEach(b => b.classList.remove('active'));
-            document.getElementById('section-' + id).classList.add('active');
-            document.getElementById('btn-' + id).classList.add('active');
-        }
-    </script>
-</body>
-</html>
+        function populateParts(parts) {
+            const tbody = document.getElementById('sparesTableBody');
+            if (parts.length === 0) { tbody.innerHTML = '<tr><td colspan="8" style
