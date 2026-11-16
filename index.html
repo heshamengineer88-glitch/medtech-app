@@ -7,14 +7,12 @@
     <style>
         body { font-family: Tahoma, sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; color: #333; }
         
-        /* شاشة تسجيل الدخول والتثبيت */
         #login-screen { display: flex; justify-content: center; align-items: center; height: 100vh; background: #1e293b; position: fixed; top: 0; left: 0; width: 100%; z-index: 9999; }
         .login-card { background: #fff; padding: 25px; border-radius: 10px; width: 100%; max-width: 380px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); text-align: center; }
         .login-card h2 { margin-bottom: 5px; color: #1e293b; }
         .login-card select, .login-card input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; font-size: 14px; background: #fff; }
         .login-card button { width: 100%; padding: 10px; background: #007bff; color: #fff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 15px; margin-top: 10px; }
         
-        /* زر تثبيت التطبيق PWA للأندرويد والأيفون */
         #install-pwa-btn { background: #28a745; margin-bottom: 15px; display: none; }
         .ios-install-guide { font-size: 11px; color: #666; margin-top: 10px; background: #f8f9fa; padding: 8px; border-radius: 5px; border: 1px dashed #ccc; display: none; }
 
@@ -50,13 +48,12 @@
 </head>
 <body>
 
-    <!-- 1. شاشة تسجيل الدخول واختيار الاسم (مع حفظ الاختيار وحل التثبيت للأندرويد والأيفون) -->
+    <!-- 1. شاشة تسجيل الدخول (تسحب الأسماء من Google Sheets ديناميكياً) -->
     <div id="login-screen">
         <div class="login-card">
             <h2>MedTech FSM</h2>
             <p style="color: #666; font-size: 13px; margin-bottom: 15px;">نظام إدارة الصيانة الميدانية</p>
             
-            <!-- زر تثبيت التطبيق PWA -->
             <button id="install-pwa-btn" onclick="installPWAApp()">📥 تثبيت التطبيق على جهازك</button>
             <div id="ios-guide" class="ios-install-guide">
                 <b>مستخدمي iPhone:</b> اضغط على زر المشاركة (Share) في متصفح Safari ثم اختر <b>"إلى الشاشة الرئيسية" (Add to Home Screen)</b>.
@@ -64,35 +61,14 @@
 
             <label style="font-size: 12px; display: block; text-align: right; margin-bottom: 3px; font-weight: bold;">اختر اسم المستخدم:</label>
             <select id="userSelect" onchange="autoFillRole()">
-                <option value="">-- اختر اسمك من القائمة --</option>
-                <optgroup label="الإدارة العليا">
-                    <option value="هشام عاصم|manager">هشام عاصم (مدير عام)</option>
-                </optgroup>
-                <optgroup label="المشرفين">
-                    <option value="محمود|supervisor">محمود (مشرف منطقة)</option>
-                </optgroup>
-                <optgroup label="مهندسي الصيانة (المنطقة الشمالية)">
-                    <option value="أحمد العيسوي|engineer">أحمد العيسوي</option>
-                    <option value="خالد الضوي|engineer">خالد الضوي</option>
-                    <option value="إسلام ماهر|engineer">إسلام ماهر</option>
-                    <option value="مينا فوزي|engineer">مينا فوزي</option>
-                </optgroup>
-                <optgroup label="مهندسي الصيانة (منطقة الدلتا)">
-                    <option value="أحمد رضا|engineer">أحمد رضا</option>
-                    <option value="بهجت أيمن|engineer">بهجت أيمن</option>
-                    <option value="مهند أيمن|engineer">مهند أيمن</option>
-                    <option value="محمد صلاح|engineer">محمد صلاح</option>
-                    <option value="عماد عباس|engineer">عماد عباس</option>
-                    <option value="حسام صلاح|engineer">حسام صلاح</option>
-                    <option value="محمد خالد|engineer">محمد خالد</option>
-                </optgroup>
+                <option value="">-- جارِ تحميل الأسماء من الشيت... --</option>
             </select>
 
             <input type="hidden" id="roleInput" value="manager" />
             <input type="password" id="pinInput" placeholder="كود الدخول السريع" value="1111" />
             
             <button onclick="handleLogin()">دخول للبرنامج</button>
-            <div style="margin-top: 12px; font-size: 11px; color: #888;">[🔄 متصل بـ Google Sheets ✓]</div>
+            <div style="margin-top: 12px; font-size: 11px; color: #888;"><a href="[🔄 متصل بـ Google Sheets ✓](url?id=5)" style="color: inherit; text-decoration: none;">[🔄 متصل بـ Google Sheets ✓]</a></div>
         </div>
     </div>
 
@@ -134,7 +110,7 @@
                         <span>الأجهزة المسجلة</span>
                         <strong>1470</strong>
                         <div id="regionDetailsBox" style="display: none; margin-top: 8px; font-size: 11px; text-align: right; border-top: 1px dashed #eee; padding-top: 6px; color: #444;">
-                            • المنطقة الشمالية (الإسكندرية، مطروح، البحيرة): 620 جهازاً<br>• منطقة الدلتا (الدقهلية، الشرقية، كفر الشيخ، إلخ): 850 جهازاً
+                            • القاهرة الكبرى والصعيد: 550 جهازاً<br>• المنطقة الشمالية والدلتا: 920 جهازاً
                         </div>
                     </div>
                     <div class="kpi-card"><span>تنبيهات الزيارة الدورية</span><strong style="color: #ffc107;">0</strong></div>
@@ -142,7 +118,7 @@
                     <div class="kpi-card"><span>طلبات الإجازات</span><strong style="color: #17a2b8;">0</strong></div>
                 </div>
 
-                <!-- لوحة التحكم والبحث المنسدل (دروب داون + كتابة) -->
+                <!-- لوحة التحكم والبحث المنسدل -->
                 <div class="panel-box">
                     <div class="section-title">📊 لوحة التحكم والبحث المباشر (اكتب أو اختر من القائمة)</div>
                     <div style="margin-bottom: 15px;">
@@ -153,7 +129,7 @@
                         </div>
                     </div>
 
-                    <!-- قسم متابعة أداء المهندسين (مخفي للمهندس، ظاهر للمشرف والمدير) -->
+                    <!-- قسم متابعة أداء المهندسين -->
                     <div id="supervisorEngineersSection" style="background: #f9f9f9; padding: 12px; border-radius: 6px; border: 1px solid #dcdcdc; display: none;">
                         <h4 id="perfSectionTitle" style="font-size: 14px; color: #333; margin: 0 0 10px 0; border-bottom: 1px solid #eee; padding-bottom: 4px;">👨‍💻 متابعة أداء المهندسين</h4>
                         <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px;">
@@ -260,17 +236,22 @@
     </div>
 
     <script>
-        // التحقق من وجود اسم محفوظ مسبقاً (حفظ الاختيار تلقائياً)
+        // رابط الـ Apps Script الخاص بشيت الجداول لجلب الأسماء تلقائياً
+        const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbwEZSQGiYW3F20SgLUCjE_GT2AtY3jCopZcVc_5ZSCZhbPVqSs0V5g_2OSP9TLvljzU0Q/exec";
+
         window.onload = function() {
+            loadUsersFromSheets();
+
             const savedUser = localStorage.getItem('medtech_saved_user');
             const savedRole = localStorage.getItem('medtech_saved_role');
             if (savedUser && savedRole) {
-                document.getElementById('userSelect').value = savedUser + "|" + savedRole;
-                document.getElementById('roleInput').value = savedRole;
-                handleLogin(true); // دخول تلقائي إذا كان مسجلاً من قبل
+                setTimeout(() => {
+                    document.getElementById('userSelect').value = savedUser + "|" + savedRole;
+                    document.getElementById('roleInput').value = savedRole;
+                    handleLogin(true);
+                }, 500);
             }
 
-            // فحص إذا كان الجهاز أيفون لإظهار إرشادات التثبيت
             const isIos = /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
             if (isIos && !window.navigator.standalone) {
                 document.getElementById('ios-guide').style.display = 'block';
@@ -278,7 +259,32 @@
             }
         };
 
-        // تفعيل زر تثبيت التطبيق PWA للأندرويد
+        // دالة سحب الأسماء من Google Sheets
+        function loadUsersFromSheets() {
+            const select = document.getElementById('userSelect');
+            fetch(SHEET_API_URL)
+                .then(response => response.json())
+                .then(users => {
+                    select.innerHTML = '<option value="">-- اختر اسمك من القائمة --</option>';
+                    users.forEach(u => {
+                        let opt = document.createElement('option');
+                        opt.value = u.name + "|" + u.role;
+                        opt.textContent = u.name + " (" + (u.role === 'manager' ? 'مدير عام' : u.role === 'supervisor' ? 'مشرف' : 'مهندس') + ")";
+                        select.appendChild(opt);
+                    });
+                })
+                .catch(err => {
+                    // في حال عدم الاتصال المؤقت، يتم وضع الأسماء الافتراضية
+                    select.innerHTML = `
+                        <option value="">-- اختر اسمك من القائمة --</option>
+                        <option value="هشام عاصم|manager">هشام عاصم (مدير عام)</option>
+                        <option value="د. محمد عطية|supervisor">د. محمد عطية (مشرف)</option>
+                        <option value="د. سعيد|supervisor">د. سعيد (مشرف)</option>
+                        <option value="أحمد العيسوي|engineer">أحمد العيسوي (مهندس)</option>
+                    `;
+                });
+        }
+
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
@@ -290,9 +296,6 @@
             if (deferredPrompt) {
                 deferredPrompt.prompt();
                 deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        console.log('User accepted the install prompt');
-                    }
                     deferredPrompt = null;
                 });
             }
@@ -306,7 +309,6 @@
             }
         }
 
-        // قواعد البيانات للبحث الذكي في الخانات
         const dataSources = {
             globalSearchInput: [
                 "مستشفى الجمهورية - كيمياء الدم CA-200",
@@ -318,7 +320,8 @@
                 "مستشفى دسوق العام - DH-33"
             ],
             engSearchInput: [
-                "أحمد العيسوي", "خالد الضوي", "إسلام ماهر", "مينا فوزي",
+                "د. محمد عطية", "د. سعيد", "م. وليد", "م. تامر", "م. مصطفى",
+                "م. رجب", "م. عادل", "م. هاني", "أحمد العيسوي", "خالد الضوي", "إسلام ماهر", "مينا فوزي",
                 "أحمد رضا", "بهجت أيمن", "مهند أيمن", "محمد صلاح", "عماد عباس", "حسام صلاح", "محمد خالد"
             ],
             clientSearchInput: [
@@ -368,7 +371,6 @@
             }
         };
 
-        // تسجيل الدخول مع الحفظ وتطبيق الصلاحيات بدقة دون إظهارها بجانب الاسم
         function handleLogin(isAuto = false) {
             let userName = "";
             let role = "";
@@ -379,37 +381,31 @@
             } else {
                 const selectVal = document.getElementById('userSelect').value;
                 if (!selectVal) {
-                    alert('الرجاء اختيار اسم المستخدم أولاً.');
+                    alert('الرجاء اختيار اسمك من القائمة أولاً.');
                     return;
                 }
                 const parts = selectVal.split('|');
                 userName = parts[0];
                 role = parts[1];
 
-                // حفظ الاختيار في ذاكرة المتصفح
                 localStorage.setItem('medtech_saved_user', userName);
                 localStorage.setItem('medtech_saved_role', role);
             }
 
             document.getElementById('loggedUserName').innerText = userName;
             
-            const badge = document.getElementById('userRoleBadge');
             const supSection = document.getElementById('supervisorEngineersSection');
             const tableTitle = document.getElementById('tableTitle');
 
-            // تفعيل الصلاحيات في الخلفية بدقة ودون كتابة تفاصيل مزعجة بالواجهة
             if (role === 'engineer') {
-                badge.innerText = ""; 
-                supSection.style.display = 'none'; // مهندس يرى منطقته فقط
+                supSection.style.display = 'none';
                 tableTitle.innerText = "مأموريات منطقتي الخاصة";
             } else if (role === 'supervisor') {
-                badge.innerText = "";
-                supSection.style.display = 'block'; // مشرف يرى مهندسي منطقته
+                supSection.style.display = 'block';
                 document.getElementById('perfSectionTitle').innerText = "👨‍💻 متابعة أداء مهندسي المنطقة";
                 tableTitle.innerText = "مأموريات وتقارير مهندسي المنطقة";
             } else {
-                badge.innerText = "";
-                supSection.style.display = 'block'; // مدير عام يرى الكل
+                supSection.style.display = 'block';
                 document.getElementById('perfSectionTitle').innerText = "👨‍💻 متابعة أداء مهندسي الجمهورية";
                 tableTitle.innerText = "أحدث المأموريات الجارية بجميع المناطق";
             }
@@ -419,7 +415,6 @@
         }
 
         function handleLogout() {
-            // مسح الحفظ عند تسجيل الخروج لاختيار مستخدم آخر
             localStorage.removeItem('medtech_saved_user');
             localStorage.removeItem('medtech_saved_role');
             document.getElementById('main-app-container').style.display = 'none';
@@ -427,7 +422,7 @@
         }
 
         function switchTab(sectionId) {
-            document.querySelectorAll('.app-section').forEach(sec => sec.classList.remove('active'));
+            document.querySelectorAll('.app-section').forEach, sec => sec.classList.remove('active');
             document.querySelectorAll('.nav-tabs button').forEach(btn => btn.classList.remove('active'));
 
             document.getElementById('section-' + sectionId).classList.add('active');
