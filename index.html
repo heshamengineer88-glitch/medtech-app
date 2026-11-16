@@ -144,7 +144,7 @@
     <header>
         <div style="display: flex; align-items: center; gap: 1rem;">
             <h1 style="margin: 0; font-size: 1.25rem;">MedTech FSM</h1>
-            <span class="status-badge">متصل بالشيت ✓</span>
+            <span class="status-badge" id="sync-status">متصل بالشيت ✓</span>
         </div>
         <nav>
             <ul class="nav-links">
@@ -160,29 +160,48 @@
     </header>
 
     <main>
-        <!-- لوحة المتابعة -->
+        <!-- 1. لوحة المتابعة وإحصائيات الأجهزة حسب المنطقة -->
         <div id="dashboard" class="tab-content active">
             <div class="section-card">
-                <h2>لوحة المتابعة العامة</h2>
-                <p>مرحباً بك يا هشام. نظام إدارة صيانة الأجهزة الطبية يعمل بكفاءة لتغطية كافة مناطق الدلتا والجمهورية.</p>
+                <h2>لوحة المتابعة العامة وإحصائيات المناطق</h2>
+                <p>مرحباً بك يا هشام. اختر المنطقة لعرض عدد الأجهزة من كل نوع بشكل فوري:</p>
+                
+                <div class="form-group" style="max-width: 300px; margin-bottom: 1.5rem;">
+                    <label for="filter-region">اختر المنطقة:</label>
+                    <select id="filter-region" onchange="updateDeviceStats()">
+                        <option value="">جميع المناطق</option>
+                        <option value="الدلتا">الدلتا</option>
+                        <option value="المنطقة الشمالية">المنطقة الشمالية</option>
+                        <option value="القاهرة">القاهرة</option>
+                        <option value="الصعيد">الصعيد</option>
+                    </select>
+                </div>
+
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1.5rem;">
                     <div style="background: #e0f2fe; padding: 1rem; border-radius: 0.5rem; text-align: center;">
                         <h3 style="margin:0; color:#0369a1;">المأموريات النشطة</h3>
-                        <p style="font-size: 1.5rem; font-weight: bold; margin: 0.5rem 0 0 0;">12</p>
+                        <p id="stat-missions" style="font-size: 1.5rem; font-weight: bold; margin: 0.5rem 0 0 0;">0</p>
                     </div>
                     <div style="background: #dcfce7; padding: 1rem; border-radius: 0.5rem; text-align: center;">
-                        <h3 style="margin:0; color:#15803d;">الأجهزة المسجلة</h3>
-                        <p style="font-size: 1.5rem; font-weight: bold; margin: 0.5rem 0 0 0;">3,000</p>
+                        <h3 style="margin:0; color:#15803d;">إجمالي الأجهزة</h3>
+                        <p id="stat-devices-total" style="font-size: 1.5rem; font-weight: bold; margin: 0.5rem 0 0 0;">0</p>
                     </div>
                     <div style="background: #fee2e2; padding: 1rem; border-radius: 0.5rem; text-align: center;">
                         <h3 style="margin:0; color:#b91c1c;">طلبات قطع الغيار</h3>
-                        <p style="font-size: 1.5rem; font-weight: bold; margin: 0.5rem 0 0 0;">5</p>
+                        <p id="stat-spares" style="font-size: 1.5rem; font-weight: bold; margin: 0.5rem 0 0 0;">0</p>
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem;">
+                    <h3>توزيع الأجهزة حسب النوع للمنطقة المحددة:</h3>
+                    <div id="device-type-breakdown" style="background: #f1f5f9; padding: 1rem; border-radius: 0.5rem; margin-top: 0.5rem;">
+                        <p style="margin: 0; color: #64748b;">اختر منطقة من القائمة أعلاه لعرض التفاصيل...</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- المأموريات اليومية -->
+        <!-- 2. المأموريات اليومية (شيت المأموريات) -->
         <div id="missions" class="tab-content">
             <div class="section-card">
                 <h2>المأموريات اليومية وإضافة مأمورية جديدة</h2>
@@ -207,6 +226,12 @@
                                     <option value="إسلام ماهر">إسلام ماهر</option>
                                     <option value="مينا فوزي">مينا فوزي</option>
                                 </optgroup>
+                                <optgroup label="منطقة القاهرة والاتصال">
+                                    <option value="هشام عاصم">هشام عاصم</option>
+                                    <option value="سعيد">سعيد</option>
+                                    <option value="حمد عطية">حمد عطية</option>
+                                    <option value="البطاوي">البطاوي</option>
+                                </optgroup>
                             </select>
                         </div>
                         <div class="form-group">
@@ -218,12 +243,27 @@
                             <input type="date" id="mission-date" required>
                         </div>
                     </div>
-                    <button type="submit">إضافة المأمورية</button>
+                    <button type="submit">إضافة المأمورية وتصديرها للشيت</button>
                 </form>
+                <div style="margin-top: 2rem;">
+                    <h3>سجل المأموريات</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>اسم المهندس</th>
+                                <th>الجهة / العميل</th>
+                                <th>التاريخ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="missions-table-body">
+                            <tr><td colspan="3" style="text-align: center;">لا توجد مأموريات مسجلة حديثاً</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
-        <!-- الأجهزة والعملاء -->
+        <!-- 3. الأجهزة والعملاء (شيت الأجهزة) -->
         <div id="devices" class="tab-content">
             <div class="section-card">
                 <h2>قاعدة بيانات الأجهزة والعملاء</h2>
@@ -237,7 +277,7 @@
                             <th>تاريخ آخر زيارة</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="devices-table-body">
                         <tr>
                             <td>BH-70P</td>
                             <td>مستشفى دمياط العام</td>
@@ -252,12 +292,19 @@
                             <td>SN-44102</td>
                             <td>2026/11/10</td>
                         </tr>
+                        <tr>
+                            <td>Sysmex XN-1000</td>
+                            <td>مستشفى الإسكندرية العام</td>
+                            <td>المنطقة الشمالية</td>
+                            <td>SN-11022</td>
+                            <td>2026/11/14</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <!-- طلبات قطع الغيار -->
+        <!-- 4. طلبات قطع الغيار (شيت قطع الغيار) -->
         <div id="spares" class="tab-content">
             <div class="section-card">
                 <h2>طلبات قطع الغيار</h2>
@@ -280,12 +327,28 @@
                             <input type="date" id="spare-date" required>
                         </div>
                     </div>
-                    <button type="submit">إرسال الطلب</button>
+                    <button type="submit">إرسال طلب قطع الغيار للشيت</button>
                 </form>
+                <div style="margin-top: 2rem;">
+                    <h3>سجل طلبات قطع الغيار</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>الجهة / المستشفى</th>
+                                <th>وصف العطل</th>
+                                <th>قطعة الغيار</th>
+                                <th>التاريخ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="spares-table-body">
+                            <tr><td colspan="4" style="text-align: center;">لا توجد طلبات قطع غيار حالياً</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
-        <!-- الإجازات -->
+        <!-- 5. الإجازات (شيت الإجازات) -->
         <div id="leaves" class="tab-content">
             <div class="section-card">
                 <h2>سجل الإجازات وطلب إجازة جديد</h2>
@@ -299,6 +362,7 @@
                                 <option value="بهجت أيمن">بهجت أيمن</option>
                                 <option value="أحمد العيسوي">أحمد العيسوي</option>
                                 <option value="إسلام ماهر">إسلام ماهر</option>
+                                <option value="محمد صلاح">محمد صلاح</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -315,70 +379,11 @@
                             <label for="leave-from">من تاريخ:</label>
                             <input type="date" id="leave-from" required>
                         </div>
-                        <div class="con-group form-group">
+                        <div class="form-group">
                             <label for="leave-to">إلى تاريخ:</label>
                             <input type="date" id="leave-to" required>
                         </div>
                     </div>
                     <div class="form-group" style="margin-bottom: 1rem;">
                         <label for="leave-reason">السبب:</label>
-                        <textarea id="leave-reason" rows="2" placeholder="سبب طلب الإجازة" required></textarea>
-                    </div>
-                    <button type="submit">تقديم طلب الإجازة</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- استيراد وتصدير -->
-        <div id="import-export" class="tab-content">
-            <div class="section-card">
-                <h2>استيراد وتصدير البيانات</h2>
-                <p>يمكنك مزامنة البيانات مباشرة مع Google Sheets عبر الرابط البرمجي (Apps Script Web App).</p>
-                <button onclick="alert('تم مزامنة وتصدير البيانات بنجاح مع الشيت!')">مزامنة وتصدير الآن</button>
-            </div>
-        </div>
-    </main>
-
-    <script>
-        // التحكم في التنقل بين الأقسام (SPA Routing بدون مشاكل 404)
-        const navLinks = document.querySelectorAll('.nav-link');
-        const tabContents = document.querySelectorAll('.tab-content');
-
-        navLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const targetId = link.getAttribute('data-target');
-
-                // إزالة التفعيل عن الكل
-                navLinks.forEach(l => l.classList.remove('active'));
-                tabContents.forEach(tc => tc.classList.remove('active'));
-
-                // تفعيل العنصر المختار
-                link.classList.add('active');
-                document.getElementById(targetId).classList.add('active');
-            });
-        });
-
-        // التعامل مع النماذج وإرسالها للـ Web App (Google Apps Script)
-        const SCRIPT_URL = "AKfycbwEZSQGiYW3F20SgLUCjE_GT2AtY3jCopZcVc_5ZSCZhbPVqSs0V5g_2OSP9TLvljzU0Q/exec"; // رابط الـ API الخاص بك
-
-        document.getElementById('mission-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('تم تسجيل المأمورية بنجاح وإرسالها للشيت!');
-            this.reset();
-        });
-
-        document.getElementById('spare-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('تم إرسال طلب قطع الغيار بنجاح!');
-            this.reset();
-        });
-
-        document.getElementById('leave-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('تم تقديم طلب الإجازة بنجاح!');
-            this.reset();
-        });
-    </script>
-</body>
-</html>
+                        <textarea id="leave-reason" rows="2" placeholder="سبب طلب الإجازة" required
