@@ -18,7 +18,6 @@
     .tab-active { border-bottom: 3px solid #0284c7; color: #0284c7; font-weight: 700; }
   </style>
   <script>
-    // Embedded Dynamic PWA Manifest (Single-File Solution)
     (function() {
       const iconSvg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%230284c7'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-family='Arial, sans-serif' font-weight='bold' font-size='220'%3EM%2B%3C/text%3E%3C/svg%3E";
       const manifestObj = {
@@ -40,7 +39,6 @@
       const blob = new Blob([JSON.stringify(manifestObj)], { type: "application/manifest+json" });
       document.getElementById("dynamicManifest").setAttribute("href", URL.createObjectURL(blob));
 
-      // Embedded Service Worker via Blob
       if ("serviceWorker" in navigator) {
         const swCode = "self.addEventListener('install', e => self.skipWaiting()); self.addEventListener('activate', e => self.clients.claim()); self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => caches.match(e.request))));";
         const swBlob = new Blob([swCode], { type: "application/javascript" });
@@ -56,8 +54,13 @@
     <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 text-center">
       <div class="w-16 h-16 bg-sky-100 text-sky-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-3xl font-extrabold">M+</div>
       <h1 class="text-2xl font-extrabold text-slate-900">MedTech FSM</h1>
-      <p class="text-sm text-slate-500 mt-1 mb-6">منظومة إدارة صيانة الأجهزة الطبية والمعملية</p>
+      <p class="text-sm text-slate-500 mt-1 mb-4">منظومة إدارة صيانة الأجهزة الطبية والمعملية</p>
       
+      <div id="syncBadgeLogin" class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 mb-5">
+        <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+        <span>جاري مزامنة البيانات من Google Sheets...</span>
+      </div>
+
       <div class="text-right mb-4">
         <label class="block text-sm font-bold text-slate-700 mb-1">اختر المستخدم</label>
         <select id="userSelect" class="w-full border border-slate-300 rounded-xl p-3 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-sky-500">
@@ -75,11 +78,11 @@
       <button id="installPwaBtn" onclick="triggerInstallPWA()" class="hidden w-full mt-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl shadow transition text-sm">📲 تثبيت التطبيق على الهاتف</button>
 
       <div class="mt-6 pt-4 border-t border-slate-100 text-xs text-slate-400 text-right space-y-1">
-        <p><strong>أكواد تجريبية سريعة:</strong></p>
+        <p><strong>أكواد الدخول الافتراضية:</strong></p>
         <p>• المدير العام (د. أحمد العيسوي): <code>1111</code></p>
         <p>• مشرف المنطقة الشمالية (م. خالد الضوي): <code>2222</code></p>
         <p>• مشرف منطقة الدلتا (م. أحمد رضا): <code>5555</code></p>
-        <p>• مهندس صيانة (م. بهجت أيمن): <code>1234</code></p>
+        <p>• مهندس صيانة: <code>1234</code></p>
       </div>
     </div>
   </div>
@@ -95,7 +98,11 @@
             <p class="text-xs text-slate-400">إدارة الصيانة الميدانية والأجهزة الطبية</p>
           </div>
         </div>
-        <div class="flex items-center gap-4">
+        <div class="flex items-center gap-3">
+          <button onclick="syncFromGoogleSheets(true)" id="syncHeaderBtn" title="تحديث البيانات من Google Sheets" class="bg-emerald-700 hover:bg-emerald-600 text-xs px-3 py-2 rounded-lg font-bold transition flex items-center gap-1.5">
+            <span>🔄</span>
+            <span id="syncStatusText">متصل بالشيت</span>
+          </button>
           <div class="text-left">
             <p id="currentUserName" class="text-sm font-bold text-sky-300"></p>
             <p id="currentUserRole" class="text-xs text-slate-400"></p>
@@ -239,7 +246,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
             <h2 class="font-bold text-lg text-sky-900">📥 استيراد البيانات من ملف Excel</h2>
-            <p class="text-sm text-slate-600">ارفع ملف الإكسيل المجهز (<code>.xlsx</code> أو <code>.xls</code>) لإضافة البيانات دفعة واحدة إلى البرنامج.</p>
+            <p class="text-sm text-slate-600">ارفع ملف الإكسيل المجهز (<code>.xlsx</code> أو <code>.xls</code>) لإضافة البيانات دفعة واحدة إلى البرنامج ومزامنتها مع Google Sheets.</p>
             <div>
               <label class="block text-sm font-bold mb-1">1. اختر نوع البيانات المراد استيرادها:</label>
               <select id="importType" class="w-full border rounded-xl p-2.5 bg-slate-50">
@@ -335,6 +342,8 @@
   </div>
 
   <script>
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwEZSQGiYW3F20SgLUCjE_GT2AtY3jCopZcVc_5ZSCZhbPVqSs0V5g_2OSP9TLvljzU0Q/exec";
+
     let deferredPrompt;
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
@@ -364,41 +373,86 @@
         { id: "ENG-06", name: "م. مهند أيمن", region: "منطقة الدلتا", role: "مهندس صيانة", pin: "1234" },
         { id: "ENG-07", name: "م. محمد صلاح", region: "منطقة الدلتا", role: "مهندس صيانة", pin: "1234" }
       ],
-      visits: [
-        { date: "2026-11-16", region: "منطقة الدلتا", engineer: "م. بهجت أيمن", client: "معمل المختبر - طنطا", city: "طنطا", device: "Sysmex XN-550", sn: "SN-884920", type: "صيانة دورية", desc: "معايرة وفحص وقائي", status: "مكتملة", notes: "" },
-        { date: "2026-11-16", region: "المنطقة الشمالية", engineer: "م. خالد الضوي", client: "مستشفى الشفاء التخصصي", city: "الإسكندرية", device: "YHLO iFlash 1800", sn: "SN-441092", type: "عطل طارئ", desc: "فحص وحدة السحب", status: "قيد التنفيذ", notes: "" }
-      ],
-      devices: [
-        { code: "DEV-1001", model: "Sysmex XN-550", vendor: "Sysmex", category: "أمراض دم", sn: "SN-884920", client: "معمل المختبر - طنطا", region: "منطقة الدلتا", city: "طنطا", contract: "عقد صيانة شامل", expiry: "2027-06-30", status: "يعمل بكفاءة" },
-        { code: "DEV-1002", model: "YHLO iFlash 1800", vendor: "YHLO", category: "هرمونات", sn: "SN-441092", client: "مستشفى الشفاء التخصصي", region: "المنطقة الشمالية", city: "الإسكندرية", contract: "ضمان", expiry: "2027-01-15", status: "يحتاج صيانة" }
-      ],
-      parts: [
-        { date: "2026-11-16", engineer: "م. بهجت أيمن", region: "منطقة الدلتا", client: "معمل المختبر - طنطا", device: "Sysmex XN-550", part: "Aspiration Valve (V-204)", qty: 1, status: "قيد المراجعة" }
-      ],
-      leaves: [
-        { engineer: "م. محمد صلاح", region: "منطقة الدلتا", from: "2026-11-20", to: "2026-11-21", reason: "إجازة عارضة", status: "قيد المراجعة" }
-      ]
+      visits: [],
+      devices: [],
+      parts: [],
+      leaves: []
     };
 
     let appData = JSON.parse(localStorage.getItem("medtech_fsm_data")) || DEFAULT_DATA;
     let currentUser = null;
     let pendingImportRows = [];
 
-    function saveData() {
+    function updateSyncUI(state, msg) {
+      const loginBadge = document.getElementById("syncBadgeLogin");
+      const headerStatus = document.getElementById("syncStatusText");
+      if (loginBadge) {
+        if (state === "syncing") {
+          loginBadge.className = "inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 mb-5";
+          loginBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span><span>${msg}</span>`;
+        } else if (state === "ok") {
+          loginBadge.className = "inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 mb-5";
+          loginBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span><span>${msg}</span>`;
+        } else {
+          loginBadge.className = "inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200 mb-5";
+          loginBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-slate-400"></span><span>${msg}</span>`;
+        }
+      }
+      if (headerStatus) headerStatus.textContent = msg;
+    }
+
+    async function syncFromGoogleSheets(showAlert = false) {
+      if (!GOOGLE_SCRIPT_URL) return;
+      updateSyncUI("syncing", "جاري التحديث من الشيت...");
+      try {
+        const res = await fetch(GOOGLE_SCRIPT_URL);
+        const cloudData = await res.json();
+        if (cloudData.users && cloudData.users.length > 0) appData.users = cloudData.users;
+        if (cloudData.devices) appData.devices = cloudData.devices;
+        if (cloudData.visits) appData.visits = cloudData.visits;
+        if (cloudData.parts) appData.parts = cloudData.parts;
+        if (cloudData.leaves) appData.leaves = cloudData.leaves;
+        localStorage.setItem("medtech_fsm_data", JSON.stringify(appData));
+        initLogin();
+        if (currentUser) renderAll();
+        updateSyncUI("ok", "متصل بـ Google Sheets ✓");
+        if (showAlert) alert("تم تحديث كافة البيانات من ملف Google Sheets بنجاح!");
+      } catch (e) {
+        updateSyncUI("offline", "يعمل أوفلاين (نسخة محلية)");
+      }
+    }
+
+    async function saveData() {
       localStorage.setItem("medtech_fsm_data", JSON.stringify(appData));
+      if (!GOOGLE_SCRIPT_URL) return;
+      updateSyncUI("syncing", "جاري الرفع للشيت...");
+      try {
+        await fetch(GOOGLE_SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(appData)
+        });
+        updateSyncUI("ok", "تم الحفظ في الشيت ✓");
+      } catch (e) {
+        updateSyncUI("offline", "حفظ محلي (في انتظار الإنترنت)");
+      }
     }
 
     function initLogin() {
       const sel = document.getElementById("userSelect");
+      const currentVal = sel.value;
       sel.innerHTML = appData.users.map((u, idx) => `<option value="${idx}">${u.name} (${u.role} - ${u.region})</option>`).join("");
+      if (currentVal && sel.options[currentVal]) sel.value = currentVal;
     }
     initLogin();
+    window.addEventListener("DOMContentLoaded", () => syncFromGoogleSheets(false));
 
     function handleLogin() {
       const idx = document.getElementById("userSelect").value;
       const pin = document.getElementById("pinInput").value.trim();
       const user = appData.users[idx];
-      if (user && user.pin === pin) {
+      if (user && String(user.pin) === pin) {
         currentUser = user;
         document.getElementById("loginError").classList.add("hidden");
         document.getElementById("loginScreen").classList.add("hidden");
@@ -514,7 +568,9 @@
     }
 
     function completeVisit(idx) {
-      appData.visits[idx].status = "مكتملة";
+      const myVisits = filterByPermission(appData.visits);
+      const target = myVisits[idx];
+      if (target) target.status = "مكتملة";
       saveData(); renderAll();
     }
 
@@ -532,7 +588,11 @@
       saveData(); closeModal("partModal"); renderAll();
     }
 
-    function approvePart(idx) { appData.parts[idx].status = "تم الاعتماد"; saveData(); renderAll(); }
+    function approvePart(idx) {
+      const myParts = filterByPermission(appData.parts);
+      if (myParts[idx]) myParts[idx].status = "تم الاعتماد";
+      saveData(); renderAll();
+    }
 
     function addLeave() {
       appData.leaves.unshift({
@@ -546,7 +606,11 @@
       saveData(); closeModal("leaveModal"); renderAll();
     }
 
-    function approveLeave(idx) { appData.leaves[idx].status = "مقبولة"; saveData(); renderAll(); }
+    function approveLeave(idx) {
+      const myLeaves = filterByPermission(appData.leaves);
+      if (myLeaves[idx]) myLeaves[idx].status = "مقبولة";
+      saveData(); renderAll();
+    }
 
     function previewExcelFile(e) {
       const file = e.target.files[0];
@@ -619,7 +683,7 @@
       }
       saveData();
       renderAll();
-      alert(`تم استيراد وحفظ ${pendingImportRows.length} سجل بنجاح!`);
+      alert(`تم استيراد وحفظ ${pendingImportRows.length} سجل ومزامنتها مع Google Sheets بنجاح!`);
       document.getElementById("excelPreviewContainer").classList.add("hidden");
       document.getElementById("confirmImportBtn").classList.add("hidden");
     }
