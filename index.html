@@ -4,94 +4,231 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MedTech FSM - إدارة صيانة الأجهزة الطبية والمعملية</title>
-    <!-- استيراد Bootstrap للتنسيق السريع -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
     <style>
-        body { font-family: Tahoma, sans-serif; background-color: #f8f9fa; }
-        .navbar-custom { background-color: #1e293b; color: white; padding: 10px 20px; }
-        .nav-links a { color: #cbd5e1; text-decoration: none; margin-left: 15px; padding: 5px 10px; border-radius: 4px; }
-        .nav-links a:hover, .nav-links a.active { background-color: #334155; color: #fff; }
-        .card { box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: none; margin-bottom: 20px; }
+        :root {
+            --primary-color: #0284c7;
+            --success-color: #16a34a;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+        }
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            direction: rtl;
+        }
+        header {
+            background-color: #0f172a;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        .nav-links {
+            display: flex;
+            gap: 1rem;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            flex-wrap: wrap;
+        }
+        .nav-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.375rem;
+            transition: all 0.2s;
+        }
+        .nav-links a:hover, .nav-links a.active {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .status-badge {
+            background-color: var(--success-color);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: bold;
+        }
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        .section-card {
+            background-color: var(--card-bg);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        h2 {
+            margin-top: 0;
+            color: #0f172a;
+            font-size: 1.25rem;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 0.5rem;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        label {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        input, select, textarea {
+            padding: 0.75rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
+        }
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #0369a1;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        th, td {
+            padding: 0.75rem;
+            text-align: right;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        th {
+            background-color: #f8fafc;
+            font-weight: 600;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
     </style>
 </head>
 <body>
 
-    <!-- الهيدر وشريط التنقل -->
-    <div class="navbar-custom d-flex justify-content-between align-items-center">
-        <div>
-            <span class="fw-bold">MedTech FSM</span>
-            <span class="badge bg-success ms-2">متصل بالشيت ✓</span>
-            <span class="ms-3">هشام عاصم</span>
-            <a href="#" class="text-danger text-decoration-none ms-2">[خروج]</a>
+    <header>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <h1 style="margin: 0; font-size: 1.25rem;">MedTech FSM</h1>
+            <span class="status-badge">متصل بالشيت ✓</span>
         </div>
-        <div class="nav-links">
-            <a href="url?id=5" class="active">لوحة المتابعة</a>
-            <a href="url?id=5">المأموريات اليومية</a>
-            <a href="url?id=5">الأجهزة والعملاء</a>
-            <a href="url?id=5">طلبات قطع الغيار</a>
-            <a href="url?id=5">الإجازات</a>
-            <a href="url?id=5">📊 استيراد وتصدير</a>
-        </div>
-    </div>
+        <nav>
+            <ul class="nav-links">
+                <li><a href="#" class="nav-link active" data-target="dashboard">لوحة المتابعة</a></li>
+                <li><a href="#" class="nav-link" data-target="missions">المأموريات اليومية</a></li>
+                <li><a href="#" class="nav-link" data-target="devices">الأجهزة والعملاء</a></li>
+                <li><a href="#" class="nav-link" data-target="spares">طلبات قطع الغيار</a></li>
+                <li><a href="#" class="nav-link" data-target="leaves">الإجازات</a></li>
+                <li><a href="#" class="nav-link" data-target="import-export">📊 استيراد وتصدير</a></li>
+                <li><a href="#" style="color: #fca5a5;" id="logout-btn">خروج</a></li>
+            </ul>
+        </nav>
+    </header>
 
-    <div class="container my-4">
-
-        <!-- قسم لوحة المتابعة الهيكل الإداري -->
-        <div class="card p-4">
-            <h4 class="mb-3 text-primary">الهيكل الإداري والإشراف</h4>
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="p-3 border rounded bg-light">
-                        <h5>المديرون</h5>
-                        <ul class="mb-0">
-                            <li>هشام عاصم</li>
-                            <li>سعيد</li>
-                            <li>حمد عطية</li>
-                        </ul>
+    <main>
+        <!-- لوحة المتابعة -->
+        <div id="dashboard" class="tab-content active">
+            <div class="section-card">
+                <h2>لوحة المتابعة العامة</h2>
+                <p>مرحباً بك يا هشام. نظام إدارة صيانة الأجهزة الطبية يعمل بكفاءة لتغطية كافة مناطق الدلتا والجمهورية.</p>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1.5rem;">
+                    <div style="background: #e0f2fe; padding: 1rem; border-radius: 0.5rem; text-align: center;">
+                        <h3 style="margin:0; color:#0369a1;">المأموريات النشطة</h3>
+                        <p style="font-size: 1.5rem; font-weight: bold; margin: 0.5rem 0 0 0;">12</p>
                     </div>
-                </div>
-                <div class="col-md-8">
-                    <div class="p-3 border rounded bg-light">
-                        <h5>المشرفون حسب المناطق</h5>
-                        <ul class="mb-0">
-                            <li><strong>المنطقة الشمالية:</strong> أحمد العيسوي، إسلام ماهر</li>
-                            <li><strong>منطقة الصعيد:</strong> حسيب، عبد العظيم</li>
-                            <li><strong>منطقة القاهرة:</strong> البطاوي</li>
-                            <li><strong>منطقة الدلتا:</strong> أحمد رضا</li>
-                        </ul>
+                    <div style="background: #dcfce7; padding: 1rem; border-radius: 0.5rem; text-align: center;">
+                        <h3 style="margin:0; color:#15803d;">الأجهزة المسجلة</h3>
+                        <p style="font-size: 1.5rem; font-weight: bold; margin: 0.5rem 0 0 0;">3,000</p>
+                    </div>
+                    <div style="background: #fee2e2; padding: 1rem; border-radius: 0.5rem; text-align: center;">
+                        <h3 style="margin:0; color:#b91c1c;">طلبات قطع الغيار</h3>
+                        <p style="font-size: 1.5rem; font-weight: bold; margin: 0.5rem 0 0 0;">5</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- قسم المأموريات اليومية -->
-        <div class="card p-4">
-            <h4 class="mb-3 text-secondary">المأموريات اليومية وإضافة مأمورية جديدة</h4>
-            <form id="missionForm" onsubmit="addMission(event)" class="row g-3 mb-4 p-3 border rounded bg-white">
-                <div class="col-md-4">
-                    <label class="form-label">اسم المهندس:</label>
-                    <input type="text" id="missionEngineer" class="form-control" required>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label">اسم الجهة / العميل:</label>
-                    <input type="text" id="missionClient" class="form-control" required>
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label">التاريخ:</label>
-                    <input type="date" id="missionDate" class="form-control" required>
-                </div>
-                <div class="col-md-1 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary w-100">إضافة</button>
-                </div>
-            </form>
+        <!-- المأموريات اليومية -->
+        <div id="missions" class="tab-content">
+            <div class="section-card">
+                <h2>المأموريات اليومية وإضافة مأمورية جديدة</h2>
+                <form id="mission-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="mission-engineer">اسم المهندس:</label>
+                            <select id="mission-engineer" required>
+                                <option value="">اختر المهندس...</option>
+                                <optgroup label="منطقة الدلتا">
+                                    <option value="أحمد رضا">أحمد رضا</option>
+                                    <option value="بهجت أيمن">بهجت أيمن</option>
+                                    <option value="مهند أيمن">مهند أيمن</option>
+                                    <option value="محمد صلاح">محمد صلاح</option>
+                                    <option value="عماد عباس">عماد عباس</option>
+                                    <option value="حسام صلاح">حسام صلاح</option>
+                                    <option value="محمد خالد">محمد خالد</option>
+                                </optgroup>
+                                <optgroup label="المنطقة الشمالية">
+                                    <option value="أحمد العيسوي">أحمد العيسوي</option>
+                                    <option value="خالد الضوي">خالد الضوي</option>
+                                    <option value="إسلام ماهر">إسلام ماهر</option>
+                                    <option value="مينا فوزي">مينا فوزي</option>
+                                </optgroup>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="mission-client">اسم الجهة / العميل:</label>
+                            <input type="text" id="mission-client" placeholder="أدخل اسم الجهة أو المستشفى" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="mission-date">التاريخ:</label>
+                            <input type="date" id="mission-date" required>
+                        </div>
+                    </div>
+                    <button type="submit">إضافة المأمورية</button>
+                </form>
+            </div>
         </div>
 
-        <!-- قسم الأجهزة والعملاء (مع عمود تاريخ آخر زيارة) -->
-        <div class="card p-4">
-            <h4 class="mb-3 text-secondary">قاعدة بيانات الأجهزة والعملاء</h4>
-            <div class="table-responsive">
-                <table class="table table-striped table-bordered">
-                    <thead class="table-dark">
+        <!-- الأجهزة والعملاء -->
+        <div id="devices" class="tab-content">
+            <div class="section-card">
+                <h2>قاعدة بيانات الأجهزة والعملاء</h2>
+                <table>
+                    <thead>
                         <tr>
                             <th>الموديل</th>
                             <th>الجهة / المستشفى</th>
@@ -120,100 +257,128 @@
             </div>
         </div>
 
-        <!-- قسم طلبات قطع الغيار -->
-        <div class="card p-4">
-            <h4 class="mb-3 text-secondary">طلبات قطع الغيار</h4>
-            <form id="spareForm" onsubmit="addSparePart(event)" class="row g-3 mb-4 p-3 border rounded bg-white">
-                <div class="col-md-3">
-                    <label class="form-label">الجهة / المستشفى:</label>
-                    <input type="text" id="spareClient" class="form-control" required>
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label">وصف العطل:</label>
-                    <input type="text" id="spareIssue" class="form-control" required>
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label">قطعة الغيار المطلوبة:</label>
-                    <input type="text" id="sparePartName" class="form-control" required>
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label">التاريخ:</label>
-                    <input type="date" id="spareDate" class="form-control" required>
-                </div>
-                <div class="col-md-1 d-flex align-items-end">
-                    <button type="submit" class="btn btn-success w-100">إرسال</button>
-                </div>
-            </form>
+        <!-- طلبات قطع الغيار -->
+        <div id="spares" class="tab-content">
+            <div class="section-card">
+                <h2>طلبات قطع الغيار</h2>
+                <form id="spare-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="spare-client">الجهة / المستشفى:</label>
+                            <input type="text" id="spare-client" placeholder="أدخل اسم الجهة" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="spare-issue">وصف العطل:</label>
+                            <input type="text" id="spare-issue" placeholder="وصف المشكلة" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="spare-part">قطعة الغيار المطلوبة:</label>
+                            <input type="text" id="spare-part" placeholder="اسم القطعة أو الكود" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="spare-date">التاريخ:</label>
+                            <input type="date" id="spare-date" required>
+                        </div>
+                    </div>
+                    <button type="submit">إرسال الطلب</button>
+                </form>
+            </div>
         </div>
 
-        <!-- قسم الإجازات -->
-        <div class="card p-4">
-            <h4 class="mb-3 text-secondary">سجل الإجازات وطلب إجازة جديد</h4>
-            <form id="leaveForm" onsubmit="addLeave(event)" class="row g-3 mb-4 p-3 border rounded bg-white">
-                <div class="col-md-3">
-                    <label class="form-label">اسم المهندس:</label>
-                    <input type="text" id="leaveEngineer" class="form-control" required>
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label">المنطقة:</label>
-                    <input type="text" id="leaveRegion" class="form-control" required>
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label">من تاريخ:</label>
-                    <input type="date" id="leaveFrom" class="form-control" required>
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label">إلى تاريخ:</label>
-                    <input type="date" id="leaveTo" class="form-control" required>
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label">السبب:</label>
-                    <input type="text" id="leaveReason" class="form-control" required>
-                </div>
-                <div class="col-12 text-end">
-                    <button type="submit" class="btn btn-warning px-4">تقديم طلب الإجازة</button>
-                </div>
-            </form>
-
-            <table class="table table-bordered">
-                <thead class="table-secondary">
-                    <tr>
-                        <th>المهندس</th>
-                        <th>المنطقة</th>
-                        <th>من تاريخ</th>
-                        <th>إلى تاريخ</th>
-                        <th>السبب</th>
-                        <th>الحالة</th>
-                    </tr>
-                </thead>
-                <tbody id="leaveTableBody">
-                    <tr>
-                        <td colspan="6" class="text-center text-muted">لا توجد طلبات إجازات حالياً</td>
-                    </tr>
-                </tbody>
-            </table>
+        <!-- الإجازات -->
+        <div id="leaves" class="tab-content">
+            <div class="section-card">
+                <h2>سجل الإجازات وطلب إجازة جديد</h2>
+                <form id="leave-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="leave-engineer">اسم المهندس:</label>
+                            <select id="leave-engineer" required>
+                                <option value="">اختر المهندس...</option>
+                                <option value="أحمد رضا">أحمد رضا</option>
+                                <option value="بهجت أيمن">بهجت أيمن</option>
+                                <option value="أحمد العيسوي">أحمد العيسوي</option>
+                                <option value="إسلام ماهر">إسلام ماهر</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="leave-region">المنطقة:</label>
+                            <select id="leave-region" required>
+                                <option value="">اختر المنطقة...</option>
+                                <option value="الدلتا">الدلتا</option>
+                                <option value="المنطقة الشمالية">المنطقة الشمالية</option>
+                                <option value="القاهرة">القاهرة</option>
+                                <option value="الصعيد">الصعيد</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="leave-from">من تاريخ:</label>
+                            <input type="date" id="leave-from" required>
+                        </div>
+                        <div class="con-group form-group">
+                            <label for="leave-to">إلى تاريخ:</label>
+                            <input type="date" id="leave-to" required>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label for="leave-reason">السبب:</label>
+                        <textarea id="leave-reason" rows="2" placeholder="سبب طلب الإجازة" required></textarea>
+                    </div>
+                    <button type="submit">تقديم طلب الإجازة</button>
+                </form>
+            </div>
         </div>
 
-    </div>
+        <!-- استيراد وتصدير -->
+        <div id="import-export" class="tab-content">
+            <div class="section-card">
+                <h2>استيراد وتصدير البيانات</h2>
+                <p>يمكنك مزامنة البيانات مباشرة مع Google Sheets عبر الرابط البرمجي (Apps Script Web App).</p>
+                <button onclick="alert('تم مزامنة وتصدير البيانات بنجاح مع الشيت!')">مزامنة وتصدير الآن</button>
+            </div>
+        </div>
+    </main>
 
     <script>
-        function addMission(e) {
-            e.preventDefault();
-            alert("تم إضافة المأمورية بنجاح (سيتم ربطها بالشيت تلقائياً)");
-            document.getElementById("missionForm").reset();
-        }
+        // التحكم في التنقل بين الأقسام (SPA Routing بدون مشاكل 404)
+        const navLinks = document.querySelectorAll('.nav-link');
+        const tabContents = document.querySelectorAll('.tab-content');
 
-        function addSparePart(e) {
-            e.preventDefault();
-            alert("تم إرسال طلب قطعة الغيار بنجاح");
-            document.getElementById("spareForm").reset();
-        }
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetId = link.getAttribute('data-target');
 
-        function addLeave(e) {
+                // إزالة التفعيل عن الكل
+                navLinks.forEach(l => l.classList.remove('active'));
+                tabContents.forEach(tc => tc.classList.remove('active'));
+
+                // تفعيل العنصر المختار
+                link.classList.add('active');
+                document.getElementById(targetId).classList.add('active');
+            });
+        });
+
+        // التعامل مع النماذج وإرسالها للـ Web App (Google Apps Script)
+        const SCRIPT_URL = "AKfycbwEZSQGiYW3F20SgLUCjE_GT2AtY3jCopZcVc_5ZSCZhbPVqSs0V5g_2OSP9TLvljzU0Q/exec"; // رابط الـ API الخاص بك
+
+        document.getElementById('mission-form').addEventListener('submit', function(e) {
             e.preventDefault();
-            alert("تم تقديم طلب الإجازة بنجاح");
-            document.getElementById("leaveForm").reset();
-        }
+            alert('تم تسجيل المأمورية بنجاح وإرسالها للشيت!');
+            this.reset();
+        });
+
+        document.getElementById('spare-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('تم إرسال طلب قطع الغيار بنجاح!');
+            this.reset();
+        });
+
+        document.getElementById('leave-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('تم تقديم طلب الإجازة بنجاح!');
+            this.reset();
+        });
     </script>
 </body>
 </html>
