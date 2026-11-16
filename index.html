@@ -7,7 +7,6 @@
     <style>
         body { font-family: Tahoma, sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; color: #333; }
         
-        /* شاشة تسجيل الدخول والتثبيت */
         #login-screen { display: flex; justify-content: center; align-items: center; height: 100vh; background: #1e293b; position: fixed; top: 0; left: 0; width: 100%; z-index: 9999; }
         .login-card { background: #fff; padding: 25px; border-radius: 10px; width: 100%; max-width: 380px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); text-align: center; }
         .login-card h2 { margin-bottom: 5px; color: #1e293b; }
@@ -60,7 +59,7 @@
                 <b>مستخدمي iPhone:</b> اضغط على زر المشاركة (Share) في متصفح Safari ثم اختر <b>"إلى الشاشة الرئيسية" (Add to Home Screen)</b>.
             </div>
 
-            <label style="font-size: 12px; display: block; text-align: right; margin-bottom: 3px; font-weight: bold;">اختر اسم المستخدم:</label>
+            <label style="font-size: 12px; display: block; text-align: right; margin-bottom: 3px; font-weight: bold;">اختر اسم المستخدم من الشيت:</label>
             <select id="userSelect" onchange="autoFillRole()">
                 <option value="">-- جارِ تحميل الأسماء من الشيت... --</option>
             </select>
@@ -237,7 +236,7 @@
     </div>
 
     <script>
-        // رابط الـ Web App الخاص بك مرفق بداخل الكود هنا
+        // رابط الـ Web App الخاص بك المُتصل بشيت الجداول
         const SHEET_API_URL = "https://script.google.com/macros/s/AKfycbwQg520OFkn-gA9UQ7t10-tm2IcCvZlCDDC4XA1isJ_AVbXMNRuB2o3jUpEBM81IobiCQ/exec";
 
         window.onload = function() {
@@ -260,7 +259,7 @@
             }
         };
 
-        // دالة سحب بيانات المهندسين من شيت "المهندسين"
+        // دالة سحب أسماء المهندسين والصلاحيات من شيت "المهندسين" تلقائياً
         function loadUsersFromGoogleSheets() {
             const select = document.getElementById('userSelect');
             fetch(SHEET_API_URL)
@@ -277,18 +276,12 @@
                             select.appendChild(opt);
                         });
                     } else {
-                        select.innerHTML = '<option value="">-- لا توجد بيانات مسجلة --</option>';
+                        select.innerHTML = '<option value="">-- لا توجد بيانات في شيت المهندسين --</option>';
                     }
                 })
                 .catch(err => {
-                    console.error("خطأ في الاتصال بقاعدة البيانات:", err);
-                    select.innerHTML = `
-                        <option value="">-- اختر اسمك من القائمة --</option>
-                        <option value="هشام عاصم|manager">هشام عاصم (مدير عام)</option>
-                        <option value="د. محمد عطية|supervisor">د. محمد عطية (مشرف)</option>
-                        <option value="د. سعيد|supervisor">د. سعيد (مشرف)</option>
-                        <option value="أحمد العيسوي|engineer">أحمد العيسوي (مهندس)</option>
-                    `;
+                    console.error("خطأ في جلب بيانات المستخدمين:", err);
+                    select.innerHTML = '<option value="">-- تعذر جلب الأسماء من الشيت --</option>';
                 });
         }
 
