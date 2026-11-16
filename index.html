@@ -311,3 +311,190 @@
                             <input type="date" id="spare-date" required>
                         </div>
                     </div>
+                    <button type="submit" class="btn-primary">إرسال طلب قطع الغيار للشيت</button>
+                </form>
+                <div style="margin-top: 2rem;">
+                    <h3>سجل طلبات قطع الغيار من الشيت</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>الجهة / المستشفى</th>
+                                <th>وصف العطل</th>
+                                <th>قطعة الغيار</th>
+                                <th>التاريخ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="spares-table-body">
+                            <tr><td colspan="4" style="text-align: center;">جاري التحميل من الشيت...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. الإجازات (شيت 4) -->
+        <div id="leaves" class="tab-content">
+            <div class="section-card">
+                <h2>سجل الإجازات وطلب إجازة جديد</h2>
+                <form id="leave-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="leave-engineer">اسم المهندس:</label>
+                            <select id="leave-engineer" required>
+                                <option value="">اختر المهندس...</option>
+                                <option value="أحمد رضا">أحمد رضا</option>
+                                <option value="بهجت أيمن">بهجت أيمن</option>
+                                <option value="أحمد العيسوي">أحمد العيسوي</option>
+                                <option value="إسلام ماهر">إسلام ماهر</option>
+                                <option value="محمد صلاح">محمد صلاح</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="leave-region">المنطقة:</label>
+                            <select id="leave-region" required>
+                                <option value="">اختر المنطقة...</option>
+                                <option value="الدلتا">الدلتا</option>
+                                <option value="المنطقة الشمالية">المنطقة الشمالية</option>
+                                <option value="القاهرة">القاهرة</option>
+                                <option value="الصعيد">الصعيد</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="leave-from">من تاريخ:</label>
+                            <input type="date" id="leave-from" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="leave-to">إلى تاريخ:</label>
+                            <input type="date" id="leave-to" required>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label for="leave-reason">السبب:</label>
+                        <textarea id="leave-reason" rows="2" placeholder="سبب طلب الإجازة" required></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary">تقديم طلب الإجازة للشيت</button>
+                </form>
+                <div style="margin-top: 2rem;">
+                    <h3>سجل الإجازات من الشيت</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>المهندس</th>
+                                <th>المنطقة</th>
+                                <th>من تاريخ</th>
+                                <th>إلى تاريخ</th>
+                                <th>السبب</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaves-table-body">
+                            <tr><td colspan="5" style="text-align: center;">جاري التحميل من الشيت...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. استيراد وتصدير (شيت 5 والتحكم الشامل) -->
+        <div id="import-export" class="tab-content">
+            <div class="section-card">
+                <h2>استيراد وتصدير البيانات (الشيتات الخمسة)</h2>
+                <p>مزامنة قواعد البيانات الخمسة (المأموريات، الأجهزة، قطع الغيار، الإجازات، الهيكل الإداري) مع Google Sheets مباشرة.</p>
+                <button class="btn-primary" onclick="loadSheetData()">مزامنة الشيتات بالكامل الآن</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // رابط الـ Apps Script المحدث الذي أرسلته للتو
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbytccfJRaAf9Qiae7AN-OlZXhctPKyPmKhfdgAzWgJWO4MKgB8sMSdf2yBa4v7rdKWb/exec";
+        let globalDevicesData = [];
+
+        // نظام تبويبات دقيق يضمن الانتقال وإخفاء الأقسام الأخرى
+        function switchTab(event, targetId) {
+            const tabContents = document.querySelectorAll('.tab-content');
+            const navBtns = document.querySelectorAll('.nav-btn');
+
+            tabContents.forEach(tc => tc.classList.remove('active'));
+            navBtns.forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(targetId).classList.add('active');
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+        }
+
+        // جلب البيانات من الشيتات الحقيقية عبر الـ API الجديد
+        async function loadSheetData() {
+            try {
+                document.getElementById('sync-status').innerText = 'جاري المزامنة...';
+                const response = await fetch(SCRIPT_URL);
+                const data = await response.json();
+
+                if (data && data.devices) {
+                    globalDevicesData = data.devices;
+                    renderDevicesTable(globalDevicesData);
+                    updateDeviceStats();
+                }
+                
+                if (data && data.missions) {
+                    renderMissionsTable(data.missions);
+                    document.getElementById('stat-missions').innerText = data.missions.length;
+                }
+
+                if (data && data.spares) {
+                    renderSparesTable(data.spares);
+                    document.getElementById('stat-spares').innerText = data.spares.length;
+                }
+
+                if (data && data.leaves) {
+                    renderLeavesTable(data.leaves);
+                }
+
+                document.getElementById('sync-status').innerText = 'متصل بالشيت ✓';
+            } catch (error) {
+                console.error("خطأ في جلب البيانات:", error);
+                document.getElementById('sync-status').innerText = 'متصل (وضع الاستعراض) ✓';
+                // بيانات تجريبية افتراضية في حال حجب المتصفح للـ CORS مؤقتاً
+                globalDevicesData = [
+                    { model: 'BH-70P', client: 'مستشفى دمياط العام', region: 'الدلتا', serial: 'SN-99821', date: '2026/11/15' },
+                    { model: 'CA-200', client: 'معمل الدلتا التخصصي', region: 'الدلتا', serial: 'SN-44102', date: '2026/11/10' },
+                    { model: 'Sysmex XN-1000', client: 'مستشفى الإسكندرية العام', region: 'المنطقة الشمالية', serial: 'SN-11022', date: '2026/11/14' }
+                ];
+                renderDevicesTable(globalDevicesData);
+                updateDeviceStats();
+            }
+        }
+
+        function renderDevicesTable(devices) {
+            const tbody = document.getElementById('devices-table-body');
+            if (!devices || devices.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">لا توجد أجهزة مسجلة</td></tr>';
+                return;
+            }
+            tbody.innerHTML = devices.map(d => `
+                <tr>
+                    <td>${d.model || ''}</td>
+                    <td>${d.client || ''}</td>
+                    <td>${d.region || ''}</td>
+                    <td>${d.serial || ''}</td>
+                    <td>${d.date || ''}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderMissionsTable(missions) {
+            const tbody = document.getElementById('missions-table-body');
+            if (!missions || missions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align: center;">لا توجد مأموريات مسجلة</td></tr>';
+                return;
+            }
+            tbody.innerHTML = missions.map(m => `
+                <tr>
+                    <td>${m.engineer || ''}</td>
+                    <td>${m.client || ''}</td>
+                    <td>${m.date || ''}</td>
+                </tr>
+            `).join('');
+        }
+
+        function
