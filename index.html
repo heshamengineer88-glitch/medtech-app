@@ -7,7 +7,7 @@
     <style>
         body { font-family: Tahoma, sans-serif; background-color: #f4f7f6; margin: 0; padding: 0; color: #333; }
         
-        /* شاشة تسجيل الدخول */
+        /* شاشة تسجيل الدخول وتحديد الصلاحيات */
         #login-screen { display: flex; justify-content: center; align-items: center; height: 100vh; background: #1e293b; position: fixed; top: 0; left: 0; width: 100%; z-index: 9999; }
         .login-card { background: #fff; padding: 30px; border-radius: 10px; width: 100%; max-width: 380px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); text-align: center; }
         .login-card h2 { margin-bottom: 5px; color: #1e293b; }
@@ -15,7 +15,7 @@
         .login-card button { width: 100%; padding: 10px; background: #007bff; color: #fff; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 15px; margin-top: 10px; }
         .login-card button:hover { background: #0056b3; }
 
-        /* واجهة البرنامج الرئيسية (مخفية لحين تسجيل الدخول) */
+        /* واجهة البرنامج الرئيسية */
         #main-app-container { display: none; }
 
         .header { background: #1e293b; color: #fff; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
@@ -44,39 +44,38 @@
 </head>
 <body>
 
-    <!-- 1. شاشة تسجيل الدخول الترحيبية -->
+    <!-- 1. شاشة تسجيل الدخول وتحديد دور المستخدم والصلاحية -->
     <div id="login-screen">
         <div class="login-card">
             <h2>MedTech FSM</h2>
-            <p style="color: #666; font-size: 13px; margin-bottom: 20px;">إدارة الصيانة الميدانية للأجهزة الطبية</p>
+            <p style="color: #666; font-size: 13px; margin-bottom: 20px;">نظام إدارة الصيانة الميدانية والأجهزة الطبية</p>
             
-            <input type="text" id="usernameInput" placeholder="اسم المستخدم أو الكود الوظيفي" value="هشام عاصم" />
+            <input type="text" id="usernameInput" placeholder="اسم المستخدم أو الكود" value="أحمد العيسوي" />
             <select id="roleInput">
-                <option value="manager">مدير عام (مشرف)</option>
-                <option value="engineer">مهندس صيانة ميداني</option>
+                <option value="engineer">مهندس صيانة (يرى منطقته فقط)</option>
+                <option value="supervisor">مشرف منطقة (يرى مهندسي منطقته)</option>
+                <option value="manager">مدير عام (يرى كل المناطق)</option>
             </select>
-            <input type="password" id="pinInput" placeholder="كود الدخول السريع (مثال: 1111)" value="1111" />
+            <input type="password" id="pinInput" placeholder="كود الدخول (مثال: 1111)" value="1111" />
             
             <button onclick="handleLogin()">تسجيل الدخول</button>
             <div style="margin-top: 15px; font-size: 11px; color: #888;">[🔄 متصل بقاعدة بيانات Google Sheets ✓]</div>
         </div>
     </div>
 
-    <!-- 2. واجهة البرنامج الرئيسية الكاملة (تظهر بعد الدخول) -->
+    <!-- 2. واجهة البرنامج الرئيسية -->
     <div id="main-app-container">
-        <!-- رأس التطبيق -->
         <div class="header">
             <div>
                 <h2 style="margin: 0; font-size: 18px;">MedTech FSM</h2>
-                <small style="color: #aaa;">إدارة الصيانة الميدانية والأجهزة الطبية</small>
+                <small id="userRoleBadge" style="color: #38bdf8; font-weight: bold;"></small>
             </div>
             <div>
-                <span id="loggedUserName" style="font-size: 14px; margin-left: 10px;">هشام عاصم (مدير عام)</span>
+                <span id="loggedUserName" style="font-size: 14px; margin-left: 10px;"></span>
                 <span onclick="handleLogout()" style="color: #ff4d4d; cursor: pointer; font-size: 13px; font-weight: bold;">[خروج]</span>
             </div>
         </div>
 
-        <!-- شريط التنقل بين الصفحات -->
         <div class="nav-tabs">
             <button onclick="switchTab('dashboard')" class="active" id="btn-dashboard">لوحة المتابعة</button>
             <button onclick="switchTab('missions')" id="btn-missions">المأموريات اليومية</button>
@@ -93,14 +92,14 @@
                 <div class="kpi-grid">
                     <div class="kpi-card" onclick="toggleMissionDetails()">
                         <span>إجمالي المأموريات</span>
-                        <strong style="color: #28a745;">95</strong>
+                        <strong style="color: #28a745;" id="kpiMissions">95</strong>
                         <div id="missionDetailsBox" style="display: none; margin-top: 8px; font-size: 11px; text-align: right; border-top: 1px dashed #eee; padding-top: 6px; color: #444;">
                             • زيارات دورية منتظمة: 82<br>• بلاغات أعطال طارئة: 13
                         </div>
                     </div>
                     <div class="kpi-card" onclick="toggleRegionDetails()">
                         <span>الأجهزة المسجلة</span>
-                        <strong>1470</strong>
+                        <strong id="kpiDevices">1470</strong>
                         <div id="regionDetailsBox" style="display: none; margin-top: 8px; font-size: 11px; text-align: right; border-top: 1px dashed #eee; padding-top: 6px; color: #444;">
                             • المنطقة الشمالية (الإسكندرية، مطروح، البحيرة): 620 جهازاً<br>• منطقة الدلتا (الدقهلية، الشرقية، كفر الشيخ، إلخ): 850 جهازاً
                         </div>
@@ -119,9 +118,9 @@
                         <div id="globalSearchResults" style="display: none; background: #fff; border: 1px solid #ccc; max-height: 150px; overflow-y: auto; border-radius: 0 0 5px 5px; font-size: 13px; margin-top: 2px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);"></div>
                     </div>
 
-                    <!-- قسم متابعة أداء المهندسين (للمشرفين والمديرين فقط) -->
-                    <div id="supervisorEngineersSection" style="background: #f9f9f9; padding: 12px; border-radius: 6px; border: 1px solid #dcdcdc;">
-                        <h4 style="font-size: 14px; color: #333; margin: 0 0 10px 0; border-bottom: 1px solid #eee; padding-bottom: 4px;">👨‍💻 متابعة أداء المهندسين (مخصص للمشرفين والمديرين)</h4>
+                    <!-- قسم متابعة أداء المهندسين (يظهر للمشرف والمدير العام فقط) -->
+                    <div id="supervisorEngineersSection" style="background: #f9f9f9; padding: 12px; border-radius: 6px; border: 1px solid #dcdcdc; display: none;">
+                        <h4 id="perfSectionTitle" style="font-size: 14px; color: #333; margin: 0 0 10px 0; border-bottom: 1px solid #eee; padding-bottom: 4px;">👨‍💻 متابعة أداء المهندسين</h4>
                         <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px;">
                             <div>
                                 <label style="font-size: 12px; display: block; margin-bottom: 3px;">اختر المهندس:</label>
@@ -155,10 +154,10 @@
                 </div>
 
                 <div class="table-container">
-                    <h3 style="font-size: 16px; margin-top: 0; margin-bottom: 15px; color: #333;">أحدث المأموريات الجارية</h3>
+                    <h3 style="font-size: 16px; margin-top: 0; margin-bottom: 15px; color: #333;" id="tableTitle">أحدث المأموريات الجارية</h3>
                     <table>
                         <thead><tr><th>التاريخ</th><th>المهندس</th><th>العميل / المعمل</th><th>الجهاز</th><th>نوع الزيارة</th><th>الحالة</th></tr></thead>
-                        <tbody>
+                        <tbody id="missionsTableBody">
                             <tr><td>2026-11-16</td><td>أحمد العيسوي</td><td>مستشفى مطروح العام</td><td>Phototron HC80</td><td>زيارة دورية</td><td><span style="color: #28a745;">🟢 في الموعد</span></td></tr>
                             <tr><td>2026-11-15</td><td>محمد صلاح</td><td>معمل أطلس</td><td>CA-200</td><td>عطل طارئ</td><td><span style="color: #dc3545;">🔴 متأخر</span></td></tr>
                         </tbody>
@@ -235,33 +234,42 @@
     </div>
 
     <script>
-        // دالة تسجيل الدخول وإظهار التطبيق الرئيسي
+        // دالة تسجيل الدخول والتحكم بصلاحيات العرض (مهندس، مشرف، مدير عام)
         function handleLogin() {
-            const name = document.getElementById('usernameInput').value || "هشام عاصم";
+            const name = document.getElementById('usernameInput').value || "المستخدم";
             const role = document.getElementById('roleInput').value;
             
-            document.getElementById('loggedUserName').innerText = name + (role === 'manager' ? ' (مدير عام)' : ' (مهندس ميداني)');
+            document.getElementById('loggedUserName').innerText = name;
             
-            // إخفاء شاشة الدخول وإظهار البرنامج
+            const badge = document.getElementById('userRoleBadge');
+            const supSection = document.getElementById('supervisorEngineersSection');
+            const tableTitle = document.getElementById('tableTitle');
+
+            if (role === 'engineer') {
+                badge.innerText = "[صلاحية: مهندس صيانة - يرى منطقته فقط]";
+                supSection.style.display = 'none'; // المهندس لا يرى أداء زملائه
+                tableTitle.innerText = "مأموريات منطقتي الخاصة";
+            } else if (role === 'supervisor') {
+                badge.innerText = "[صلاحية: مشرف منطقة - يرى مهندسي منطقته]";
+                supSection.style.display = 'block';
+                document.getElementById('perfSectionTitle').innerText = "👨‍💻 متابعة أداء مهندسي المنطقة";
+                tableTitle.innerText = "مأموريات وتقارير مهندسي المنطقة";
+            } else {
+                badge.innerText = "[صلاحية: مدير عام - رؤية شاملة لكل المناطق]";
+                supSection.style.display = 'block';
+                document.getElementById('perfSectionTitle').innerText = "👨‍💻 متابعة أداء مهندسي الجمهورية (جميع المناطق)";
+                tableTitle.innerText = "أحدث المأموريات الجارية بجميع المناطق";
+            }
+            
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('main-app-container').style.display = 'block';
-
-            // إذا كان المستخدم مهندساً عادياً، نقوم بإخفاء قسم تقييم المهندسين المخصص للمشرفين فقط
-            const supervisorSection = document.getElementById('supervisorEngineersSection');
-            if (role === 'engineer') {
-                supervisorSection.style.display = 'none';
-            } else {
-                supervisorSection.style.display = 'block';
-            }
         }
 
-        // دالة تسجيل الخروج والعودة لشاشة الدخول
         function handleLogout() {
             document.getElementById('main-app-container').style.display = 'none';
             document.getElementById('login-screen').style.display = 'flex';
         }
 
-        // تنقل الصفحات
         function switchTab(sectionId) {
             document.querySelectorAll('.app-section').forEach(sec => sec.classList.remove('active'));
             document.querySelectorAll('.nav-tabs button').forEach(btn => btn.classList.remove('active'));
@@ -327,11 +335,10 @@
 
             resultDiv.style.display = 'block';
             resultDiv.innerHTML = `
-                <b>المهندس:</b> ${eng}<br>
-                <b>فترة المتابعة المخصصة:</b> من ${start} إلى ${end}<br>
-                <b>إجمالي الزيارات الدورية المنفذة:</b> مطابق للسجلات الشهرية<br>
-                <b>بلاغات الأعطال المُعالجة:</b> مطابق لتقارير المنطقة التشغيلية<br>
-                <b>مؤشر الالتزام:</b> في الموعد السليم (🟢)
+                <b>المهندس المختار:</b> ${eng}<br>
+                <b>فترة المتابعة:</b> من ${start} إلى ${end}<br>
+                <b>الزيارات الدورية المنفذة:</b> مطابقة لسجلات المنطقة<br>
+                <b>الأعطال والمعالجات:</b> تم إنجاز المهام في المواعيد المحددة (🟢)
             `;
         }
     </script>
