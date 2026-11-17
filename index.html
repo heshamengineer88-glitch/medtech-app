@@ -1,188 +1,167 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="theme-color" content="#0284c7" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="MedTech FSM" />
-  <link id="dynamicManifest" rel="manifest" />
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='40' fill='%230284c7'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-family='Arial, sans-serif' font-weight='bold' font-size='84'%3EM%2B%3C/text%3E%3C/svg%3E" />
-  <title>MedTech FSM - إدارة صيانة الأجهزة الطبية والمعملية</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    body { font-family: 'Cairo', sans-serif; background-color: #f1f5f9; }
-    .tab-active { border-bottom: 3px solid #0284c7; color: #0284c7; font-weight: 700; }
-  </style>
-  <script>
-    (function() {
-      const iconSvg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%230284c7'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-family='Arial, sans-serif' font-weight='bold' font-size='220'%3EM%2B%3C/text%3E%3C/svg%3E";
-      const manifestObj = {
-        name: "MedTech FSM - إدارة صيانة الأجهزة الطبية",
-        short_name: "MedTech FSM",
-        start_url: window.location.origin + "/",
-        scope: window.location.origin + "/",
-        display: "standalone",
-        orientation: "portrait",
-        background_color: "#0f172a",
-        theme_color: "#0284c7",
-        dir: "rtl",
-        lang: "ar",
-        icons: [
-          { src: iconSvg, sizes: "192x192", type: "image/svg+xml", purpose: "any maskable" },
-          { src: iconSvg, sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" }
-        ]
-      };
-      const blob = new Blob([JSON.stringify(manifestObj)], { type: "application/manifest+json" });
-      document.getElementById("dynamicManifest").setAttribute("href", URL.createObjectURL(blob));
+import React, { useState, useEffect } from 'react';
 
-      if ("serviceWorker" in navigator) {
-        const swCode = "self.addEventListener('install', e => self.skipWaiting()); self.addEventListener('activate', e => self.clients.claim()); self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => caches.match(e.request))));";
-        const swBlob = new Blob([swCode], { type: "application/javascript" });
-        navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(() => {});
-      }
-    })();
-  </script>
-</head>
-<body class="text-slate-800">
+// رابط الـ Google Apps Script الذي أرسلته
+const API_URL = "https://script.google.com/macros/s/AKfycbzC_p1uhBpZkgFZBL7JGtE9ug7MB8tOimDt835DeEgmFwh__GbqSGpyyrB4NlYrOjYN5w/exec";
 
-  <!-- LOGIN SCREEN -->
-  <div id="loginScreen" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-sky-950 to-slate-900 p-4">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 text-center">
-      <div class="w-16 h-16 bg-sky-100 text-sky-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-3xl font-extrabold">M+</div>
-      <h1 class="text-2xl font-extrabold text-slate-900">MedTech FSM</h1>
-      <p class="text-sm text-slate-500 mt-1 mb-4">منظومة إدارة صيانة الأجهزة الطبية والمعملية</p>
-      
-      <div id="syncBadgeLogin" class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 mb-5">
-        <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-        <span>جاري مزامنة البيانات من Google Sheets...</span>
+export default function App() {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  
+  // حالة البيانات المستلمة من الشيتات
+  const [engineers, setEngineers] = useState([]);
+  const [missions, setMissions] = useState([]);
+  const [devices, setDevices] = useState([]);
+  const [spareParts, setSpareParts] = useState([]);
+  const [vacations, setVacations] = useState([]);
+
+  // حالة تسجيل الدخول برقم الكود
+  const [loginCode, setLoginCode] = useState('');
+  const [currentUser, setCurrentUser] = useState(null);
+
+  // جلب البيانات عند فتح التطبيق
+  useEffect(() => {
+    fetch(API_URL)
+      .then(res => res.json())
+      .then(data => {
+        console.log("تم استلام البيانات بنجاح:", data);
+        setEngineers(data["المهندسين"] || []);
+        setMissions(data["المأموريات اليومية"] || []);
+        setDevices(data["الأجهزة والعملاء"] || []);
+        setSpareParts(data["طلبات قطع الغيار"] || []);
+        setVacations(data["الإجازات"] || []);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("خطأ في جلب البيانات:", err);
+        setError("تعذر سحب البيانات من Google Sheets، تأكد من الاتصال أو الرابط.");
+        setLoading(false);
+      });
+  }, []);
+
+  // دالة تسجيل الدخول باستخدام رقم الدخول الموجود في شيت المهندسين
+  const handleLogin = (e) => {
+    e.preventDefault();
+    const foundUser = engineers.find(eng => String(eng.الكود || eng.رقم_الدخول || eng.Code) === String(loginCode));
+    if (foundUser) {
+      setCurrentUser(foundUser);
+    } else {
+      alert("رقم الدخول غير صحيح، يرجى مراجعة شيت المهندسين.");
+    }
+  };
+
+  if (loading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', fontFamily: 'Cairo, sans-serif' }}>
+        <h2>جاري تحميل بيانات MedTech FSM من Google Sheets...</h2>
       </div>
+    );
+  }
 
-      <div class="text-right mb-4">
-        <label class="block text-sm font-bold text-slate-700 mb-1">اختر المستخدم</label>
-        <select id="userSelect" class="w-full border border-slate-300 rounded-xl p-3 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-sky-500"></select>
+  if (error) {
+    return (
+      <div style={{ padding: '20px', color: 'red', fontFamily: 'Cairo, sans-serif', textAlign: 'center' }}>
+        <h2>{error}</h2>
       </div>
+    );
+  }
 
-      <div class="text-right mb-6">
-        <label class="block text-sm font-bold text-slate-700 mb-1">كود الدخول السري (4 أرقام)</label>
-        <input id="pinInput" type="password" inputmode="numeric" maxlength="4" placeholder="••••" onkeydown="if(event.key==='Enter') handleLogin()" class="w-full border border-slate-300 rounded-xl p-3 text-center text-2xl tracking-widest bg-slate-50 focus:outline-none focus:ring-2 focus:ring-sky-500" />
-      </div>
-
-      <button onclick="handleLogin()" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 rounded-xl shadow-lg transition">تسجيل الدخول</button>
-      <p id="loginError" class="text-red-600 text-sm font-semibold mt-3 hidden">كود الدخول غير صحيح! جرب مرة أخرى.</p>
-
-      <button id="installPwaBtn" onclick="triggerInstallPWA()" class="hidden w-full mt-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl shadow transition text-sm">📲 تثبيت التطبيق على الهاتف</button>
-    </div>
-  </div>
-
-  <!-- MAIN APP -->
-  <div id="mainApp" class="hidden min-h-screen flex flex-col">
-    <header class="bg-slate-900 text-white shadow-md">
-      <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 bg-sky-500 rounded-xl flex items-center justify-center font-extrabold text-lg">M+</div>
-          <div>
-            <h1 class="font-bold text-lg leading-tight">MedTech FSM</h1>
-            <p class="text-xs text-slate-400">إدارة الصيانة الميدانية والأجهزة الطبية</p>
-          </div>
-        </div>
-        <div class="flex items-center gap-3">
-          <button onclick="syncFromGoogleSheets(true)" id="syncHeaderBtn" title="تحديث البيانات من Google Sheets" class="bg-emerald-700 hover:bg-emerald-600 text-xs px-3 py-2 rounded-lg font-bold transition flex items-center gap-1.5">
-            <span>🔄</span>
-            <span id="syncStatusText">متصل بالشيت</span>
+  // إذا لم يتم تسجيل الدخول بعد
+  if (!currentUser) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#f4f6f9', fontFamily: 'Cairo, sans-serif' }}>
+        <form onSubmit={handleLogin} style={{ background: 'white', padding: '30px', borderRadius: '10px', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', width: '350px', textAlign: 'center' }}>
+          <h2 style={{ color: '#1e293b', marginBottom: '20px' }}>MedTech FSM</h2>
+          <p style={{ color: '#64748b', marginBottom: '20px' }}>الرجاء إدخال رقم الدخول الخاص بك</p>
+          <input 
+            type="password" 
+            placeholder="رقم الدخول (الكود)" 
+            value={loginCode} 
+            onChange={(e) => setLoginCode(e.target.value)}
+            style={{ width: '100%', padding: '10px', marginBottom: '15px', borderRadius: '5px', border: '1px solid #cbd5e1', textAlign: 'center', fontSize: '16px' }}
+          />
+          <button type="submit" style={{ width: '100%', padding: '10px', background: '#0284c7', color: 'white', border: 'none', borderRadius: '5px', fontSize: '16px', cursor: 'pointer' }}>
+            دخول للنظام
           </button>
-          <div class="text-left">
-            <p id="currentUserName" class="text-sm font-bold text-sky-300"></p>
-            <p id="currentUserRole" class="text-xs text-slate-400"></p>
+        </form>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ fontFamily: 'Cairo, sans-serif', background: '#f8fafc', minHeight: '100vh', direction: 'rtl' }}>
+      {/* الشريط العلوي */}
+      <header style={{ background: '#1e293b', color: 'white', padding: '15px 30px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div>
+          <h1 style={{ margin: 0, fontSize: '20px' }}>MedTech FSM - إدارة الصيانة الميدانية</h1>
+          <span style={{ fontSize: '14px', color: '#94a3b8' }}>مرحباً، {currentUser.الاسم || currentUser.Name} ({currentUser.الوظيفة || currentUser.Role})</span>
+        </div>
+        <button onClick={() => setCurrentUser(null)} style={{ background: '#ef4444', color: 'white', border: 'none', padding: '8px 15px', borderRadius: '5px', cursor: 'pointer' }}>
+          [خروج]
+        </button>
+      </header>
+
+      {/* لوحة المؤشرات (Dashboard Cards) */}
+      <div style={{ padding: '30px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '30px' }}>
+          <div style={{ background: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', textAlign: 'center' }}>
+            <h4 style={{ margin: '0 0 10px 0', color: '#64748b' }}>إجمالي المأموريات</h4>
+            <h2 style={{ margin: 0, color: '#0284c7' }}>{missions.length}</h2>
           </div>
-          <button onclick="logout()" class="bg-slate-800 hover:bg-red-600 text-xs px-3 py-2 rounded-lg transition">خروج</button>
+          <div style={{ background: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', textAlign: 'center' }}>
+            <h4 style={{ margin: '0 0 10px 0', color: '#64748b' }}>الأجهزة المسجلة</h4>
+            <h2 style={{ margin: 0, color: '#059669' }}>{devices.length}</h2>
+          </div>
+          <div style={{ background: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', textAlign: 'center' }}>
+            <h4 style={{ margin: '0 0 10px 0', color: '#64748b' }}>طلبات قطع الغيار</h4>
+            <h2 style={{ margin: 0, color: '#d97706' }}>{spareParts.length}</h2>
+          </div>
+          <div style={{ background: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', textAlign: 'center' }}>
+            <h4 style={{ margin: '0 0 10px 0', color: '#64748b' }}>طلبات الإجازات</h4>
+            <h2 style={{ margin: 0, color: '#7c3aed' }}>{vacations.length}</h2>
+          </div>
+        </div>
+
+        {/* جدول أحدث المأموريات */}
+        <div style={{ background: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+          <h3 style={{ marginTop: 0, color: '#1e293b' }}>أحدث المأموريات الجارية</h3>
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'right' }}>
+              <thead>
+                <tr style={{ background: '#f1f5f9', color: '#334155' }}>
+                  <th style={{ padding: '12px', borderBottom: '1px solid #e2e8f0' }}>التاريخ</th>
+                  <th style={{ padding: '12px', borderBottom: '1px solid #e2e8f0' }}>المهندس</th>
+                  <th style={{ padding: '12px', borderBottom: '1px solid #e2e8f0' }}>العميل / المعمل</th>
+                  <th style={{ padding: '12px', borderBottom: '1px solid #e2e8f0' }}>الجهاز</th>
+                  <th style={{ padding: '12px', borderBottom: '1px solid #e2e8f0' }}>نوع الزيارة</th>
+                  <th style={{ padding: '12px', borderBottom: '1px solid #e2e8f0' }}>الحالة</th>
+                </tr>
+              </thead>
+              <tbody>
+                {missions.map((mission, index) => (
+                  <tr key={index} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                    <td style={{ padding: '12px' }}>{mission.التاريخ || mission.Date || '-'}</td>
+                    <td style={{ padding: '12px' }}>{mission.المهندس || mission.Engineer || '-'}</td>
+                    <td style={{ padding: '12px' }}>{mission.العميل || mission.Client || '-'}</td>
+                    <td style={{ padding: '12px' }}>{mission.الجهاز || mission.Device || '-'}</td>
+                    <td style={{ padding: '12px' }}>{mission.نوع_الزيارة || mission.VisitType || '-'}</td>
+                    <td style={{ padding: '12px' }}>
+                      <span style={{ 
+                        padding: '4px 10px', 
+                        borderRadius: '4px', 
+                        fontSize: '12px',
+                        background: mission.الحالة === 'مكتملة' ? '#dcfce7' : '#fef9c3',
+                        color: mission.الحالة === 'مكتملة' ? '#166534' : '#854d0e'
+                      }}>
+                        {mission.الحالة || mission.Status || 'قيد التنفيذ'}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
-
-      <nav class="bg-white text-slate-600 border-b border-slate-200 overflow-x-auto">
-        <div class="max-w-7xl mx-auto px-4 flex gap-6 text-sm whitespace-nowrap">
-          <button onclick="switchTab('dashboard')" id="tab-dashboard" class="py-3 tab-active">لوحة المتابعة</button>
-          <button onclick="switchTab('visits')" id="tab-visits" class="py-3">المأموريات اليومية</button>
-          <button onclick="switchTab('devices')" id="tab-devices" class="py-3">الأجهزة والعملاء</button>
-          <button onclick="switchTab('parts')" id="tab-parts" class="py-3">طلبات قطع الغيار</button>
-          <button onclick="switchTab('leaves')" id="tab-leaves" class="py-3">الإجازات</button>
-          <button onclick="switchTab('excel')" id="tab-excel" class="py-3 text-emerald-700 font-bold">📊 استيراد وتصدير Excel</button>
-        </div>
-      </nav>
-    </header>
-
-    <main class="max-w-7xl mx-auto w-full px-4 py-6 flex-1">
-      <!-- TAB: DASHBOARD -->
-      <section id="view-dashboard" class="space-y-6">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4" id="kpiCards"></div>
-
-        <!-- ALERTS BANNER FOR UPCOMING / OVERDUE PM VISITS -->
-        <div id="pmAlertsBox" class="hidden bg-amber-50 border-r-4 border-amber-500 rounded-xl p-5 shadow-sm space-y-3">
-          <div class="flex items-center justify-between">
-            <h2 class="font-extrabold text-amber-900 text-base flex items-center gap-2">
-              <span>⚠️ تنبيهات الزيارات الدورية القادمة (متبقي 7 أيام أو أقل / متأخرة)</span>
-              <span id="pmAlertsCount" class="bg-amber-600 text-white text-xs px-2.5 py-0.5 rounded-full">0</span>
-            </h2>
-            <button onclick="switchTab('devices')" class="text-xs font-bold text-amber-800 underline">عرض كل الأجهزة ←</button>
-          </div>
-          <div class="overflow-x-auto bg-white rounded-lg border border-amber-200">
-            <table class="w-full text-xs text-right">
-              <thead class="bg-amber-100/70 text-amber-950 font-bold">
-                <tr>
-                  <th class="p-2.5">العميل / المعمل</th>
-                  <th class="p-2.5">الجهاز (S/N)</th>
-                  <th class="p-2.5">المنطقة</th>
-                  <th class="p-2.5">تاريخ آخر زيارة</th>
-                  <th class="p-2.5">الزيارة القادمة (+30 يوم)</th>
-                  <th class="p-2.5">حالة التنبيه</th>
-                </tr>
-              </thead>
-              <tbody id="pmAlertsBody" class="divide-y divide-amber-100"></tbody>
-            </table>
-          </div>
-        </div>
-
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
-          <h2 class="font-bold text-lg mb-4 text-slate-800">أحدث المأموريات الجارية</h2>
-          <div class="overflow-x-auto">
-            <table class="w-full text-sm text-right">
-              <thead class="bg-slate-50 text-slate-600 border-b">
-                <tr>
-                  <th class="p-3">التاريخ</th>
-                  <th class="p-3">المهندس</th>
-                  <th class="p-3">العميل / المعمل</th>
-                  <th class="p-3">الجهاز</th>
-                  <th class="p-3">نوع الزيارة</th>
-                  <th class="p-3">الحالة</th>
-                </tr>
-              </thead>
-              <tbody id="dashboardVisitsBody" class="divide-y"></tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <!-- TAB: VISITS -->
-      <section id="view-visits" class="hidden space-y-4">
-        <div class="flex flex-wrap justify-between items-center gap-3">
-          <h2 class="font-bold text-xl">سجل المأموريات اليومية</h2>
-          <div class="flex flex-wrap items-center gap-2">
-            <select id="visitEngFilter" onchange="renderVisits()" class="border rounded-xl px-3 py-2 text-sm bg-white font-semibold">
-              <option value="all">كل المهندسين</option>
-            </select>
-            <select id="visitClientFilter" onchange="renderVisits()" class="border rounded-xl px-3 py-2 text-sm bg-white font-semibold">
-              <option value="all">كل العملاء / المعامل</option>
-            </select>
-            <button onclick="openVisitModal()" class="bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded-xl text-sm font-bold">+ إضافة مأمورية جديدة</button>
-          </div>
-        </div>
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto">
-          <table class="w-full text-sm text-right">
-            <thead class="bg-slate-800 text-white">
-              <tr>
-                <th class="p-3">التاريخ</th>
-                <th class="p-3">المنطقة</th>
-                <th class="p-3">المهندس</th>
+    </div>
+  );
+}
