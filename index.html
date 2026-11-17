@@ -93,7 +93,7 @@
       box-shadow: var(--shadow);
     }
 
-    .form-group { margin-bottom: 14px; }
+    .form-group { margin-bottom: 14px; position: relative; }
     label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--text); margin-bottom: 6px; }
     input, select, textarea {
       width: 100%;
@@ -123,24 +123,122 @@
     }
     .btn-accent { background: var(--accent); }
 
+    /* كروت الأجهزة التفاعلية */
     .device-card {
       background: white;
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 14px;
+      border-radius: 14px;
+      padding: 14px 16px;
       margin-bottom: 10px;
-      border-right: 4px solid var(--primary);
+      border-right: 5px solid var(--primary);
       display: flex;
       flex-direction: column;
       gap: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+    .device-card:active {
+      transform: scale(0.98);
+      background-color: #f8fafc;
+    }
+    .device-card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.12);
     }
 
     .badge { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: 700; }
     .badge-primary { background: var(--primary-light); color: var(--primary-dark); }
+    .badge-success { background: #dcfce7; color: #166534; }
+    .badge-warning { background: #fef3c7; color: #92400e; }
 
+    /* شريط البحث مع الإكمال التلقائي */
     .search-box { position: relative; margin-bottom: 14px; }
     .search-box i { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
     .search-box input { padding-right: 40px; background: white; }
+
+    .autocomplete-list {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      left: 0;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin-top: 4px;
+      max-height: 220px;
+      overflow-y: auto;
+      z-index: 60;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      display: none;
+    }
+    .autocomplete-item {
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      border-bottom: 1px solid #f1f5f9;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .autocomplete-item:hover { background-color: var(--primary-light); color: var(--primary-dark); }
+
+    /* تفاصيل الجهاز المنبثقة */
+    .details-modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.6);
+      z-index: 1000;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .details-sheet {
+      background: white;
+      width: 100%;
+      max-width: 500px;
+      border-radius: 24px 24px 0 0;
+      padding: 22px 20px 30px;
+      max-height: 85vh;
+      overflow-y: auto;
+      animation: slideUp 0.25s ease-out;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+    .details-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .details-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .detail-item {
+      background: #f8fafc;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid #edf2f7;
+    }
+    .detail-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    .detail-val {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text);
+      word-break: break-word;
+    }
 
     /* أزرار تثبيت التطبيق للموبايل */
     .install-bar {
@@ -225,6 +323,69 @@
     <span id="loadingText">جاري المعالجة...</span>
   </div>
 
+  <!-- نافذة تفاصيل الجهاز التفاعلية -->
+  <div id="deviceModal" class="details-modal" onclick="closeDeviceDetails(event)">
+    <div class="details-sheet" onclick="event.stopPropagation()">
+      <div class="details-header">
+        <div>
+          <h3 id="modalClientName" style="font-size: 1.15rem; font-weight: 800; color: var(--primary-dark);">اسم العميل</h3>
+          <span id="modalDeviceModelBadge" class="badge badge-primary">موديل الجهاز</span>
+        </div>
+        <button onclick="closeDeviceModalDirect()" style="background:none; border:none; font-size: 1.4rem; color: var(--text-muted); cursor:pointer;">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="details-grid">
+        <div class="detail-item">
+          <div class="detail-label"><i class="fa-solid fa-hashtag"></i> كود الجهاز</div>
+          <div class="detail-val" id="modalDevCode">-</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label"><i class="fa-solid fa-barcode"></i> الرقم التسلسلي (S/N)</div>
+          <div class="detail-val" id="modalDevSerial">-</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label"><i class="fa-solid fa-industry"></i> الشركة المصنعة</div>
+          <div class="detail-val" id="modalDevMaker">-</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label"><i class="fa-solid fa-layer-group"></i> التصنيف</div>
+          <div class="detail-val" id="modalDevCategory">-</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label"><i class="fa-solid fa-map-location-dot"></i> المنطقة</div>
+          <div class="detail-val" id="modalDevRegion">-</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label"><i class="fa-solid fa-city"></i> المحافظة / المدينة</div>
+          <div class="detail-val" id="modalDevCity">-</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label"><i class="fa-solid fa-file-contract"></i> نوع العقد</div>
+          <div class="detail-val" id="modalDevContract">-</div>
+        </div>
+        <div class="detail-item">
+          <div class="detail-label"><i class="fa-regular fa-calendar-xmark"></i> انتهاء الضمان</div>
+          <div class="detail-val" id="modalDevWarranty">-</div>
+        </div>
+        <div class="detail-item" style="grid-column: span 2;">
+          <div class="detail-label"><i class="fa-solid fa-heart-pulse"></i> حالة الجهاز</div>
+          <div class="detail-val" id="modalDevStatus">-</div>
+        </div>
+        <div class="detail-item" style="grid-column: span 2; background: #f0fdf4; border-color: #bbf7d0;">
+          <div class="detail-label" style="color: #166534;"><i class="fa-solid fa-clock-rotate-left"></i> آخر زيارة / مأمورية مسجلة</div>
+          <div class="detail-val" id="modalDevLastVisit" style="color: #15803d; font-size: 0.88rem;">لا توجد مأموريات مسجلة مؤخراً</div>
+        </div>
+      </div>
+
+      <button class="btn" id="btnQuickMission" onclick="startMissionForThisDevice()">
+        <i class="fa-solid fa-route"></i>
+        <span>تسجيل مأمورية لهذا الجهاز فوراً</span>
+      </button>
+    </div>
+  </div>
+
   <!-- نافذة تثبيت الآيفون المنبثقة -->
   <div id="iosModal" class="modal-overlay">
     <div class="modal-card">
@@ -265,7 +426,6 @@
         </div>
 
         <div class="card">
-          <!-- القائمة المنسدلة للمهندسين بصلاحياتهم -->
           <div class="form-group">
             <label>اختر المهندس</label>
             <select id="loginUserSelect">
@@ -283,7 +443,6 @@
             <span>دخول النظام</span>
           </button>
 
-          <!-- أزرار التثبيت على الهاتف -->
           <div class="install-bar">
             <button class="install-btn android" id="androidInstallBtn" onclick="installAndroidApp()">
               <i class="fa-brands fa-android"></i>
@@ -297,7 +456,7 @@
         </div>
       </section>
 
-      <!-- 2. شاشة الأجهزة والعملاء -->
+      <!-- 2. شاشة الأجهزة والعملاء (التفاعلية والبحث المتقدم) -->
       <section id="viewDevices" class="view-section">
         <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom: 12px;">
           <h2 style="font-size: 1.15rem; font-weight: 700;">الأجهزة والعملاء</h2>
@@ -306,8 +465,9 @@
           </button>
         </div>
 
+        <!-- إضافة جهاز جديد -->
         <div id="addDeviceCard" class="card" style="display: none; border-color: var(--accent);">
-          <h3 style="font-size: 0.95rem; margin-bottom: 10px; color: var(--accent);">إضافة جهاز جديد</h3>
+          <h3 style="font-size: 0.95rem; margin-bottom: 10px; color: var(--accent);">إضافة جهاز جديد للشيت</h3>
           <div class="form-group">
             <label>اسم العميل / المعمل</label>
             <input type="text" id="devClient" />
@@ -315,6 +475,14 @@
           <div class="form-group">
             <label>اسم الجهاز / الموديل</label>
             <input type="text" id="devModel" />
+          </div>
+          <div class="form-group">
+            <label>الشركة المصنعة</label>
+            <input type="text" id="devMaker" placeholder="A.M.S / NEO MEDICA / HUMAN GMBH" />
+          </div>
+          <div class="form-group">
+            <label>التصنيف</label>
+            <input type="text" id="devCategory" placeholder="AUTO CHEMISTRY / HEMATOLOGY" />
           </div>
           <div class="form-group">
             <label>الرقم التسلسلي (S/N)</label>
@@ -333,12 +501,18 @@
             <label>المحافظة / المدينة</label>
             <input type="text" id="devCity" />
           </div>
+          <div class="form-group">
+            <label>نوع العقد</label>
+            <input type="text" id="devContract" placeholder="ضمان / عقد شامل / زيارات" />
+          </div>
           <button class="btn btn-accent" onclick="submitNewDevice()">حفظ في الشيت</button>
         </div>
 
+        <!-- شريط البحث السريع والذكي مع قائمة الإكمال التلقائي -->
         <div class="search-box">
           <i class="fa-solid fa-magnifying-glass"></i>
-          <input type="text" id="deviceSearchInput" placeholder="بحث بالمعمل، السيريال، أو الموديل..." oninput="handleSearch()" />
+          <input type="text" id="deviceSearchInput" placeholder="بحث بالمعمل، المحافظة، المنطقة، السيريال، أو الموديل..." oninput="handleSearch()" autocomplete="off" />
+          <div id="autocompleteList" class="autocomplete-list"></div>
         </div>
 
         <div id="devicesCount" style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;"></div>
@@ -479,10 +653,11 @@
 
     let cachedDevices = [];
     let cachedEngineers = [];
+    let cachedMissions = [];
     let activeUser = null;
     let deferredPrompt = null;
+    let selectedDeviceForMission = null;
 
-    // استماع لحدث التثبيت على أندرويد
     window.addEventListener("beforeinstallprompt", (e) => {
       e.preventDefault();
       deferredPrompt = e;
@@ -494,7 +669,6 @@
       if (document.getElementById("lvStart")) document.getElementById("lvStart").value = today;
       if (document.getElementById("lvEnd")) document.getElementById("lvEnd").value = today;
 
-      // سحب قائمة المهندسين لتغذية القائمة المنسدلة
       loadEngineersList();
 
       const savedUser = localStorage.getItem("medtech_active_user");
@@ -503,6 +677,13 @@
         setupSessionUI();
         loadDevices();
       }
+
+      // إغلاق قائمة الإكمال التلقائي عند الضغط خارجها
+      document.addEventListener("click", (e) => {
+        if (!e.target.closest(".search-box")) {
+          document.getElementById("autocompleteList").style.display = "none";
+        }
+      });
     });
 
     function showLoading(msg = "جاري التحميل...") {
@@ -521,7 +702,7 @@
       if (el) el.classList.add("active");
     }
 
-    // ================= تغذية القائمة المنسدلة بالمهندسين والصلاحيات =================
+    // ================= قائمة المهندسين =================
     async function loadEngineersList() {
       const select = document.getElementById("loginUserSelect");
       try {
@@ -529,11 +710,11 @@
         const data = await res.json();
         if (data.status === "success" && data.engineers) {
           cachedEngineers = data.engineers;
+          if (data.missions) cachedMissions = data.missions;
           select.innerHTML = '<option value="">-- اختر المهندس من القائمة --</option>';
           data.engineers.forEach(eng => {
             const opt = document.createElement("option");
             opt.value = eng["كود المهندس"] || eng["الاسم بالكامل"];
-            // عرض الاسم وبجانبه الصلاحية
             opt.innerText = `${eng["الاسم بالكامل"]} (${eng["الدور / الصلاحية"]})`;
             select.appendChild(opt);
           });
@@ -548,14 +729,8 @@
       const username = document.getElementById("loginUserSelect").value.trim();
       const pin = document.getElementById("loginPin").value.trim();
 
-      if (!username) {
-        alert("يرجى اختيار اسم المهندس من القائمة المنسدلة");
-        return;
-      }
-      if (!pin) {
-        alert("يرجى إدخال كود الدخول (PIN)");
-        return;
-      }
+      if (!username) { alert("يرجى اختيار اسم المهندس من القائمة"); return; }
+      if (!pin) { alert("يرجى إدخال كود الدخول (PIN)"); return; }
 
       showLoading("جاري التحقق من الصلاحيات...");
 
@@ -593,16 +768,11 @@
       }
     }
 
-    // ================= تثبيت التطبيق على الهواتف =================
+    // ================= تثبيت التطبيق =================
     function installAndroidApp() {
       if (deferredPrompt) {
         deferredPrompt.prompt();
-        deferredPrompt.userChoice.then((choiceResult) => {
-          if (choiceResult.outcome === "accepted") {
-            console.log("تمت الموافقة على تثبيت التطبيق");
-          }
-          deferredPrompt = null;
-        });
+        deferredPrompt.userChoice.then(() => { deferredPrompt = null; });
       } else {
         alert("لتثبيت التطبيق على أندرويد:\nاضغط على قائمة المتصفح (⋮) ثم اختر 'تثبيت التطبيق' أو 'إضافة إلى الشاشة الرئيسية'.");
       }
@@ -616,7 +786,7 @@
       document.getElementById("iosModal").style.display = "none";
     }
 
-    // ================= الأجهزة والعملاء =================
+    // ================= الأجهزة والعملاء التفاعلية =================
     async function loadDevices(forceRefresh = false) {
       const local = localStorage.getItem("medtech_devices_cache");
       if (local && !forceRefresh) {
@@ -625,7 +795,7 @@
         return;
       }
 
-      showLoading("جاري مزامنة بيانات الأجهزة...");
+      showLoading("جاري مزامنة بيانات الأجهزة والمأموريات...");
       try {
         const res = await fetch(`${API_URL}?action=getAll`);
         const data = await res.json();
@@ -633,6 +803,7 @@
 
         if (data.status === "success" && data.devices) {
           cachedDevices = data.devices;
+          if (data.missions) cachedMissions = data.missions;
           localStorage.setItem("medtech_devices_cache", JSON.stringify(cachedDevices));
           renderDevices(cachedDevices);
         }
@@ -656,32 +827,152 @@
 
       document.getElementById("devicesCount").innerText = `عدد الأجهزة المتاحة: ${filtered.length}`;
 
-      filtered.slice(0, 60).forEach(d => {
+      if (filtered.length === 0) {
+        container.innerHTML = "<p style='text-align:center; padding:20px; color:#94a3b8;'>لا توجد أجهزة مطابقة للبحث</p>";
+        return;
+      }
+
+      filtered.slice(0, 80).forEach((d) => {
         const card = document.createElement("div");
         card.className = "device-card";
+        card.onclick = () => showDeviceDetails(d);
         card.innerHTML = `
-          <div style="display:flex; justify-content:space-between; font-weight:700;">
-            <span>${d["اسم العميل / المعمل"] || ""}</span>
-            <span class="badge badge-primary">${d["اسم الجهاز / الموديل"] || ""}</span>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-weight:700; color:var(--text);">${d["اسم العميل / المعمل"] || "عميل غير محدد"}</span>
+            <span class="badge badge-primary">${d["اسم الجهاز / الموديل"] || "جهاز"}</span>
           </div>
-          <div style="font-size:0.8rem; color:var(--text-muted); display:flex; gap:12px; margin-top:4px;">
+          <div style="font-size:0.8rem; color:var(--text-muted); display:flex; flex-wrap:wrap; gap:12px; margin-top:4px;">
             <span><i class="fa-solid fa-barcode"></i> S/N: ${d["الرقم التسلسلي (S/N)"] || "غير مسجل"}</span>
             <span><i class="fa-solid fa-location-dot"></i> ${d["المنطقة"] || ""} - ${d["المحافظة / المدينة"] || ""}</span>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px; font-size:0.75rem;">
+            <span style="color:#0284c7; font-weight:600;"><i class="fa-solid fa-circle-info"></i> اضغط لعرض التفاصيل الكاملة</span>
+            <span class="badge ${d["حالة الجهاز"] === "يحتاج صيانة" ? "badge-warning" : "badge-success"}">${d["حالة الجهاز"] || "يعمل بكفاءة"}</span>
           </div>
         `;
         container.appendChild(card);
       });
     }
 
+    // ================= نافذة تفاصيل الجهاز والتاريخ والربط =================
+    function showDeviceDetails(device) {
+      selectedDeviceForMission = device;
+
+      document.getElementById("modalClientName").innerText = device["اسم العميل / المعمل"] || "غير محدد";
+      document.getElementById("modalDeviceModelBadge").innerText = device["اسم الجهاز / الموديل"] || "موديل غير محدد";
+
+      document.getElementById("modalDevCode").innerText = device["كود الجهاز"] || "غير متوفر";
+      document.getElementById("modalDevSerial").innerText = device["الرقم التسلسلي (S/N)"] || "غير متوفر";
+      document.getElementById("modalDevMaker").innerText = device["الشركة المصنعة"] || "غير مسجل";
+      document.getElementById("modalDevCategory").innerText = device["التصنيف"] || "غير مسجل";
+      document.getElementById("modalDevRegion").innerText = device["المنطقة"] || "غير مسجل";
+      document.getElementById("modalDevCity").innerText = device["المحافظة / المدينة"] || "غير مسجل";
+      document.getElementById("modalDevContract").innerText = device["نوع العقد"] || "ضمان";
+      document.getElementById("modalDevWarranty").innerText = device["تاريخ انتهاء الضمان / العقد"] || "ساري";
+      document.getElementById("modalDevStatus").innerText = device["حالة الجهاز"] || "يعمل بكفاءة";
+
+      // البحث عن آخر مأمورية لهذا الجهاز أو العميل
+      const serial = String(device["الرقم التسلسلي (S/N)"] || "").trim().toLowerCase();
+      const client = String(device["اسم العميل / المعمل"] || "").trim().toLowerCase();
+
+      let lastVisit = null;
+      if (cachedMissions && cachedMissions.length > 0) {
+        for (let i = cachedMissions.length - 1; i >= 0; i--) {
+          const m = cachedMissions[i];
+          const mSerial = String(m["الرقم التسلسلي (S/N)"] || "").trim().toLowerCase();
+          const mClient = String(m["اسم العميل / المعمل"] || "").trim().toLowerCase();
+          if ((serial && mSerial === serial) || (client && mClient === client)) {
+            lastVisit = m;
+            break;
+          }
+        }
+      }
+
+      if (lastVisit) {
+
+        document.getElementById("modalDevLastVisit").innerText = `بتاريخ: ${lastVisit["التاريخ"] || ""} | نوع الزيارة: ${lastVisit["نوع الزيارة"] || ""} (${lastVisit["الحالة"] || ""}) - المهندس: ${lastVisit["اسم المهندس"] || ""}`;
+      } else {
+        document.getElementById("modalDevLastVisit").innerText = "لا توجد زيارات مسجلة لهذا الجهاز مؤخراً في الشيت";
+      }
+
+      document.getElementById("deviceModal").style.display = "flex";
+    }
+
+    function closeDeviceDetails(e) {
+      if (e.target.id === "deviceModal") {
+        document.getElementById("deviceModal").style.display = "none";
+      }
+    }
+
+    function closeDeviceModalDirect() {
+      document.getElementById("deviceModal").style.display = "none";
+    }
+
+    function startMissionForThisDevice() {
+      if (!selectedDeviceForMission) return;
+      closeDeviceModalDirect();
+
+      // الانتقال إلى شاشة المأموريات
+      const missionTabNav = document.querySelectorAll(".nav-item")[1];
+      switchTab("viewMissions", missionTabNav);
+
+      // تعبئة البيانات تلقائياً
+      document.getElementById("msClient").value = selectedDeviceForMission["اسم العميل / المعمل"] || "";
+      document.getElementById("msModel").value = selectedDeviceForMission["اسم الجهاز / الموديل"] || "";
+      document.getElementById("msSerial").value = selectedDeviceForMission["الرقم التسلسلي (S/N)"] || "";
+      document.getElementById("msCity").value = selectedDeviceForMission["المحافظة / المدينة"] || "";
+    }
+
+    // ================= البحث المتقدم والإكمال التلقائي =================
     function handleSearch() {
       const q = document.getElementById("deviceSearchInput").value.trim().toLowerCase();
-      if (!q) { renderDevices(cachedDevices); return; }
+      const autoList = document.getElementById("autocompleteList");
 
+      if (!q) {
+        autoList.style.display = "none";
+        renderDevices(cachedDevices);
+        return;
+      }
+
+      // البحث الشامل: العميل، المحافظة، المنطقة، السيريال، أو الموديل
       const results = cachedDevices.filter(d => 
         String(d["اسم العميل / المعمل"] || "").toLowerCase().includes(q) ||
+        String(d["المحافظة / المدينة"] || "").toLowerCase().includes(q) ||
+        String(d["المنطقة"] || "").toLowerCase().includes(q) ||
         String(d["الرقم التسلسلي (S/N)"] || "").toLowerCase().includes(q) ||
         String(d["اسم الجهاز / الموديل"] || "").toLowerCase().includes(q)
       );
+
+      // بناء قائمة الإكمال التلقائي (أول 6 اقتراحات فريدة)
+      autoList.innerHTML = "";
+      const suggestions = [];
+
+      results.forEach(d => {
+        const client = d["اسم العميل / المعمل"];
+        const city = d["المحافظة / المدينة"];
+        const model = d["اسم الجهاز / الموديل"];
+        if (client && !suggestions.includes(client)) suggestions.push(client);
+        if (city && !suggestions.includes(city) && city.toLowerCase().includes(q)) suggestions.push(city);
+        if (model && !suggestions.includes(model) && model.toLowerCase().includes(q)) suggestions.push(model);
+      });
+
+      if (suggestions.length > 0) {
+        suggestions.slice(0, 6).forEach(text => {
+          const item = document.createElement("div");
+          item.className = "autocomplete-item";
+          item.innerHTML = `<span><i class="fa-solid fa-magnifying-glass" style="margin-left:6px; color:#94a3b8;"></i> ${text}</span> <small style="color:#64748b;">اختيار</small>`;
+          item.onclick = () => {
+            document.getElementById("deviceSearchInput").value = text;
+            autoList.style.display = "none";
+            handleSearch();
+          };
+          autoList.appendChild(item);
+        });
+        autoList.style.display = "block";
+      } else {
+        autoList.style.display = "none";
+      }
+
       renderDevices(results);
     }
 
@@ -694,9 +985,12 @@
       const payload = {
         clientName: document.getElementById("devClient").value.trim(),
         model: document.getElementById("devModel").value.trim(),
+        manufacturer: document.getElementById("devMaker").value.trim(),
+        category: document.getElementById("devCategory").value.trim(),
         serialNumber: document.getElementById("devSerial").value.trim(),
         region: document.getElementById("devRegion").value,
         city: document.getElementById("devCity").value.trim(),
+        contractType: document.getElementById("devContract").value.trim() || "ضمان",
         status: "يعمل بكفاءة"
       };
 
@@ -705,7 +999,7 @@
         return;
       }
 
-      showLoading("جاري حفظ الجهاز...");
+      showLoading("جاري حفظ الجهاز في الشيت...");
       await executeRemote("saveDevice", payload);
       hideLoading();
       toggleAddDeviceForm();
@@ -737,6 +1031,7 @@
         alert("تم تسجيل المأمورية في الشيت بنجاح!");
         document.getElementById("msClient").value = "";
         document.getElementById("msIssue").value = "";
+        loadDevices(true);
       }
     }
 
@@ -784,6 +1079,7 @@
       }
     }
 
+    // ================= محرك الإرسال المركزي =================
     async function executeRemote(action, dataObj) {
       try {
         const encoded = encodeURIComponent(JSON.stringify(dataObj));
