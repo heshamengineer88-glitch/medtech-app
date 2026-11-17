@@ -3,356 +3,304 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MedTech FSM - إدارة الخدمة الميدانية</title>
-    <!-- Tailwind CSS -->
+    <title>MedTech FSM - إدارة صيانة الأجهزة الطبية والمعملية</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- PWA Manifest Support -->
-    <link rel="manifest" href="data:application/manifest+json,{
-        'name': 'MedTech FSM',
-        'short_name': 'MedTech',
-        'start_url': '.',
-        'display': 'standalone',
-        'background_color': '#f8fafc',
-        'theme_color': '#2563eb'
-    }">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
-        body { font-family: 'Cairo', sans-serif; background-color: #f8fafc; }
-        .app-card { transition: all 0.2s ease-in-out; }
-        .app-card:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+        body {
+            font-family: 'Cairo', sans-serif;
+        }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 pb-24">
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
 
-    <!-- LOGIN SCREEN (Secure Login) -->
-    <div id="loginScreen" class="fixed inset-0 bg-blue-600 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl text-center">
-            <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
-                <i class="fa-solid fa-user-shield"></i>
-            </div>
-            <h2 class="text-xl font-bold text-slate-800 mb-1">تسجيل الدخول</h2>
-            <p class="text-xs text-slate-400 mb-6">نظام إدارة الخدمة الميدانية - هشام عاصم</p>
-            <form onsubmit="handleLogin(event)" class="space-y-4 text-right">
-                <div>
-                    <label class="block text-xs text-slate-500 mb-1">الرقم الوظيفي / الكود</label>
-                    <input type="password" id="pinCode" required placeholder="أدخل رقم الدخول..." class="w-full p-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none text-center tracking-widest font-bold">
+    <!-- شاشة تسجيل الدخول -->
+    <div id="loginScreen" class="flex-grow flex items-center justify-center p-4">
+        <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md border border-slate-100 space-y-6">
+            <div class="text-center">
+                <div class="inline-flex items-center justify-center w-14 h-14 bg-sky-50 text-sky-600 rounded-xl font-bold text-xl mb-3 shadow-sm">
+                    +M
                 </div>
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold shadow transition">دخول النظام</button>
+                <h1 class="text-2xl font-bold text-slate-900">MedTech FSM</h1>
+                <p class="text-sm text-slate-500 mt-1">منظومة إدارة صيانة الأجهزة الطبية والمعملية</p>
+                <div class="inline-flex items-center gap-1.5 mt-3 px-3 py-1 bg-emerald-50 text-emerald-700 text-xs font-semibold rounded-full border border-emerald-100">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    متصل بـ Google Sheets ✓
+                </div>
+            </div>
+
+            <form onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">اختر المستخدم</label>
+                    <select id="userSelect" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 focus:bg-white transition-all">
+                        <option value="هشام عاصم (مدير عام - الكل)">هشام عاصم (مدير عام - الكل)</option>
+                        <option value="م. احمد البطاوي (مشرف منطقة - القاهرة الكبرى)">م. احمد البطاوي (مشرف منطقة - القاهرة الكبرى)</option>
+                        <option value="م. احمد العيسوي (مشرف منطقة - المنطقة الشمالية)">م. احمد العيسوي (مشرف منطقة - المنطقة الشمالية)</option>
+                        <option value="م. احمد حسيب (مشرف منطقة - الصعيد)">م. احمد حسيب (مشرف منطقة - الصعيد)</option>
+                        <option value="م. أحمد رضا (مشرف منطقة - منطقة الدلتا)">م. أحمد رضا (مشرف منطقة - منطقة الدلتا)</option>
+                        <option value="م. محمد عبد العظيم (مشرف منطقة - الصعيد)">م. محمد عبد العظيم (مشرف منطقة - الصعيد)</option>
+                        <option value="م. كريم خالد (مهندس صيانة - القاهرة الكبرى)">م. كريم خالد (مهندس صيانة - القاهرة الكبرى)</option>
+                        <option value="م. أندرو نبيل (مهندس صيانة - القاهرة الكبرى)">م. أندرو نبيل (مهندس صيانة - القاهرة الكبرى)</option>
+                        <option value="م. محمد كريم (مهندس صيانة - القاهرة الكبرى)">م. محمد كريم (مهندس صيانة - القاهرة الكبرى)</option>
+                        <option value="م. شريف عادل (مهندس صيانة - القاهرة الكبرى)">م. شريف عادل (مهندس صيانة - القاهرة الكبرى)</option>
+                        <option value="م. محمد صلاح (مهندس صيانة - منطقة الدلتا)">م. محمد صلاح (مهندس صيانة - منطقة الدلتا)</option>
+                        <option value="م. عماد عباس (مهندس صيانة - منطقة الدلتا)">م. عماد عباس (مهندس صيانة - منطقة الدلتا)</option>
+                        <option value="م. حسام صلاح (مهندس صيانة - منطقة الدلتا)">م. حسام صلاح (مهندس صيانة - منطقة الدلتا)</option>
+                        <option value="م. بهجت ايمن (مهندس صيانة - منطقة الدلتا)">م. بهجت ايمن (مهندس صيانة - منطقة الدلتا)</option>
+                        <option value="م. مهند ايمن (مهندس صيانة - منطقة الدلتا)">م. مهند ايمن (مهندس صيانة - منطقة الدلتا)</option>
+                        <option value="م. محمد خالد (مهندس صيانة - منطقة الدلتا)">م. محمد خالد (مهندس صيانة - منطقة الدلتا)</option>
+                        <option value="م. اسلام ماهر (مشرف منطقة - المنطقة الشمالية)">م. اسلام ماهر (مشرف منطقة - المنطقة الشمالية)</option>
+                        <option value="م. خالد الضوي (مهندس صيانة - المنطقة الشمالية)">م. خالد الضوي (مهندس صيانة - المنطقة الشمالية)</option>
+                        <option value="م. مينا فوزي (مهندس صيانة - المنطقة الشمالية)">م. مينا فوزي (مهندس صيانة - المنطقة الشمالية)</option>
+                        <option value="م. روماني ميلاد (مهندس صيانة - الصعيد)">م. روماني ميلاد (مهندس صيانة - الصعيد)</option>
+                        <option value="م. احمد عبد المنعم (مهندس صيانة - الصعيد)">م. احمد عبد المنعم (مهندس صيانة - الصعيد)</option>
+                        <option value="م. محمد عبد الرحمن (مهندس صيانة - الصعيد)">م. محمد عبد الرحمن (مهندس صيانة - الصعيد)</option>
+                        <option value="م. محمود بكري (مهندس صيانة - الصعيد)">م. محمود بكري (مهندس صيانة - الصعيد)</option>
+                        <option value="د محمد عطية (مدير عام - الكل)">د محمد عطية (مدير عام - الكل)</option>
+                        <option value="د سعيد حسن (مدير عام - الكل)">د سعيد حسن (مدير عام - الكل)</option>
+                        <option value="م عدنان حسن (مهندس صيانة - الصعيد)">م عدنان حسن (مهندس صيانة - الصعيد)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-1.5">كود الدخول السري (4 أرقام)</label>
+                    <input type="password" maxlength="4" placeholder="••••" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-center tracking-widest text-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:bg-white transition-all">
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" id="rememberMe" class="w-4 h-4 text-sky-600 rounded border-slate-300 focus:ring-sky-500">
+                    <label for="rememberMe" class="text-xs text-slate-600 font-semibold cursor-pointer">تذكرني وتسجيل الدخول تلقائياً</label>
+                </div>
+
+                <button type="submit" class="w-full py-3 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-xl shadow-md transition-all">
+                    تسجيل الدخول
+                </button>
             </form>
+
+            <div class="pt-4 border-t border-slate-100 space-y-2">
+                <p class="text-xs font-semibold text-slate-600 text-center mb-2">تثبيت التطبيق على هاتفك:</p>
+                <div class="grid grid-cols-2 gap-2">
+                    <button type="button" id="installAndroidBtn" onclick="installAndroidApp()" class="flex items-center justify-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition-all border border-slate-200">
+                        <span>🤖</span> تثبيت أندرويد
+                    </button>
+                    <button type="button" onclick="showIosInstructions()" class="flex items-center justify-center gap-1.5 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition-all border border-slate-200">
+                        <span>🍏</span> تثبيت آيفون
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Top Header -->
-    <header class="bg-blue-600 text-white shadow-md sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-            <div class="flex items-center gap-2">
-                <span class="text-xs bg-blue-500 px-2 py-1 rounded-full border border-blue-400">
-                    <i class="fa-solid fa-user-shield ml-1"></i> هشام عاصم
-                </span>
-            </div>
-            <h1 class="text-lg font-bold flex items-center gap-2">
-                MedTech FSM <i class="fa-solid fa-laptop-medical"></i>
-            </h1>
+    <!-- لوحة التحكم الرئيسية -->
+    <div id="dashboardScreen" class="hidden flex-grow flex flex-col">
+        <header class="bg-white border-b border-slate-200 px-6 py-4 flex justify-between items-center shadow-sm">
             <div class="flex items-center gap-3">
-                <button onclick="installPWA()" id="installBtn" class="hidden text-xs bg-emerald-500 px-2.5 py-1 rounded-lg text-white" title="تثبيت التطبيق">
-                    <i class="fa-solid fa-download"></i> تثبيت
-                </button>
-                <button onclick="logout()" class="text-blue-200 hover:text-white transition" title="تسجيل الخروج">
-                    <i class="fa-solid fa-right-from-bracket"></i>
+                <div class="w-10 h-10 bg-sky-600 text-white rounded-xl flex items-center justify-center font-bold">M+</div>
+                <div>
+                    <h2 class="font-bold text-slate-900">MedTech FSM</h2>
+                    <p class="text-xs text-slate-500">إدارة الصيانة الميدانية والأجهزة الطبية</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-700 text-xs font-semibold rounded-full border border-emerald-100">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    متصل بـ Google Sheets ✓
+                </span>
+                <div class="text-left">
+                    <p class="text-sm font-bold text-slate-800" id="welcomeUser">هشام عاصم</p>
+                    <p class="text-xs text-slate-500" id="userRoleBadge">مدير عام | الكل</p>
+                </div>
+                <button onclick="handleLogout()" class="px-3 py-1.5 bg-rose-50 text-rose-600 hover:bg-rose-100 text-xs font-semibold rounded-xl transition-all">
+                    خروج
                 </button>
             </div>
-        </div>
-    </header>
+        </header>
 
-    <!-- Main Content Container -->
-    <main class="max-w-4xl mx-auto px-4 py-6">
+        <main class="flex-grow p-6 max-w-7xl mx-auto w-full">
+            <div class="flex flex-wrap gap-2 border-b border-slate-200 mb-6 pb-2">
+                <button onclick="switchTab('overview')" id="tab-overview" class="px-4 py-2 font-semibold text-sm rounded-lg bg-sky-600 text-white transition-all">لوحة المتابعة</button>
+                <button onclick="switchTab('missions')" id="tab-missions" class="px-4 py-2 font-semibold text-sm rounded-lg text-slate-600 hover:bg-slate-100 transition-all">المأموريات اليومية</button>
+                <button onclick="switchTab('devices')" id="tab-devices" class="px-4 py-2 font-semibold text-sm rounded-lg text-slate-600 hover:bg-slate-100 transition-all">الأجهزة والعملاء</button>
+                <button onclick="switchTab('parts')" id="tab-parts" class="px-4 py-2 font-semibold text-sm rounded-lg text-slate-600 hover:bg-slate-100 transition-all">طلبات قطع الغيار</button>
+                <button onclick="switchTab('vacations')" id="tab-vacations" class="px-4 py-2 font-semibold text-sm rounded-lg text-slate-600 hover:bg-slate-100 transition-all">الإجازات</button>
+                <button onclick="switchTab('excel')" id="tab-excel" class="px-4 py-2 font-semibold text-sm rounded-lg text-slate-600 hover:bg-slate-100 transition-all">📊 استيراد وتصدير Excel</button>
+            </div>
 
-        <!-- TAB 1: DEVICES SECTION -->
-        <section id="tab-devices" class="tab-content">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-bold text-slate-700 flex items-center gap-2">
-                    <i class="fa-solid fa-boxes-stacked text-blue-600"></i> دليل الأجهزة والعملاء
-                </h2>
-                <div class="flex gap-2">
-                    <button onclick="loadDevicesFromSheet()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 text-sm px-3 py-2 rounded-xl shadow transition" title="تحديث البيانات">
-                        <i class="fa-solid fa-rotate"></i>
-                    </button>
-                    <button onclick="toggleAddForm()" class="bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-2 rounded-xl shadow transition flex items-center gap-1">
-                        <i class="fa-solid fa-plus"></i> جهاز جديد
-                    </button>
+            <!-- لوحة المتابعة -->
+            <div id="content-overview" class="tab-content space-y-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                        <h3 class="text-slate-500 text-xs font-semibold">إجمالي المأموريات</h3>
+                        <p class="text-3xl font-bold text-slate-900 mt-2">0</p>
+                    </div>
+                    <div onclick="openDevicesModal()" class="bg-white p-5 rounded-2xl border border-sky-200 hover:border-sky-400 shadow-sm cursor-pointer transition-all hover:shadow-md group">
+                        <div class="flex justify-between items-start">
+                            <h3 class="text-sky-700 text-xs font-bold group-hover:text-sky-800">الأجهزة المسجلة (اضغط للتفاصيل)</h3>
+                            <span class="text-xs bg-sky-50 text-sky-600 px-2 py-0.5 rounded-full font-semibold">تفصيلي</span>
+                        </div>
+                        <p class="text-3xl font-bold text-sky-600 mt-2">1470</p>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                        <h3 class="text-slate-500 text-xs font-semibold">تنبيهات الزيارة الدورية</h3>
+                        <p class="text-3xl font-bold text-amber-600 mt-2">0</p>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                        <h3 class="text-slate-500 text-xs font-semibold">طلبات قطع الغيار</h3>
+                        <p class="text-3xl font-bold text-slate-900 mt-2">0</p>
+                    </div>
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                        <h3 class="text-slate-500 text-xs font-semibold">طلبات الإجازات</h3>
+                        <p class="text-3xl font-bold text-slate-900 mt-2">0</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <div class="px-6 py-4 border-b border-slate-200 font-bold text-slate-900">أحدث المأموريات الجارية</div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-right border-collapse">
+                            <thead>
+                                <tr class="bg-slate-50 text-slate-600 text-xs border-b border-slate-200">
+                                    <th class="px-6 py-3 font-semibold">التاريخ</th>
+                                    <th class="px-6 py-3 font-semibold">المهندس</th>
+                                    <th class="px-6 py-3 font-semibold">العميل / المعمل</th>
+                                    <th class="px-6 py-3 font-semibold">الجهاز</th>
+                                    <th class="px-6 py-3 font-semibold">نوع الزيارة</th>
+                                    <th class="px-6 py-3 font-semibold">الحالة</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-sm text-slate-700 divide-y divide-slate-100">
+                                <tr><td colspan="6" class="px-6 py-8 text-center text-slate-400">لا توجد مأموريات جارية حالياً</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
-            <!-- Add Form (Matches sheet structure strictly) -->
-            <div id="addDeviceForm" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-slate-200 mb-6 transition-all">
-                <h3 class="text-md font-bold mb-3 text-slate-600 border-b pb-2">إضافة جهاز جديد للشيت</h3>
-                <form onsubmit="saveDeviceToSheet(event)" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+            <!-- المأموريات اليومية -->
+            <div id="content-missions" class="tab-content hidden space-y-4">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex justify-between items-center">
                     <div>
-                        <label class="block text-slate-500 mb-1">اسم العميل / المعمل</label>
-                        <input type="text" id="clientName" required placeholder="مثال: مستشفى المنصورة الدولي" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                        <h3 class="font-bold text-lg text-slate-900">سجل المأموريات اليومية</h3>
+                        <p class="text-slate-500 text-sm">عرض مأموريات المهندسين حسب صلاحيات النطاق الجغرافي.</p>
                     </div>
+                    <button onclick="openMissionModal()" class="px-4 py-2 bg-sky-600 hover:bg-sky-700 text-white text-sm font-semibold rounded-xl transition-all">+ إضافة مأمورية جديدة</button>
+                </div>
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                    <table class="w-full text-right border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 text-slate-600 text-xs border-b border-slate-200">
+                                <th class="px-6 py-3 font-semibold">التاريخ</th>
+                                <th class="px-6 py-3 font-semibold">المنطقة</th>
+                                <th class="px-6 py-3 font-semibold">المهندس</th>
+                                <th class="px-6 py-3 font-semibold">العميل</th>
+                                <th class="px-6 py-3 font-semibold">الجهاز (S/N)</th>
+                                <th class="px-6 py-3 font-semibold">نوع الزيارة</th>
+                                <th class="px-6 py-3 font-semibold">الوصف</th>
+                                <th class="px-6 py-3 font-semibold">الحالة</th>
+                                <th class="px-6 py-3 font-semibold">إجراء</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-sm text-slate-700 divide-y divide-slate-100"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- باقي التبويبات -->
+            <div id="content-devices" class="tab-content hidden space-y-4">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                    <h3 class="font-bold text-lg mb-2">قائمة الأجهزة والعملاء</h3>
+                    <p class="text-slate-500 text-sm">أجهزة الـ In Vitro Diagnostics.</p>
+                </div>
+            </div>
+            <div id="content-parts" class="tab-content hidden space-y-4">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                    <h3 class="font-bold text-lg mb-2">طلبات قطع الغيار</h3>
+                    <p class="text-slate-500 text-sm">متابعة قطع الغيار حسب النطاق.</p>
+                </div>
+            </div>
+            <div id="content-vacations" class="tab-content hidden space-y-4">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                    <h3 class="font-bold text-lg mb-2">طلبات الإجازات</h3>
+                    <p class="text-slate-500 text-sm">متابعة الإجازات حسب النطاق.</p>
+                </div>
+            </div>
+            <div id="content-excel" class="tab-content hidden">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                    <h3 class="font-bold text-lg mb-2">أدوات استيراد وتصدير Excel</h3>
+                    <p class="text-slate-500 text-sm">مزامنة البيانات مع Google Sheets.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- نافذة إضافة مأمورية جديدة (مع البحث التلقائي للعميل وفلترة المهندسين) -->
+    <div id="missionModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden border border-slate-200">
+            <div class="px-6 py-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+                <h3 class="font-bold text-lg text-slate-900">إضافة مأمورية جديدة</h3>
+                <button onclick="closeMissionModal()" class="w-8 h-8 rounded-full bg-slate-200 hover:bg-slate-300 flex items-center justify-center font-bold text-slate-700 transition-all">×</button>
+            </div>
+            <div class="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-slate-500 mb-1">موديل الجهاز</label>
-                        <input type="text" id="deviceModel" required placeholder="مثال: CA-430" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-slate-500 mb-1">الرقم التسلسلي (S/N)</label>
-                        <input type="text" id="deviceSN" required placeholder="مثال: CA430TY00174" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-slate-500 mb-1">المنطقة</label>
-                        <select id="deviceRegion" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
-                            <option value="منطقة الدلتا">منطقة الدلتا</option>
-                            <option value="المنطقة الشمالية">المنطقة الشمالية</option>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">المنطقة</label>
+                        <select id="missionRegion" onchange="filterEngineersByRegion()" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-sky-500">
                             <option value="القاهرة الكبرى">القاهرة الكبرى</option>
+                            <option value="المنطقة الشمالية">المنطقة الشمالية</option>
+                            <option value="منطقة الدلتا">منطقة الدلتا</option>
                             <option value="الصعيد">الصعيد</option>
                         </select>
                     </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-slate-500 mb-1">المحافظة / المدينة</label>
-                        <input type="text" id="deviceCity" required placeholder="الدقهلية" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
-                    </div>
-                    <div class="md:col-span-2 flex justify-end gap-2 mt-2">
-                        <button type="button" onclick="toggleAddForm()" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-xl">إلغاء</button>
-                        <button type="submit" id="saveBtn" class="px-4 py-2 bg-blue-600 text-white rounded-xl shadow">حفظ الجهاز في الشيت</button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Search Bar -->
-            <div class="relative mb-4">
-                <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                </span>
-                <input type="text" id="searchInput" oninput="filterDevices()" placeholder="بحث بالمعمل، السيريال، أو الموديل..." class="w-full pr-10 pl-12 py-3 bg-white border border-slate-200 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
-                <button onclick="alert('تم تفعيل مسح الباركود')" class="absolute inset-y-0 left-0 flex items-center pl-3 text-blue-600 hover:text-blue-800" title="مسح باركود سريع">
-                    <i class="fa-solid fa-barcode text-lg"></i>
-                </button>
-            </div>
-
-            <!-- Stats Bar -->
-            <div class="mb-4 text-xs text-slate-500 font-semibold px-1">
-                إجمالي الأجهزة المتاحة: <span id="totalCount" class="text-blue-600 font-bold">0</span>
-            </div>
-
-            <!-- Devices Dynamic List Container -->
-            <div id="devicesContainer" class="space-y-3">
-                <div class="text-center py-8 text-slate-400">
-                    <i class="fa-solid fa-spinner fa-spin text-2xl mb-2"></i>
-                    <p>جاري استدعاء البيانات من جوجل شيتس...</p>
-                </div>
-            </div>
-        </section>
-
-        <!-- OTHER TABS -->
-        <section id="tab-missions" class="tab-content hidden">
-            <h2 class="text-xl font-bold text-slate-700 mb-4 flex items-center gap-2"><i class="fa-solid fa-clipboard-list text-blue-600"></i> إدارة المأموريات</h2>
-            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm text-center text-slate-500">قسم المأموريات والزيارات الميدانية.</div>
-        </section>
-        <section id="tab-parts" class="tab-content hidden">
-            <h2 class="text-xl font-bold text-slate-700 mb-4 flex items-center gap-2"><i class="fa-solid fa-gears text-blue-600"></i> قطع الغيار والمخزن</h2>
-            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm text-center text-slate-500">متابعة قطع الغيار والمكونات.</div>
-        </section>
-        <section id="tab-vacations" class="tab-content hidden">
-            <h2 class="text-xl font-bold text-slate-700 mb-4 flex items-center gap-2"><i class="fa-solid fa-calendar-days text-blue-600"></i> جدول الإجازات</h2>
-            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm text-center text-slate-500">إدارة طلبات الإجازات.</div>
-        </section>
-    </main>
-
-    <!-- Quick View Modal -->
-    <div id="quickViewModal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl">
-            <div class="flex justify-between items-center mb-4 border-b pb-2">
-                <h3 class="font-bold text-slate-800 text-lg">تفاصيل الجهاز السريعة</h3>
-                <button onclick="closeQuickView()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-            <div class="space-y-3 text-sm">
-                <div><span class="text-xs text-slate-400 block">اسم العميل</span><span id="modalClient" class="font-bold text-slate-700"></span></div>
-                <div><span class="text-xs text-slate-400 block">موديل الجهاز</span><span id="modalModel" class="font-bold text-blue-600"></span></div>
-                <div><span class="text-xs text-slate-400 block">الرقم التسلسلي (S/N)</span><span id="modalSN" class="font-bold text-slate-700"></span></div>
-                <div><span class="text-xs text-slate-400 block">المنطقة والمحافظة</span><span id="modalLocation" class="font-bold text-slate-700"></span></div>
-            </div>
-            <div class="mt-6">
-                <button onclick="closeQuickView()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-bold transition">إغلاق</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Bottom Navigation Bar -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-lg py-2 px-6 flex justify-around items-center z-40 text-xs">
-        <button onclick="switchTab('devices', this)" class="nav-btn flex flex-col items-center text-blue-600 font-bold transition">
-            <i class="fa-solid fa-laptop-medical text-lg mb-1"></i><span>الأجهزة</span>
-        </button>
-        <button onclick="switchTab('missions', this)" class="nav-btn flex flex-col items-center text-slate-400 hover:text-blue-600 transition">
-            <i class="fa-solid fa-clipboard-list text-lg mb-1"></i><span>المأموريات</span>
-        </button>
-        <button onclick="switchTab('parts', this)" class="nav-btn flex flex-col items-center text-slate-400 hover:text-blue-600 transition">
-            <i class="fa-solid fa-gears text-lg mb-1"></i><span>قطع الغيار</span>
-        </button>
-        <button onclick="switchTab('vacations', this)" class="nav-btn flex flex-col items-center text-slate-400 hover:text-blue-600 transition">
-            <i class="fa-solid fa-calendar-days text-lg mb-1"></i><span>الإجازات</span>
-        </button>
-    </nav>
-
-    <!-- JavaScript Core Logic -->
-    <script>
-        // رابط جوجل سكريبت المربوط بشيت الأجهزة الخاص بك
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxbaT2yaT-KiThZxZEYtNW3yQScb54b_YD8Vlo2FXI_VqmqUzK6qLXTXoL9eFQUSLBlZQ/exec";
-
-        let allDevices = [];
-
-        // التحقق من حالة الدخول عند فتح الصفحة
-        window.onload = function() {
-            if (localStorage.getItem('isLoggedIn') === 'true') {
-                document.getElementById('loginScreen').classList.add('hidden');
-                loadDevicesFromSheet();
-            }
-        };
-
-        function handleLogin(e) {
-            e.preventDefault();
-            const pin = document.getElementById('pinCode').value;
-            // الكود السري للدخول (1111)
-            if (pin === '1111') {
-                localStorage.setItem('isLoggedIn', 'true');
-                document.getElementById('loginScreen').classList.add('hidden');
-                loadDevicesFromSheet();
-            } else {
-                alert('كود الدخول غير صحيح');
-            }
-        }
-
-        function logout() {
-            localStorage.removeItem('isLoggedIn');
-            location.reload();
-        }
-
-        // جلب البيانات الحقيقية من Google Sheets
-        async function loadDevicesFromSheet() {
-            try {
-                const res = await fetch(SCRIPT_URL);
-                allDevices = await res.json();
-                renderDevices(allDevices);
-            } catch (err) {
-                console.error(err);
-                document.getElementById('devicesContainer').innerHTML = '<p class="text-center text-rose-500 py-4">تعذر جلب البيانات من الشيت، تأكد من الاتصال بالإنترنت.</p>';
-            }
-        }
-
-        // حفظ جهاز جديد مباشرة في جوجل شيت
-        async function saveDeviceToSheet(e) {
-            e.preventDefault();
-            const saveBtn = document.getElementById('saveBtn');
-            saveBtn.innerText = "جاري الحفظ بالشيت...";
-            saveBtn.disabled = true;
-
-            const newDevice = {
-                clientName: document.getElementById('clientName').value,
-                deviceModel: document.getElementById('deviceModel').value,
-                deviceSN: document.getElementById('deviceSN').value,
-                deviceRegion: document.getElementById('deviceRegion').value,
-                deviceCity: document.getElementById('deviceCity').value
-            };
-
-            try {
-                await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(newDevice)
-                });
-                alert('تم حفظ الجهاز في الشيت بنجاح!');
-                toggleAddForm();
-                document.getElementById('clientName').value = '';
-                document.getElementById('deviceModel').value = '';
-                document.getElementById('deviceSN').value = '';
-                document.getElementById('deviceCity').value = '';
-                loadDevicesFromSheet(); // تحديث القائمة فوراً
-            } catch (err) {
-                console.error(err);
-                alert('حدث خطأ أثناء الحفظ');
-            } finally {
-                saveBtn.innerText = "حفظ الجهاز في الشيت";
-                saveBtn.disabled = false;
-            }
-        }
-
-        function renderDevices(devices) {
-            const container = document.getElementById('devicesContainer');
-            document.getElementById('totalCount').innerText = devices.length;
-            
-            if(devices.length === 0) {
-                container.innerHTML = '<p class="text-center text-slate-400 py-4">لا توجد أجهزة مطابقة.</p>';
-                return;
-            }
-
-            container.innerHTML = devices.map(d => `
-                <div onclick="openQuickView('${d["اسم العميل"] || ''}', '${d["موديل الجهاز"] || ''}', '${d["الرقم التسلسلي (S/N)"] || ''}', '${d["المنطقة"] || ''} - ${d["المحافظة / المدينة"] || ''}')" 
-                     class="app-card bg-white p-4 rounded-2xl border-r-4 border-blue-600 border border-slate-200 shadow-sm cursor-pointer flex justify-between items-center">
                     <div>
-                        <h4 class="font-bold text-slate-800">${d["اسم العميل"] || 'بدون اسم'}</h4>
-                        <p class="text-xs text-slate-500 mt-1"><i class="fa-solid fa-location-dot text-rose-500"></i> ${d["المنطقة"] || ''} - ${d["المحافظة / المدينة"] || ''}</p>
-                    </div>
-                    <div class="text-left">
-                        <span class="bg-blue-50 text-blue-700 text-xs px-2.5 py-1 rounded-lg font-bold">${d["موديل الجهاز"] || ''}</span>
-                        <span class="block text-[11px] text-slate-400 mt-1">S/N: ${d["الرقم التسلسلي (S/N)"] || 'غير مسجل'}</span>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">التاريخ</label>
+                        <input type="date" id="missionDate" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-sky-500">
                     </div>
                 </div>
-            `).join('');
-        }
 
-        function filterDevices() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = allDevices.filter(d => 
-                (d["اسم العميل"] && String(d["اسم العميل"]).toLowerCase().includes(query)) ||
-                (d["الرقم التسلسلي (S/N)"] && String(d["الرقم التسلسلي (S/N)"]).toLowerCase().includes(query)) ||
-                (d["موديل الجهاز"] && String(d["موديل الجهاز"]).toLowerCase().includes(query))
-            );
-            renderDevices(filtered);
-        }
+                <!-- خانة المهندس (تفلتر حسب المنطقة) -->
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">المهندس / المشرف</label>
+                    <select id="missionEngineer" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-sky-500">
+                        <!-- تعبئة ديناميكية -->
+                    </select>
+                </div>
 
-        // PWA Install Prompt
-        let deferredPrompt;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            document.getElementById('installBtn').classList.remove('hidden');
-        });
+                <!-- خانة العميل مع بحث تلقائي (Auto-complete) -->
+                <div class="relative">
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">العميل / المعمل (ابحث بالاسم)</label>
+                    <input type="text" id="clientSearchInput" oninput="filterClientsDropdown()" placeholder="اكتب للبحث عن مستشفى أو معمل..." class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-sky-500">
+                    <div id="clientDropdownList" class="absolute z-10 w-full bg-white border border-slate-200 rounded-xl shadow-lg mt-1 max-h-40 overflow-y-auto hidden">
+                        <!-- نتائج البحث التلقائي -->
+                    </div>
+                </div>
 
-        function installPWA() {
-            if (deferredPrompt) {
-                deferredPrompt.prompt();
-                deferredPrompt.userChoice.then((choiceResult) => {
-                    if (choiceResult.outcome === 'accepted') {
-                        document.getElementById('installBtn').classList.add('hidden');
-                    }
-                    deferredPrompt = null;
-                });
-            }
-        }
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">نوع الجهاز</label>
+                        <select class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-sky-500">
+                            <option>أجهزة هيماتولوجي (6-part)</option>
+                            <option>أجهزة كيمياء</option>
+                            <option>أجهزة مناعة</option>
+                            <option>أجهزة تجلد (Coagulation)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">نوع الزيارة</label>
+                        <select class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-sky-500">
+                            <option>صيانة دورية</option>
+                            <option>عطل طارئ</option>
+                            <option>تركيب وتشغيل</option>
+                            <option>معايرة</option>
+                        </select>
+                    </div>
+                </div>
 
-        function switchTab(tabName, btnElement) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.getElementById('tab-' + tabName).classList.remove('hidden');
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('text-blue-600', 'font-bold');
-                btn.classList.add('text-slate-400');
-            });
-            btnElement.classList.remove('text-slate-400');
-            btnElement.classList.add('text-blue-600', 'font-bold');
-        }
-
-        function toggleAddForm() { document.getElementById('addDeviceForm').classList.toggle('hidden'); }
-        function openQuickView(client, model, sn, location) {
-            document.getElementById('modalClient').innerText = client;
-            document.getElementById('modalModel').innerText = model;
-            document.getElementById('modalSN').innerText = sn;
-            document.getElementById('modalLocation').innerText = location;
-            document.getElementById('quickViewModal').classList.remove('hidden');
-        }
-        function closeQuickView() { document.getElementById('quickViewModal').classList.add('hidden'); }
-    </script>
-</body>
-</html>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">وصف العطل / المطلوب</label>
+                    <textarea rows="3" placeholder="تفاصيل الزيارة..." class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-sky-500"></textarea>
+                </div>
+            </div>
+            <div class="px-6 py-3 bg-slate-50 border-t border-slate-200 flex justify-end gap-2">
+                <button onclick="closeMissionModal()" class="px-4 py-2 bg
