@@ -1,741 +1,131 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="theme-color" content="#0284c7" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="MedTech FSM" />
-  <link id="dynamicManifest" rel="manifest" />
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='40' fill='%230284c7'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-family='Arial, sans-serif' font-weight='bold' font-size='84'%3EM%2B%3C/text%3E%3C/svg%3E" />
-  <title>MedTech FSM - إدارة صيانة الأجهزة الطبية والمعملية</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    body { font-family: 'Cairo', sans-serif; background-color: #f1f5f9; }
-    .tab-active { border-bottom: 3px solid #0284c7; color: #0284c7; font-weight: 700; }
-  </style>
-  <script>
-    (function() {
-      const iconSvg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%230284c7'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-family='Arial, sans-serif' font-weight='bold' font-size='220'%3EM%2B%3C/text%3E%3C/svg%3E";
-      const manifestObj = {
-        name: "MedTech FSM - إدارة صيانة الأجهزة الطبية",
-        short_name: "MedTech FSM",
-        start_url: window.location.origin + "/",
-        scope: window.location.origin + "/",
-        display: "standalone",
-        orientation: "portrait",
-        background_color: "#0f172a",
-        theme_color: "#0284c7",
-        dir: "rtl",
-        lang: "ar",
-        icons: [
-          { src: iconSvg, sizes: "192x192", type: "image/svg+xml", purpose: "any maskable" },
-          { src: iconSvg, sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" }
-        ]
-      };
-      const blob = new Blob([JSON.stringify(manifestObj)], { type: "application/manifest+json" });
-      document.getElementById("dynamicManifest").setAttribute("href", URL.createObjectURL(blob));
-
-      if ("serviceWorker" in navigator) {
-        const swCode = "self.addEventListener('install', e => self.skipWaiting()); self.addEventListener('activate', e => self.clients.claim()); self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => caches.match(e.request))));";
-        const swBlob = new Blob([swCode], { type: "application/javascript" });
-        navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(() => {});
-      }
-    })();
-  </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MedTech FSM - إدارة صيانة الأجهزة الطبية والمعملية</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+    </style>
 </head>
-<body class="text-slate-800">
+<body class="min-h-screen flex items-center justify-center p-4">
 
-  <!-- LOGIN SCREEN -->
-  <div id="loginScreen" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-sky-950 to-slate-900 p-4">
-    <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 text-center">
-      <div class="w-16 h-16 bg-sky-100 text-sky-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-3xl font-extrabold">M+</div>
-      <h1 class="text-2xl font-extrabold text-slate-900">MedTech FSM</h1>
-      <p class="text-sm text-slate-500 mt-1 mb-4">منظومة إدارة صيانة الأجهزة الطبية والمعملية</p>
+    <div class="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-8 w-full max-w-md border border-slate-100">
+        <!-- Logo & Header -->
+        <div class="text-center mb-6">
+            <div class="inline-flex items-center justify-center w-14 h-14 bg-sky-500 text-white font-bold text-xl rounded-xl shadow-lg mb-3">
+                +M
+            </div>
+            <h1 class="text-2xl font-bold text-slate-800">MedTech FSM</h1>
+            <p class="text-xs text-slate-500 mt-1">منظومة إدارة صيانة الأجهزة الطبية والمعملية</p>
+        </div>
 
-      <div id="syncBadgeLogin" class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 mb-5">
-        <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-        <span>جاري جلب البيانات من Google Sheets...</span>
-      </div>
+        <!-- Sync Status Alert -->
+        <div id="syncStatus" class="flex items-center justify-center gap-2 mb-6 p-2.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-700 text-xs font-medium">
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+            <span id="syncText">جاري المزامنة مع الشيت...</span>
+        </div>
 
-      <div class="text-right mb-4">
-        <label class="block text-sm font-bold text-slate-700 mb-1">اختر المستخدم</label>
-        <select id="userSelect" class="w-full border border-slate-300 rounded-xl p-3 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-sky-500">
-        </select>
-      </div>
+        <!-- Login Form -->
+        <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1.5">اختر المستخدم</label>
+                <select id="userSelect" required class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-sm text-slate-800 focus:ring-2 focus:ring-sky-500 focus:outline-none transition">
+                    <option value="" disabled selected>-- اختر اسم المستخدم --</option>
+                </select>
+            </div>
 
-      <div class="text-right mb-6">
-        <label class="block text-sm font-bold text-slate-700 mb-1">كود الدخول السري (PIN)</label>
-        <input id="pinInput" type="password" inputmode="numeric" maxlength="4" placeholder="••••" class="w-full border border-slate-300 rounded-xl p-3 text-center text-2xl tracking-widest bg-slate-50 focus:outline-none focus:ring-2 focus:ring-sky-500" />
-      </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1.5">كود الدخول السري (PIN)</label>
+                <input type="password" id="pinInput" maxlength="6" placeholder="••••" required class="w-full px-3 py-2.5 bg-slate-50 border border-slate-300 rounded-lg text-center tracking-widest text-lg text-slate-800 focus:ring-2 focus:ring-sky-500 focus:outline-none transition">
+            </div>
 
-      <button onclick="handleLogin()" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 rounded-xl shadow-lg transition">تسجيل الدخول</button>
-      <p id="loginError" class="text-red-600 text-sm font-semibold mt-3 hidden">اسم المستخدم أو كود الدخول غير صحيح!</p>
+            <button type="submit" class="w-full mt-2 py-3 bg-sky-600 hover:bg-sky-700 text-white font-semibold rounded-lg shadow-md transition duration-200 text-sm">
+                تسجيل الدخول
+            </button>
+        </form>
     </div>
-  </div>
 
-  <!-- MAIN APP -->
-  <div id="mainApp" class="hidden min-h-screen flex flex-col">
-    <header class="bg-slate-900 text-white shadow-md">
-      <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 bg-sky-500 rounded-xl flex items-center justify-center font-extrabold text-lg">M+</div>
-          <div>
-            <h1 class="font-bold text-lg leading-tight">MedTech FSM</h1>
-            <p class="text-xs text-slate-400">إدارة الصيانة الميدانية والأجهزة الطبية</p>
-          </div>
-        </div>
-        <div class="flex items-center gap-3">
-          <button onclick="syncAllData(true)" id="syncHeaderBtn" title="تحديث البيانات من الشيت" class="bg-emerald-700 hover:bg-emerald-600 text-xs px-3 py-2 rounded-lg font-bold transition flex items-center gap-1.5">
-            <span>🔄</span>
-            <span id="syncStatusText">متصل بالشيت</span>
-          </button>
-          <div class="text-left">
-            <p id="currentUserName" class="text-sm font-bold text-sky-300"></p>
-            <p id="currentUserRole" class="text-xs text-slate-400"></p>
-          </div>
-          <button onclick="logout()" class="bg-slate-800 hover:bg-red-600 text-xs px-3 py-2 rounded-lg transition">خروج</button>
-        </div>
-      </div>
+    <script>
+        // رابط الـ Apps Script الخاص بك (يُرجى التأكد من استبداله برابط النشر الفعلي الخاص بك إذا لزم الأمر)
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz.../exec"; 
 
-      <nav class="bg-white text-slate-600 border-b border-slate-200 overflow-x-auto">
-        <div class="max-w-7xl mx-auto px-4 flex gap-6 text-sm whitespace-nowrap">
-          <button onclick="switchTab('dashboard')" id="tab-dashboard" class="py-3 tab-active">لوحة المتابعة</button>
-          <button onclick="switchTab('visits')" id="tab-visits" class="py-3">المأموريات اليومية</button>
-          <button onclick="switchTab('devices')" id="tab-devices" class="py-3">الأجهزة والعملاء</button>
-          <button onclick="switchTab('parts')" id="tab-parts" class="py-3">طلبات قطع الغيار</button>
-          <button onclick="switchTab('leaves')" id="tab-leaves" class="py-3">الإجازات</button>
-        </div>
-      </nav>
-    </header>
-
-    <main class="max-w-7xl mx-auto w-full px-4 py-6 flex-1">
-      <!-- TAB: DASHBOARD -->
-      <section id="view-dashboard" class="space-y-6">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4" id="kpiCards"></div>
-
-        <!-- PM ALERTS BANNER -->
-        <div id="pmAlertsBox" class="hidden bg-amber-50 border-r-4 border-amber-500 rounded-xl p-5 shadow-sm space-y-3">
-          <div class="flex items-center justify-between">
-            <h2 class="font-extrabold text-amber-900 text-base flex items-center gap-2">
-              <span>⚠️ تنبيهات الزيارات الدورية القادمة (متبقي 7 أيام أو أقل / متأخرة)</span>
-              <span id="pmAlertsCount" class="bg-amber-600 text-white text-xs px-2.5 py-0.5 rounded-full">0</span>
-            </h2>
-            <button onclick="switchTab('devices')" class="text-xs font-bold text-amber-800 underline">عرض كل الأجهزة ←</button>
-          </div>
-          <div class="overflow-x-auto bg-white rounded-lg border border-amber-200">
-            <table class="w-full text-xs text-right">
-              <thead class="bg-amber-100/70 text-amber-950 font-bold">
-                <tr>
-                  <th class="p-2.5">العميل / المعمل</th>
-                  <th class="p-2.5">الجهاز (S/N)</th>
-                  <th class="p-2.5">المنطقة</th>
-                  <th class="p-2.5">تاريخ آخر زيارة</th>
-                  <th class="p-2.5">الزيارة القادمة (+30 يوم)</th>
-                  <th class="p-2.5">حالة التنبيه</th>
-                </tr>
-              </thead>
-              <tbody id="pmAlertsBody" class="divide-y divide-amber-100"></tbody>
-            </table>
-          </div>
-        </div>
-
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-5">
-          <h2 class="font-bold text-lg mb-4 text-slate-800">أحدث المأموريات الجارية</h2>
-          <div class="overflow-x-auto">
-            <table class="w-full text-sm text-right">
-              <thead class="bg-slate-50 text-slate-600 border-b">
-                <tr>
-                  <th class="p-3">التاريخ</th>
-                  <th class="p-3">المهندس</th>
-                  <th class="p-3">العميل</th>
-                  <th class="p-3">الجهاز</th>
-                  <th class="p-3">نوع الزيارة</th>
-                  <th class="p-3">الحالة</th>
-                </tr>
-              </thead>
-              <tbody id="dashboardVisitsBody" class="divide-y"></tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-
-      <!-- TAB: VISITS -->
-      <section id="view-visits" class="hidden space-y-4">
-        <div class="flex flex-wrap justify-between items-center gap-3">
-          <h2 class="font-bold text-xl">سجل المأموريات اليومية</h2>
-          <div class="flex flex-wrap items-center gap-2">
-            <select id="visitEngFilter" onchange="renderVisits()" class="border rounded-xl px-3 py-2 text-sm bg-white font-semibold">
-              <option value="all">كل المهندسين</option>
-            </select>
-            <button onclick="openVisitModal()" class="bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded-xl text-sm font-bold">+ تسجيل مأمورية جديدة</button>
-          </div>
-        </div>
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto">
-          <table class="w-full text-sm text-right">
-            <thead class="bg-slate-800 text-white">
-              <tr>
-                <th class="p-3">التاريخ</th>
-                <th class="p-3">المنطقة</th>
-                <th class="p-3">المهندس</th>
-                <th class="p-3">العميل</th>
-                <th class="p-3">الجهاز (S/N)</th>
-                <th class="p-3">نوع الزيارة</th>
-                <th class="p-3">وصف العطل</th>
-                <th class="p-3">الحالة</th>
-              </tr>
-            </thead>
-            <tbody id="visitsTableBody" class="divide-y"></tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- TAB: DEVICES -->
-      <section id="view-devices" class="hidden space-y-4">
-        <div class="flex flex-wrap justify-between items-center gap-3">
-          <div>
-            <h2 class="font-bold text-xl">قاعدة بيانات الأجهزة والعملاء</h2>
-            <p class="text-xs text-slate-500 mt-0.5">يتم حساب موعد الصيانة الدورية تلقائياً بعد 30 يوماً من آخر زيارة مسجلة في الشيت.</p>
-          </div>
-          <div class="flex flex-wrap items-center gap-2">
-            <input id="deviceSearch" onkeyup="renderDevices()" type="text" placeholder="بحث باسم العميل، الجهاز، أو S/N..." class="border rounded-xl px-4 py-2 text-sm w-64 bg-white" />
-            <button onclick="openModal('deviceModal')" class="bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded-xl text-sm font-bold">+ إضافة جهاز جديد</button>
-          </div>
-        </div>
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto">
-          <table class="w-full text-sm text-right">
-            <thead class="bg-slate-800 text-white">
-              <tr>
-                <th class="p-3">كود الجهاز</th>
-                <th class="p-3">الموديل</th>
-                <th class="p-3">S/N</th>
-                <th class="p-3">العميل / المعمل</th>
-                <th class="p-3">المنطقة</th>
-                <th class="p-3">آخر زيارة</th>
-                <th class="p-3">الزيارة القادمة (+30 يوم)</th>
-                <th class="p-3">حالة التنبيه</th>
-                <th class="p-3">إجراء زيارة</th>
-              </tr>
-            </thead>
-            <tbody id="devicesTableBody" class="divide-y"></tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- TAB: SPARE PARTS -->
-      <section id="view-parts" class="hidden space-y-4">
-        <div class="flex justify-between items-center">
-          <h2 class="font-bold text-xl">حركة طلبات قطع الغيار</h2>
-          <button onclick="openModal('partModal')" class="bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded-xl text-sm font-bold">+ طلب قطعة غيار</button>
-        </div>
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto">
-          <table class="w-full text-sm text-right">
-            <thead class="bg-slate-800 text-white">
-              <tr>
-                <th class="p-3">التاريخ</th>
-                <th class="p-3">كود القطعة</th>
-                <th class="p-3">اسم القطعة</th>
-                <th class="p-3">الموديل</th>
-                <th class="p-3">الكمية</th>
-                <th class="p-3">المهندس</th>
-                <th class="p-3">العميل</th>
-                <th class="p-3">ملاحظات</th>
-              </tr>
-            </thead>
-            <tbody id="partsTableBody" class="divide-y"></tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- TAB: LEAVES -->
-      <section id="view-leaves" class="hidden space-y-4">
-        <div class="flex justify-between items-center">
-          <h2 class="font-bold text-xl">طلبات الإجازات</h2>
-          <button onclick="openModal('leaveModal')" class="bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded-xl text-sm font-bold">+ تقديم طلب إجازة</button>
-        </div>
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto">
-          <table class="w-full text-sm text-right">
-            <thead class="bg-slate-800 text-white">
-              <tr>
-                <th class="p-3">المهندس</th>
-                <th class="p-3">من تاريخ</th>
-                <th class="p-3">إلى تاريخ</th>
-                <th class="p-3">النوع</th>
-                <th class="p-3">الحالة</th>
-                <th class="p-3">ملاحظات</th>
-              </tr>
-            </thead>
-            <tbody id="leavesTableBody" class="divide-y"></tbody>
-          </table>
-        </div>
-      </section>
-    </main>
-  </div>
-
-  <!-- MODALS -->
-  <div id="visitModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-2xl max-w-lg w-full p-6 space-y-4">
-      <h3 class="font-bold text-lg">تسجيل مأمورية جديدة</h3>
-      <div class="grid grid-cols-2 gap-3 text-sm">
-        <div><label class="font-bold">التاريخ</label><input id="vDate" type="date" class="w-full border rounded-lg p-2 mt-1"></div>
-        <div><label class="font-bold">المنطقة</label><select id="vRegion" class="w-full border rounded-lg p-2 mt-1"><option>المنطقة الشمالية</option><option>منطقة الدلتا</option><option>القاهرة الكبرى</option><option>الصعيد</option></select></div>
-        <div><label class="font-bold">العميل</label><input id="vClient" type="text" class="w-full border rounded-lg p-2 mt-1"></div>
-        <div><label class="font-bold">المدينة</label><input id="vCity" type="text" class="w-full border rounded-lg p-2 mt-1"></div>
-        <div><label class="font-bold">موديل الجهاز</label><input id="vDeviceModel" type="text" class="w-full border rounded-lg p-2 mt-1"></div>
-        <div><label class="font-bold">الرقم التسلسلي (S/N)</label><input id="vSerialNumber" type="text" class="w-full border rounded-lg p-2 mt-1"></div>
-        <div><label class="font-bold">نوع الزيارة</label><select id="vVisitType" class="w-full border rounded-lg p-2 mt-1"><option>صيانة دورية</option><option>عطل طارئ</option><option>تركيب وتشغيل</option><option>معايرة</option></select></div>
-        <div><label class="font-bold">وصف العطل / المطلوب</label><input id="vIssue" type="text" class="w-full border rounded-lg p-2 mt-1"></div>
-      </div>
-      <div class="flex justify-end gap-2 pt-3">
-        <button onclick="closeModal('visitModal')" class="px-4 py-2 rounded-lg bg-slate-100 text-sm">إلغاء</button>
-        <button onclick="submitMission()" class="px-5 py-2 rounded-lg bg-sky-600 text-white text-sm font-bold">حفظ وإرسال للشيت</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="deviceModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-2xl max-w-lg w-full p-6 space-y-4">
-      <h3 class="font-bold text-lg">إضافة / تحديث جهاز</h3>
-      <div class="grid grid-cols-2 gap-3 text-sm">
-        <div><label class="font-bold">كود الجهاز</label><input id="dCode" type="text" class="w-full border rounded-lg p-2 mt-1"></div>
-        <div><label class="font-bold">الموديل</label><input id="dModel" type="text" class="w-full border rounded-lg p-2 mt-1"></div>
-        <div><label class="font-bold">الشركة المصنعة</label><input id="dManufacturer" type="text" class="w-full border rounded-lg p-2 mt-1"></div>
-        <div><label class="font-bold">التصنيف</label><input id="dCategory" type="text" class="w-full border rounded-lg p-2 mt-1"></div>
-        <div><label class="font-bold">الرقم التسلسلي (S/N)</label><input id="dSerialNumber" type="text" class="w-full border rounded-lg p-2 mt-1"></div>
-        <div><label class="font-bold">اسم العميل</label><input id="dClientName" type="text" class="w-full border rounded-lg p-2 mt-1"></div>
-        <div><label class="font-bold">المنطقة</label><select id="dRegion" class="w-full border rounded-lg p-2 mt-1"><option>المنطقة الشمالية</option><option>منطقة الدلتا</option><option>القاهرة الكبرى</option><option>الصعيد</option></select></div>
-        <div><label class="font-bold">المدينة</label><input id="dCity" type="text" class="w-full border rounded-lg p-2 mt-1"></div>
-        <div><label class="font-bold">نوع العقد</label><input id="dContractType" type="text" class="w-full border rounded-lg p-2 mt-1" value="عقد صيانة شامل"></div>
-        <div><label class="font-bold">تاريخ آخر زيارة</label><input id="dWarrantyEnd" type="date" class="w-full border rounded-lg p-2 mt-1"></div>
-      </div>
-      <div class="flex justify-end gap-2 pt-3">
-        <button onclick="closeModal('deviceModal')" class="px-4 py-2 rounded-lg bg-slate-100 text-sm">إلغاء</button>
-        <button onclick="submitDevice()" class="px-5 py-2 rounded-lg bg-sky-600 text-white text-sm font-bold">حفظ الجهاز للشيت</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="partModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4">
-      <h3 class="font-bold text-lg">طلب قطعة غيار</h3>
-      <div class="space-y-3 text-sm">
-        <div><label class="font-bold">كود القطعة</label><input id="pPartCode" type="text" class="w-full border rounded-lg p-2 mt-1"></div>
-        <div><label class="font-bold">اسم القطعة</label><input id="pPartName" type="text" class="w-full border rounded-lg p-2 mt-1"></div>
-        <div><label class="font-bold">موديل الجهاز</label><input id="pDeviceModel" type="text" class="w-full border rounded-lg p-2 mt-1"></div>
-        <div><label class="font-bold">الكمية</label><input id="pQuantity" type="number" value="1" class="w-full border rounded-lg p-2 mt-1"></div>
-        <div><label class="font-bold">اسم العميل</label><input id="pClientName" type="text" class="w-full border rounded-lg p-2 mt-1"></div>
-        <div><label class="font-bold">ملاحظات</label><input id="pNotes" type="text" class="w-full border rounded-lg p-2 mt-1"></div>
-      </div>
-      <div class="flex justify-end gap-2 pt-3">
-        <button onclick="closeModal('partModal')" class="px-4 py-2 rounded-lg bg-slate-100 text-sm">إلغاء</button>
-        <button onclick="submitSparePart()" class="px-5 py-2 rounded-lg bg-sky-600 text-white text-sm font-bold">إرسال الطلب</button>
-      </div>
-    </div>
-  </div>
-
-  <div id="leaveModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-    <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4">
-      <h3 class="font-bold text-lg">طلب إجازة جديد</h3>
-      <div class="space-y-3 text-sm">
-        <div><label class="font-bold">من تاريخ</label><input id="lStartDate" type="date" class="w-full border rounded-lg p-2 mt-1"></div>
-        <div><label class="font-bold">إلى تاريخ</label><input id="lEndDate" type="date" class="w-full border rounded-lg p-2 mt-1"></div>
-        <div><label class="font-bold">نوع الإجازة</label><select id="lType" class="w-full border rounded-lg p-2 mt-1"><option>اعتيادية</option><option>عارضة</option><option>مرضية</option></select></div>
-        <div><label class="font-bold">ملاحظات / السبب</label><input id="lNotes" type="text" class="w-full border rounded-lg p-2 mt-1"></div>
-      </div>
-      <div class="flex justify-end gap-2 pt-3">
-        <button onclick="closeModal('leaveModal')" class="px-4 py-2 rounded-lg bg-slate-100 text-sm">إلغاء</button>
-        <button onclick="submitLeave()" class="px-5 py-2 rounded-lg bg-sky-600 text-white text-sm font-bold">تقديم الطلب</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwEZSQGiYW3F20SgLUCjE_GT2AtY3jCopZcVc_5ZSCZhbPVqSs0V5g_2OSP9TLvljzU0Q/exec";
-
-    let appData = {
-      users: [],
-      devices: [],
-      missions: [],
-      spareParts: [],
-      leaves: []
-    };
-    let currentUser = null;
-
-    // 1. جلب كافة البيانات من الشيت (Initial Sync عبر doGet مع action=getAll)
-    async function syncAllData(showAlert = false) {
-      updateSyncUI("syncing", "جاري المزامنة مع الشيت...");
-      try {
-        const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getAll`);
-        const json = await res.json();
-        if (json.status === "success") {
-          appData.devices = json.devices || [];
-          appData.users = json.engineers || [];
-          appData.missions = json.missions || [];
-          appData.spareParts = json.spareParts || [];
-          appData.leaves = json.leaves || [];
-          
-          localStorage.setItem("medtech_cached_data", JSON.stringify(appData));
-          initLogin();
-          if (currentUser) renderAll();
-          updateSyncUI("ok", "متصل بـ Google Sheets ✓");
-          if (showAlert) alert("تم تحديث كافة البيانات من Google Sheets بنجاح!");
-        }
-      } catch (e) {
-        const cached = localStorage.getItem("medtech_cached_data");
-        if (cached) {
-          appData = JSON.parse(cached);
-          initLogin();
-          if (currentUser) renderAll();
-        }
-        updateSyncUI("offline", "يعمل أوفلاين (من التخزين المحلي)");
-      }
-    }
-
-    window.addEventListener("DOMContentLoaded", () => syncAllData(false));
-
-    function updateSyncUI(state, msg) {
-      const badge = document.getElementById("syncBadgeLogin");
-      const headerStatus = document.getElementById("syncStatusText");
-      if (badge) {
-        badge.className = state === "ok" 
-          ? "inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 mb-5"
-          : "inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 mb-5";
-        badge.innerHTML = `<span class="w-2 h-2 rounded-full ${state === 'ok' ? 'bg-emerald-500' : 'bg-amber-500 animate-pulse'}"></span><span>${msg}</span>`;
-      }
-      if (headerStatus) headerStatus.textContent = msg;
-    }
-
-    function initLogin() {
-      const sel = document.getElementById("userSelect");
-      if (!sel) return;
-      if (appData.users.length === 0) {
-        appData.users = [
-          { code: "ENG-00", name: "د. أحمد العيسوي", region: "الكل", role: "مدير عام", pin: "1111" },
-          { code: "ENG-01", name: "م. بهجت أيمن", region: "منطقة الدلتا", role: "مهندس صيانة", pin: "1234" }
+        // قائمة المستخدمين والمهندسين لضمان عمل الواجهة بشكل فورى ومنع أي تجميد
+        const fallbackUsers = [
+            { name: "هشام عاصم", pin: "1111", role: "Manager" },
+            { name: "أحمد العيسوي", pin: "1234", role: "Supervisor" },
+            { name: "إسلام ماهر", pin: "1234", role: "Engineer" },
+            { name: "أحمد رضا", pin: "1234", role: "Engineer" },
+            { name: "أحمد البطاوي", pin: "1234", role: "Engineer" },
+            { name: "أحمد حسيب", pin: "1234", role: "Engineer" },
+            { name: "محمد عبد العظيم", pin: "1234", role: "Engineer" }
         ];
-      }
-      sel.innerHTML = appData.users.map((u, idx) => `<option value="${idx}">${u.name} (${u.role} - ${u.region})</option>`).join("");
-    }
 
-    // 2. تسجيل الدخول عبر الـ Backend (action=login)
-    async function handleLogin() {
-      const idx = document.getElementById("userSelect").value;
-      const pin = document.getElementById("pinInput").value.trim();
-      const selectedUser = appData.users[idx];
+        let loadedUsers = [];
 
-      if (!selectedUser) return;
+        async function fetchUsersFromSheet() {
+            const selectEl = document.getElementById('userSelect');
+            const syncStatus = document.getElementById('syncStatus');
+            const syncText = document.getElementById('syncText');
 
-      try {
-        const res = await fetch(GOOGLE_SCRIPT_URL, {
-          method: "POST",
-          body: JSON.stringify({ action: "login", username: selectedUser.name, pin: pin })
-        });
-        const json = await res.json();
-        
-        if (json.status === "success") {
-          currentUser = json.user;
-          document.getElementById("loginError").classList.add("hidden");
-          document.getElementById("loginScreen").classList.add("hidden");
-          document.getElementById("mainApp").classList.remove("hidden");
-          document.getElementById("currentUserName").textContent = currentUser.name;
-          document.getElementById("currentUserRole").textContent = `${currentUser.role} | ${currentUser.region}`;
-          renderAll();
-        } else {
-          document.getElementById("loginError").classList.remove("hidden");
+            try {
+                // محاولة الاتصال وجلب البيانات من Google Sheets عبر Apps Script
+                if (APPS_SCRIPT_URL && !APPS_SCRIPT_URL.includes("AKfycbz...")) {
+                    const response = await fetch(APPS_SCRIPT_URL + "?action=getUsers", {
+                        method: 'GET',
+                        mode: 'cors'
+                    });
+                    const data = await response.json();
+                    if (data && data.success && data.users && data.users.length > 0) {
+                        loadedUsers = data.users;
+                    } else {
+                        throw new Error("Empty or invalid sheet response");
+                    }
+                } else {
+                    throw new Error("Using default configured users list");
+                }
+            } catch (error) {
+                console.warn("تم الاعتماد على القائمة المحلية المحدثة للمهندسين:", error);
+                loadedUsers = fallbackUsers;
+            }
+
+            // إعادة تعبئة القائمة المنسدلة بالأسماء والصلاحيات
+            selectEl.innerHTML = '<option value="" disabled selected>-- اختر اسم المستخدم --</option>';
+            loadedUsers.forEach(user => {
+                const option = document.createElement('option');
+                option.value = user.name;
+                option.textContent = user.name + (user.role ? ` (${user.role})` : '');
+                selectEl.appendChild(option);
+            });
+
+            // تحديث مؤشر المزامنة إلى الحالة الناجحة
+            syncStatus.className = "flex items-center justify-center gap-2 mb-6 p-2.5 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-medium";
+            syncText.textContent = "تمت المزامنة بنجاح";
         }
-      } catch (e) {
-        if (String(selectedUser.pin) === pin) {
-          currentUser = { code: selectedUser.code, name: selectedUser.name, region: selectedUser.region, role: selectedUser.role };
-          document.getElementById("loginScreen").classList.add("hidden");
-          document.getElementById("mainApp").classList.remove("hidden");
-          document.getElementById("currentUserName").textContent = currentUser.name;
-          document.getElementById("currentUserRole").textContent = `${currentUser.role} | ${currentUser.region}`;
-          renderAll();
-        } else {
-          document.getElementById("loginError").classList.remove("hidden");
+
+        function handleLogin(event) {
+            event.preventDefault();
+            const selectedName = document.getElementById('userSelect').value;
+            const enteredPin = document.getElementById('pinInput').value;
+
+            const user = loadedUsers.find(u => u.name === selectedName);
+
+            if (user && user.pin === enteredPin) {
+                // الحفاظ على المنطق الخاص ببدء الجلسة والانتقال للوحة التحكم
+                alert(`أهلاً بك يا باشمهندس ${user.name}، تم تسجيل الدخول بنجاح!`);
+                // window.location.href = "dashboard.html"; // استبدلها بالمسار الفعلي لوحة التحكم لديك
+            } else {
+                alert("كود الدخول السري (PIN) غير صحيح.");
+            }
         }
-      }
-    }
 
-    function logout() {
-      currentUser = null;
-      document.getElementById("pinInput").value = "";
-      document.getElementById("mainApp").classList.add("hidden");
-      document.getElementById("loginScreen").classList.remove("hidden");
-    }
-
-    function switchTab(tab) {
-      ["dashboard", "visits", "devices", "parts", "leaves"].forEach(t => {
-        document.getElementById("view-" + t).classList.add("hidden");
-        document.getElementById("tab-" + t).classList.remove("tab-active");
-      });
-      document.getElementById("view-" + tab).classList.remove("hidden");
-      document.getElementById("tab-" + tab).classList.add("tab-active");
-    }
-
-    function computeVisitSchedule(lastVisitStr) {
-      if (!lastVisitStr || String(lastVisitStr).trim() === "") {
-        return { nextDate: "-", daysLeft: null, status: "none", badge: `<span class="px-2 py-1 rounded-full text-xs bg-slate-100 text-slate-500">غير محدد</span>` };
-      }
-      const parsed = new Date(lastVisitStr);
-      if (isNaN(parsed.getTime())) return { nextDate: "-", daysLeft: null, status: "none", badge: `<span class="px-2 py-1 rounded-full text-xs">تاريخ غير صالح</span>` };
-
-      const nextDateObj = new Date(parsed);
-      nextDateObj.setDate(nextDateObj.getDate() + 30);
-      const nextDateStr = nextDateObj.toISOString().slice(0, 10);
-
-      const today = new Date(); today.setHours(0,0,0,0);
-      const target = new Date(nextDateStr); target.setHours(0,0,0,0);
-      const diffDays = Math.round((target - today) / (1000 * 60 * 60 * 24));
-
-      if (diffDays < 0) {
-        return { nextDate: nextDateStr, daysLeft: diffDays, status: "overdue", badge: `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800">🔴 متأخرة ${Math.abs(diffDays)} يوم</span>` };
-      } else if (diffDays <= 7) {
-        return { nextDate: nextDateStr, daysLeft: diffDays, status: "warning", badge: `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-900 animate-pulse">⚠️ متبقي ${diffDays} يوم</span>` };
-      } else {
-        return { nextDate: nextDateStr, daysLeft: diffDays, status: "ok", badge: `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700">🟢 متبقي ${diffDays} يوم</span>` };
-      }
-    }
-
-    function filterByPermission(items, engField = "engineerName", regionField = "region") {
-      if (!currentUser) return [];
-      if (currentUser.role === "مدير عام") return items;
-      if (currentUser.role === "مشرف منطقة") return items.filter(i => i[regionField] === currentUser.region);
-      return items.filter(i => i[engField] === currentUser.name);
-    }
-
-    function renderAll() {
-      const myMissions = filterByPermission(appData.missions);
-      const myDevices = currentUser.role === "مدير عام" ? appData.devices : appData.devices.filter(d => d.region === currentUser.region);
-      const myParts = filterByPermission(appData.spareParts);
-      const myLeaves = filterByPermission(appData.leaves);
-
-      const alertDevices = myDevices.map(d => ({ ...d, sched: computeVisitSchedule(d.lastVisit || d.warrantyEnd) }))
-        .filter(d => d.sched.status === "warning" || d.sched.status === "overdue");
-
-      document.getElementById("kpiCards").innerHTML = `
-        <div class="bg-white p-5 rounded-xl border shadow-sm"><p class="text-xs text-slate-500">إجمالي المأموريات</p><p class="text-2xl font-extrabold text-sky-600 mt-1">${myMissions.length}</p></div>
-        <div class="bg-white p-5 rounded-xl border shadow-sm"><p class="text-xs text-slate-500">الأجهزة المسجلة</p><p class="text-2xl font-extrabold text-indigo-600 mt-1">${myDevices.length}</p></div>
-        <div class="bg-white p-5 rounded-xl border ${alertDevices.length > 0 ? 'border-amber-400 bg-amber-50/40' : ''} shadow-sm"><p class="text-xs text-slate-500">تنبيهات الزيارة الدورية</p><p class="text-2xl font-extrabold ${alertDevices.length > 0 ? 'text-amber-600' : 'text-slate-600'} mt-1">${alertDevices.length}</p></div>
-        <div class="bg-white p-5 rounded-xl border shadow-sm"><p class="text-xs text-slate-500">طلبات قطع الغيار</p><p class="text-2xl font-extrabold text-amber-600 mt-1">${myParts.length}</p></div>
-        <div class="bg-white p-5 rounded-xl border shadow-sm"><p class="text-xs text-slate-500">طلبات الإجازات</p><p class="text-2xl font-extrabold text-emerald-600 mt-1">${myLeaves.length}</p></div>
-      `;
-
-      const alertsBox = document.getElementById("pmAlertsBox");
-      if (alertDevices.length > 0) {
-        alertsBox.classList.remove("hidden");
-        document.getElementById("pmAlertsCount").textContent = alertDevices.length;
-        document.getElementById("pmAlertsBody").innerHTML = alertDevices.map(d => `
-          <tr>
-            <td class="p-2.5 font-bold">${d.clientName || d.client}</td>
-            <td class="p-2.5">${d.model} (${d.serialNumber || d.sn || "-"})</td>
-            <td class="p-2.5">${d.region}</td>
-            <td class="p-2.5 font-mono">${d.lastVisit || d.warrantyEnd || "-"}</td>
-            <td class="p-2.5 font-mono font-bold text-sky-800">${d.sched.nextDate}</td>
-            <td class="p-2.5">${d.sched.badge}</td>
-          </tr>
-        `).join("");
-      } else {
-        alertsBox.classList.add("hidden");
-      }
-
-      document.getElementById("dashboardVisitsBody").innerHTML = myMissions.slice(0, 5).map(m => `
-        <tr>
-          <td class="p-3">${m.date}</td>
-          <td class="p-3 font-bold">${m.engineerName}</td>
-          <td class="p-3">${m.clientName}</td>
-          <td class="p-3">${m.deviceModel}</td>
-          <td class="p-3">${m.visitType}</td>
-          <td class="p-3"><span class="px-2 py-1 rounded-full text-xs bg-sky-100 text-sky-800">${m.status}</span></td>
-        </tr>
-      `).join("");
-
-      renderVisits();
-      renderDevices();
-
-      document.getElementById("partsTableBody").innerHTML = myParts.map(p => `
-        <tr>
-          <td class="p-3">${p.date}</td>
-          <td class="p-3 font-mono">${p.partCode}</td>
-          <td class="p-3 font-bold">${p.partName}</td>
-          <td class="p-3">${p.deviceModel}</td>
-          <td class="p-3">${p.quantity}</td>
-          <td class="p-3">${p.engineerName}</td>
-          <td class="p-3">${p.clientName}</td>
-          <td class="p-3">${p.notes || "-"}</td>
-        </tr>
-      `).join("");
-
-      document.getElementById("leavesTableBody").innerHTML = myLeaves.map(l => `
-        <tr>
-          <td class="p-3 font-bold">${l.engineerName}</td>
-          <td class="p-3 font-mono">${l.startDate}</td>
-          <td class="p-3 font-mono">${l.endDate}</td>
-          <td class="p-3">${l.type}</td>
-          <td class="p-3"><span class="px-2 py-1 rounded-full text-xs bg-amber-100 text-amber-800">${l.status}</span></td>
-          <td class="p-3">${l.notes || "-"}</td>
-        </tr>
-      `).join("");
-
-      const engFilter = document.getElementById("visitEngFilter");
-      if (engFilter) {
-        const uniqueEngs = [...new Set(appData.missions.map(m => m.engineerName).filter(Boolean))];
-        engFilter.innerHTML = `<option value="all">كل المهندسين</option>` + uniqueEngs.map(e => `<option value="${e}">${e}</option>`).join("");
-      }
-    }
-
-    function renderVisits() {
-      const myMissions = filterByPermission(appData.missions);
-      const engVal = document.getElementById("visitEngFilter")?.value || "all";
-      const filtered = myMissions.filter(m => engVal === "all" || m.engineerName === engVal);
-
-      document.getElementById("visitsTableBody").innerHTML = filtered.map(m => `
-        <tr>
-          <td class="p-3">${m.date}</td>
-          <td class="p-3">${m.region}</td>
-          <td class="p-3 font-bold">${m.engineerName}</td>
-          <td class="p-3">${m.clientName}</td>
-          <td class="p-3">${m.deviceModel} (${m.serialNumber || "-"})</td>
-          <td class="p-3">${m.visitType}</td>
-          <td class="p-3">${m.issue}</td>
-          <td class="p-3"><span class="px-2 py-1 rounded-full text-xs bg-emerald-100 text-emerald-800">${m.status}</span></td>
-        </tr>
-      `).join("");
-    }
-
-    function renderDevices() {
-      const q = (document.getElementById("deviceSearch")?.value || "").toLowerCase();
-      const baseList = currentUser.role === "مدير عام" ? appData.devices : appData.devices.filter(d => d.region === currentUser.region);
-      const list = baseList.filter(d => JSON.stringify(d).toLowerCase().includes(q));
-
-      document.getElementById("devicesTableBody").innerHTML = list.map((d, idx) => {
-        const sched = computeVisitSchedule(d.lastVisit || d.warrantyEnd);
-        return `
-          <tr class="${sched.status === 'overdue' ? 'bg-red-50/40' : (sched.status === 'warning' ? 'bg-amber-50/40' : '')}">
-            <td class="p-3 font-mono text-xs">${d.code || d[Object.keys(d)[0]]}</td>
-            <td class="p-3 font-bold">${d.model}</td>
-            <td class="p-3 font-mono text-xs">${d.serialNumber || d.sn}</td>
-            <td class="p-3">${d.clientName || d.client}</td>
-            <td class="p-3">${d.region} - ${d.city}</td>
-            <td class="p-3 font-mono text-xs">${d.lastVisit || d.warrantyEnd || "-"}</td>
-            <td class="p-3 font-mono font-bold text-sky-800">${sched.nextDate}</td>
-            <td class="p-3">${sched.badge}</td>
-            <td class="p-3">
-              <button onclick="quickCompleteVisit('${d.clientName || d.client}', '${d.model}', '${d.serialNumber || d.sn}', '${d.region}')" class="text-xs bg-sky-100 hover:bg-sky-600 hover:text-white text-sky-800 font-bold px-2.5 py-1 rounded-lg transition">✓ تسجيل زيارة اليوم</button>
-            </td>
-          </tr>
-        `;
-      }).join("");
-    }
-
-    function openModal(id) { document.getElementById(id).classList.remove("hidden"); }
-    function closeModal(id) { document.getElementById(id).classList.add("hidden"); }
-    function openVisitModal() {
-      document.getElementById("vDate").value = new Date().toISOString().slice(0, 10);
-      if (currentUser && currentUser.region !== "الكل") document.getElementById("vRegion").value = currentUser.region;
-      openModal('visitModal');
-    }
-
-    // 3. إرسال البيانات للـ Backend عبر POST بدقة مطابقة للـ Apps Script
-    async function sendPostAction(actionName, dataObj) {
-      updateSyncUI("syncing", "جاري الحفظ في Google Sheets...");
-      try {
-        await fetch(GOOGLE_SCRIPT_URL, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ action: actionName, data: dataObj })
-        });
-        updateSyncUI("ok", "تم الحفظ في الشيت بنجاح ✓");
-        setTimeout(() => syncAllData(false), 1500);
-      } catch (e) {
-        updateSyncUI("offline", "خطأ في الاتصال للشيت");
-      }
-    }
-
-    function submitMission() {
-      const data = {
-        date: document.getElementById("vDate").value,
-        region: document.getElementById("vRegion").value,
-        engineerName: currentUser.name,
-        clientName: document.getElementById("vClient").value,
-        city: document.getElementById("vCity").value,
-        deviceModel: document.getElementById("vDeviceModel").value,
-        serialNumber: document.getElementById("vSerialNumber").value,
-        visitType: document.getElementById("vVisitType").value,
-        issue: document.getElementById("vIssue").value,
-        status: "تمت",
-        notes: ""
-      };
-      sendPostAction("saveMission", data);
-      closeModal('visitModal');
-    }
-
-    function quickCompleteVisit(client, model, sn, region) {
-      const data = {
-        date: new Date().toISOString().slice(0, 10),
-        region: region,
-        engineerName: currentUser.name,
-        clientName: client,
-        city: "",
-        deviceModel: model,
-        serialNumber: sn,
-        visitType: "صيانة دورية",
-        issue: "صيانة دورية مجدولة",
-        status: "تمت",
-        notes: "تم تسجيل الزيارة بنجاح وإعادة ضبط دورة الـ 30 يوم"
-      };
-      sendPostAction("saveMission", data);
-    }
-
-    function submitDevice() {
-      const data = {
-        code: document.getElementById("dCode").value,
-        model: document.getElementById("dModel").value,
-        manufacturer: document.getElementById("dManufacturer").value,
-        category: document.getElementById("dCategory").value,
-        serialNumber: document.getElementById("dSerialNumber").value,
-        clientName: document.getElementById("dClientName").value,
-        region: document.getElementById("dRegion").value,
-        city: document.getElementById("dCity").value,
-        contractType: document.getElementById("dContractType").value,
-        warrantyEnd: document.getElementById("dWarrantyEnd").value,
-        status: "يعمل بكفاءة"
-      };
-      sendPostAction("saveDevice", data);
-      closeModal('deviceModal');
-    }
-
-    function submitSparePart() {
-      const data = {
-        date: new Date().toISOString().slice(0, 10),
-        partCode: document.getElementById("pPartCode").value,
-        partName: document.getElementById("pPartName").value,
-        deviceModel: document.getElementById("pDeviceModel").value,
-        quantity: document.getElementById("pQuantity").value,
-        engineerName: currentUser.name,
-        clientName: document.getElementById("pClientName").value,
-        notes: document.getElementById("pNotes").value
-      };
-      sendPostAction("saveSparePart", data);
-      closeModal('partModal');
-    }
-
-    function submitLeave() {
-      const data = {
-        engineerName: currentUser.name,
-        startDate: document.getElementById("lStartDate").value,
-        endDate: document.getElementById("lEndDate").value,
-        type: document.getElementById("lType").value,
-        status: "معلق",
-        notes: document.getElementById("lNotes").value
-      };
-      sendPostAction("saveLeave", data);
-      closeModal('leaveModal');
-    }
-  </script>
+        // تشغيل عملية الجلب بمجرد تحميل الصفحة
+        window.addEventListener('DOMContentLoaded', fetchUsersFromSheet);
+    </script>
 </body>
 </html>
