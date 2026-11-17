@@ -1,180 +1,862 @@
-import React, { useState, useEffect } from 'react';
-
-// رابط الـ Google Apps Script الخاص بك
-const API_URL = "https://script.google.com/macros/s/AKfycbzC_p1uhBpZkgFZBL7JGtE9ug7MB8tOimDt835DeEgmFwh__GbqSGpyyrB4NlYrOjYN5w/exec";
-
-export default function App() {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>MedTech FSM - إدارة الخدمة الميدانية</title>
   
-  // حالة البيانات المستلمة من الشيتات
-  const [engineers, setEngineers] = useState([]);
-  const [missions, setMissions] = useState([]);
-  const [devices, setDevices] = useState([]);
-  const [spareParts, setSpareParts] = useState([]);
-  const [vacations, setVacations] = useState([]);
+  <!-- خط تجوال الحديث وأيقونات FontAwesome -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
-  // حالة تسجيل الدخول برقم الكود
-  const [loginCode, setLoginCode] = useState('');
-  const [currentUser, setCurrentUser] = useState(null);
-
-  // جلب البيانات عند فتح التطبيق
-  useEffect(() => {
-    fetch(API_URL)
-      .then(res => res.json())
-      .then(data => {
-        console.log("تم استلام البيانات بنجاح:", data);
-        setEngineers(data["المهندسين"] || []);
-        setMissions(data["المأموريات اليومية"] || []);
-        setDevices(data["الأجهزة والعملاء"] || []);
-        setSpareParts(data["طلبات قطع الغيار"] || []);
-        setVacations(data["الإجازات"] || []);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error("خطأ في جلب البيانات:", err);
-        setError("تعذر سحب البيانات من Google Sheets، تأكد من الاتصال أو الرابط.");
-        setLoading(false);
-      });
-  }, []);
-
-  // دالة تسجيل الدخول باستخدام رقم الكود
-  const handleLogin = (e) => {
-    e.preventDefault();
-    const foundUser = engineers.find(eng => String(eng.الكود || eng.رقم_الدخول || eng.Code) === String(loginCode));
-    if (foundUser) {
-      setCurrentUser(foundUser);
-    } else {
-      alert("رقم الدخول غير صحيح، يرجى مراجعة شيت المهندسين.");
+  <style>
+    :root {
+      --primary: #0284c7;
+      --primary-dark: #0369a1;
+      --primary-light: #e0f2fe;
+      --accent: #059669;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --radius: 16px;
+      --shadow: 0 4px 12px -2px rgba(15, 23, 42, 0.08);
     }
-  };
 
-  if (loading) {
-    return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', fontFamily: 'Cairo, sans-serif' }}>
-        <h2>جاري تحميل بيانات MedTech FSM من Google Sheets...</h2>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Tajawal', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Container */
+    .app-container {
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: var(--card-bg);
+      position: relative;
+      box-shadow: 0 0 30px rgba(0,0,0,0.05);
+    }
+
+    /* Header */
+    header {
+      background: var(--primary);
+      color: white;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: 0 2px 8px rgba(2, 132, 199, 0.2);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .brand i {
+      font-size: 1.3rem;
+      color: #7dd3fc;
+    }
+
+    .user-pill {
+      background: rgba(255,255,255,0.15);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Main Content Area */
+    main {
+      flex: 1;
+      padding: 16px;
+      padding-bottom: 90px;
+    }
+
+    /* Bottom Navigation Bar */
+    nav.bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 500px;
+      background: white;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-around;
+      padding: 8px 0;
+      z-index: 100;
+      box-shadow: 0 -4px 12px rgba(0,0,0,0.04);
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .nav-item i {
+      font-size: 1.25rem;
+    }
+
+    .nav-item.active {
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    /* Views */
+    .view-section {
+      display: none;
+      animation: fadeIn 0.25s ease-out forwards;
+    }
+
+    .view-section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Cards */
+    .card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    /* Forms */
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border 0.2s;
+      background: #fafafa;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--primary);
+      background: white;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 13px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 10px rgba(2, 132, 199, 0.25);
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+      background: var(--primary-dark);
+    }
+
+    .btn-secondary {
+      background: #f1f5f9;
+      color: var(--text);
+      box-shadow: none;
+    }
+
+    .btn-accent {
+      background: var(--accent);
+      box-shadow: 0 4px 10px rgba(5, 150, 105, 0.25);
+    }
+
+    /* Device Card List */
+    .device-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 10px;
+      border-right: 4px solid var(--primary);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .device-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .device-meta {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+
+    .badge-primary { background: var(--primary-light); color: var(--primary-dark); }
+    .badge-success { background: #dcfce7; color: #166534; }
+    .badge-warning { background: #fef3c7; color: #92400e; }
+
+    /* Search Bar */
+    .search-box {
+      position: relative;
+      margin-bottom: 14px;
+    }
+
+    .search-box i {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+    }
+
+    .search-box input {
+      padding-right: 40px;
+      background: white;
+    }
+
+    /* Loading Overlay */
+    #loadingOverlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.4);
+      z-index: 999;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      flex-direction: column;
+      gap: 12px;
+      font-weight: 600;
+    }
+
+    .spinner {
+      width: 38px;
+      height: 38px;
+      border: 4px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Loading State -->
+  <div id="loadingOverlay">
+    <div class="spinner"></div>
+    <span id="loadingText">جاري المزامنة مع الشيت...</span>
+  </div>
+
+  <div class="app-container">
+
+    <!-- Header -->
+    <header>
+      <div class="brand">
+        <i class="fa-solid fa-notes-medical"></i>
+        <span>MedTech FSM</span>
       </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', color: '#ef4444', fontFamily: 'Cairo, sans-serif' }}>
-        <h2>{error}</h2>
+      <div id="userBadge" class="user-pill" style="display: none;">
+        <i class="fa-regular fa-circle-user"></i>
+        <span id="userNameDisplay">مهندس</span>
+        <i class="fa-solid fa-arrow-right-from-bracket" onclick="logout()" style="cursor: pointer; margin-right: 4px;" title="تسجيل الخروج"></i>
       </div>
-    );
-  }
+    </header>
 
-  // إذا لم يتم تسجيل الدخول بعد
-  if (!currentUser) {
-    return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#f8fafc', fontFamily: 'Cairo, sans-serif' }}>
-        <form onSubmit={handleLogin} style={{ background: 'white', padding: '30px', borderRadius: '10px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', width: '350px', textAlign: 'center' }}>
-          <h2 style={{ color: '#1e293b', marginBottom: '20px' }}>MedTech FSM</h2>
-          <p style={{ color: '#64748b', marginBottom: '15px' }}>الرجاء إدخال رقم الدخول الخاص بك</p>
-          <input 
-            type="password" 
-            placeholder="رقم الدخول" 
-            value={loginCode}
-            onChange={(e) => setLoginCode(e.target.value)}
-            style={{ width: '100%', padding: '10px', marginBottom: '15px', borderRadius: '5px', border: '1px solid #cbd5e1', textAlign: 'center', fontSize: '16px', boxSizing: 'border-box' }}
-          />
-          <button type="submit" style={{ width: '100%', padding: '10px', background: '#2563eb', color: 'white', border: 'none', borderRadius: '5px', fontSize: '16px', cursor: 'pointer' }}>
-            دخول للنظام
+    <main>
+
+      <!-- ================= 1. شاشة تسجيل الدخول ================= -->
+      <section id="viewLogin" class="view-section active">
+        <div style="text-align: center; margin: 25px 0 20px;">
+          <div style="display:inline-flex; width: 64px; height: 64px; border-radius: 20px; background: var(--primary-light); align-items: center; justify-content: center; color: var(--primary); font-size: 1.8rem; margin-bottom: 12px;">
+            <i class="fa-solid fa-stethoscope"></i>
+          </div>
+          <h2 style="font-size: 1.3rem; font-weight: 800;">تسجيل دخول المهندسين</h2>
+          <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 4px;">متزامن مباشرة مع جدول مهندسي MedTech</p>
+        </div>
+
+        <div class="card">
+          <div class="form-group">
+            <label>كود المهندس أو الاسم</label>
+            <input type="text" id="loginUser" placeholder="مثال: ENG-00 أو هشام عاصم" />
+          </div>
+          <div class="form-group">
+            <label>كود الدخول السري (PIN)</label>
+            <input type="password" id="loginPin" placeholder="••••" maxlength="6" inputmode="numeric" />
+          </div>
+          <button class="btn" onclick="executeLogin()">
+            <i class="fa-solid fa-right-to-bracket"></i>
+            <span>دخول النظام</span>
           </button>
-        </form>
-      </div>
-    );
-  }
+        </div>
+      </section>
 
-  return (
-    <div style={{ padding: '20px', background: '#f8fafc', minHeight: '100vh', fontFamily: 'Cairo, sans-serif', direction: 'rtl' }}>
+      <!-- ================= 2. شاشة الأجهزة والعملاء ================= -->
+      <section id="viewDevices" class="view-section">
+        <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom: 12px;">
+          <h2 style="font-size: 1.15rem; font-weight: 700;">دليل الأجهزة والعملاء</h2>
+          <button class="btn btn-accent" style="width: auto; padding: 6px 14px; font-size: 0.8rem;" onclick="toggleAddDeviceForm()">
+            <i class="fa-solid fa-plus"></i> جهاز جديد
+          </button>
+        </div>
+
+        <!-- كارد إضافة جهاز جديد -->
+        <div id="addDeviceCard" class="card" style="display: none; border-color: var(--accent);">
+          <h3 style="font-size: 0.95rem; margin-bottom: 10px; color: var(--accent);">إضافة جهاز جديد للشيت</h3>
+          <div class="form-group">
+            <label>اسم العميل / المعمل</label>
+            <input type="text" id="devClient" placeholder="مثال: مستشفى المنصورة الدولي" />
+          </div>
+          <div class="form-group">
+            <label>موديل الجهاز</label>
+            <input type="text" id="devModel" placeholder="مثال: CA-430" />
+          </div>
+          <div class="form-group">
+            <label>الرقم التسلسلي (S/N)</label>
+            <input type="text" id="devSerial" placeholder="مثال: CA430TY00174" />
+          </div>
+          <div class="form-group">
+            <label>المنطقة</label>
+            <select id="devRegion">
+              <option value="منطقة الدلتا">منطقة الدلتا</option>
+              <option value="المنطقة الشمالية">المنطقة الشمالية</option>
+              <option value="القاهرة الكبرى">القاهرة الكبرى</option>
+              <option value="الصعيد">الصعيد</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>المحافظة / المدينة</label>
+            <input type="text" id="devCity" placeholder="الدقهلية" />
+          </div>
+          <button class="btn btn-accent" onclick="submitNewDevice()">حفظ الجهاز في الشيت</button>
+        </div>
+
+        <!-- شريط البحث السريع -->
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="deviceSearchInput" placeholder="بحث بالمعمل، السيريال، أو الموديل..." oninput="handleSearch()" />
+        </div>
+
+        <div id="devicesCount" style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;">جاري تحميل الأجهزة...</div>
+        <div id="devicesListContainer"></div>
+      </section>
+
+      <!-- ================= 3. شاشة المأموريات ================= -->
+      <section id="viewMissions" class="view-section">
+        <h2 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 12px;">تسجيل مأمورية صيانة</h2>
+        
+        <div class="card">
+          <div class="form-group">
+            <label>تاريخ المأمورية</label>
+            <input type="date" id="msDate" />
+          </div>
+          <div class="form-group">
+            <label>اسم العميل / المعمل</label>
+            <input type="text" id="msClient" placeholder="اكتب اسم المعمل أو المستشفى" />
+          </div>
+          <div class="form-group">
+            <label>موديل الجهاز</label>
+            <input type="text" id="msModel" placeholder="مثال: CA-200" />
+          </div>
+          <div class="form-group">
+            <label>الرقم التسلسلي (S/N)</label>
+            <input type="text" id="msSerial" placeholder="S/N" />
+          </div>
+          <div class="form-group">
+            <label>نوع الزيارة</label>
+            <select id="msVisitType">
+              <option value="صيانة دورية">صيانة دورية</option>
+              <option value="صيانة طارئة (عطل)">صيانة طارئة (عطل)</option>
+              <option value="تركيب وتدريب">تركيب وتدريب</option>
+              <option value="معايرة وفحص">معايرة وفحص</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>وصف العطل / الإجراء المتبع</label>
+            <textarea id="msIssue" rows="3" placeholder="اكتب تقرير الصيانة والإصلاح..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>حالة المأمورية</label>
+            <select id="msStatus">
+              <option value="تمت بنجاح">تمت بنجاح</option>
+              <option value="يحتاج قطع غيار">يحتاج قطع غيار</option>
+              <option value="معلق / جاري المتابعة">معلق / جاري المتابعة</option>
+            </select>
+          </div>
+          <button class="btn" onclick="submitMission()">
+            <i class="fa-solid fa-paper-plane"></i>
+            <span>حفظ المأمورية في الشيت</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- ================= 4. شاشة قطع الغيار ================= -->
+      <section id="viewParts" class="view-section">
+        <h2 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 12px;">صرف واستهلاك قطع الغيار</h2>
+        
+        <div class="card">
+          <div class="form-group">
+            <label>اسم أو كود قطعة الغيار</label>
+            <input type="text" id="spName" placeholder="مثال: Halogen Lamp / صمام سحب" />
+          </div>
+          <div class="form-group">
+            <label>الموديل المتوافق</label>
+            <input type="text" id="spModel" placeholder="CA-200 / CA-430 / BH-3300P" />
+          </div>
+          <div class="form-group">
+            <label>الكمية المستهلكة</label>
+            <input type="number" id="spQty" value="1" min="1" />
+          </div>
+          <div class="form-group">
+            <label>العميل المستخدم له</label>
+            <input type="text" id="spClient" placeholder="اسم المستشفى أو المعمل" />
+          </div>
+          <div class="form-group">
+            <label>ملاحظات إضافية</label>
+            <textarea id="spNotes" rows="2" placeholder="رقم أمر الشغل أو سبب الصرف"></textarea>
+          </div>
+          <button class="btn" onclick="submitSparePart()">
+            <i class="fa-solid fa-box-open"></i>
+            <span>تسجيل الحركة للشيت</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- ================= 5. شاشة الإجازات ================= -->
+      <section id="viewLeaves" class="view-section">
+        <h2 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 12px;">طلب إجازة</h2>
+        
+        <div class="card">
+          <div class="form-group">
+            <label>من تاريخ</label>
+            <input type="date" id="lvStart" />
+          </div>
+          <div class="form-group">
+            <label>إلى تاريخ</label>
+            <input type="date" id="lvEnd" />
+          </div>
+          <div class="form-group">
+            <label>نوع الإجازة</label>
+            <select id="lvType">
+              <option value="اعتيادية / سنوية">اعتيادية / سنوية</option>
+              <option value="عارضة">عارضة</option>
+              <option value="مرضية">مرضية</option>
+              <option value="أخرى">أخرى</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>ملاحظات / السبب</label>
+            <textarea id="lvNotes" rows="2" placeholder="ملاحظات الطلب إن وجدت"></textarea>
+          </div>
+          <button class="btn" onclick="submitLeave()">
+            <i class="fa-regular fa-calendar-check"></i>
+            <span>إرسال طلب الإجازة</span>
+          </button>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- شريط التنقل السفلي -->
+    <nav id="bottomNav" class="bottom-nav" style="display: none;">
+      <div class="nav-item active" onclick="switchTab('viewDevices', this)">
+        <i class="fa-solid fa-server"></i>
+        <span>الأجهزة</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('viewMissions', this)">
+        <i class="fa-solid fa-route"></i>
+        <span>المأموريات</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('viewParts', this)">
+        <i class="fa-solid fa-gears"></i>
+        <span>قطع الغيار</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('viewLeaves', this)">
+        <i class="fa-regular fa-calendar-days"></i>
+        <span>الإجازات</span>
+      </div>
+    </nav>
+
+  </div>
+
+  <!-- ================= Logic & Integration Script ================= -->
+  <script>
+    // الرابط النهائي المباشر لنظامك على Google Apps Script
+    const API_URL = "https://script.google.com/macros/s/AKfycbxbaT2yaT-KiThZxZEYtNW3yQScb54b_YD8Vlo2FXI_VqmqUzK6qLXTXoL9eFQUSLBlZQ/exec";
+
+    // المتغيرات العامة للكاش
+    let cachedDevices = [];
+    let activeUser = null;
+
+    // تشغيل النظام عند الفتح
+    window.addEventListener("DOMContentLoaded", () => {
+      // ملء حقول التاريخ تلقائياً باليوم
+      const today = new Date().toISOString().split("T")[0];
+      if (document.getElementById("msDate")) document.getElementById("msDate").value = today;
+      if (document.getElementById("lvStart")) document.getElementById("lvStart").value = today;
+      if (document.getElementById("lvEnd")) document.getElementById("lvEnd").value = today;
+
+      // فحص هل المهندس مسجل دخول مسبقاً
+      const savedUser = localStorage.getItem("medtech_active_user");
+      if (savedUser) {
+        activeUser = JSON.parse(savedUser);
+        setupSessionUI();
+        loadDevices();
+      }
+    });
+
+    // إظهار وإخفاء شاشة الانتظار
+    function showLoading(msg = "جاري التحميل...") {
+      document.getElementById("loadingText").innerText = msg;
+      document.getElementById("loadingOverlay").style.display = "flex";
+    }
+
+    function hideLoading() {
+      document.getElementById("loadingOverlay").style.display = "none";
+    }
+
+    // التنقل بين الشاشات
+    function switchTab(viewId, el) {
+      document.querySelectorAll(".view-section").forEach(s => s.classList.remove("active"));
+      document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
+      document.getElementById(viewId).classList.add("active");
+      if (el) el.classList.add("active");
+    }
+
+    // ================= 1. تسجيل الدخول =================
+    async function executeLogin() {
+      const username = document.getElementById("loginUser").value.trim();
+      const pin = document.getElementById("loginPin").value.trim();
+
+      if (!username || !pin) {
+        alert("يرجى إدخال اسم المستخدم أو الكود مع كود الـ PIN");
+        return;
+      }
+
+      showLoading("جاري التحقق من بيانات المهندس...");
+
+      try {
+        const res = await fetch(`${API_URL}?action=login&username=${encodeURIComponent(username)}&pin=${encodeURIComponent(pin)}`);
+        const json = await res.json();
+        hideLoading();
+
+        if (json.status === "success") {
+          activeUser = json.user;
+          localStorage.setItem("medtech_active_user", JSON.stringify(activeUser));
+          setupSessionUI();
+          loadDevices(true);
+        } else {
+          alert(json.message || "كود الدخول أو المستخدم غير صحيح");
+        }
+      } catch (err) {
+        hideLoading();
+        alert("تعذر الاتصال بالخادم، تأكد من اتصال الإنترنت وحاول مجدداً.");
+      }
+    }
+
+    function setupSessionUI() {
+      document.getElementById("viewLogin").classList.remove("active");
+      document.getElementById("viewDevices").classList.add("active");
+      document.getElementById("bottomNav").style.display = "flex";
+      document.getElementById("userBadge").style.display = "flex";
+      document.getElementById("userNameDisplay").innerText = activeUser.name || activeUser.code;
+    }
+
+    function logout() {
+      if (confirm("هل تريد تسجيل الخروج؟")) {
+        localStorage.removeItem("medtech_active_user");
+        location.reload();
+      }
+    }
+
+    // ================= 2. الأجهزة والعملاء =================
+    async function loadDevices(forceRefresh = false) {
+      const local = localStorage.getItem("medtech_devices_cache");
       
-      {/* الشريط العلوي */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'white', padding: '15px 20px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', marginBottom: '20px' }}>
-        <h2 style={{ margin: 0, color: '#1e293b' }}>MedTech FSM - إدارة الصيانة الميدانية</h2>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-          <span style={{ color: '#475569', fontWeight: 'bold' }}>
-            مرحباً، {currentUser.الاسم || currentUser.Name} ({currentUser.الوظيفة || currentUser.Role})
-          </span>
-          <button 
-            onClick={() => setCurrentUser(null)} 
-            style={{ background: '#ef4444', color: 'white', border: 'none', padding: '8px 15px', borderRadius: '5px', cursor: 'pointer' }}
-          >
-            خروج
-          </button>
-        </div>
-      </div>
+      if (local && !forceRefresh) {
+        cachedDevices = JSON.parse(local);
+        renderDevices(cachedDevices);
+        return;
+      }
 
-      {/* لوحة المؤشرات (Dashboard Cards) */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px', marginBottom: '20px' }}>
-        <div style={{ background: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', textAlign: 'center' }}>
-          <h4 style={{ margin: '0 0 10px 0', color: '#64748b' }}>إجمالي المأموريات</h4>
-          <h2 style={{ margin: 0, color: '#2563eb' }}>{missions.length}</h2>
-        </div>
-        <div style={{ background: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', textAlign: 'center' }}>
-          <h4 style={{ margin: '0 0 10px 0', color: '#64748b' }}>الأجهزة المسجلة</h4>
-          <h2 style={{ margin: 0, color: '#16a34a' }}>{devices.length}</h2>
-        </div>
-        <div style={{ background: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', textAlign: 'center' }}>
-          <h4 style={{ margin: '0 0 10px 0', color: '#64748b' }}>طلبات قطع الغيار</h4>
-          <h2 style={{ margin: 0, color: '#d97706' }}>{spareParts.length}</h2>
-        </div>
-        <div style={{ background: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', textAlign: 'center' }}>
-          <h4 style={{ margin: '0 0 10px 0', color: '#64748b' }}>طلبات الإجازات</h4>
-          <h2 style={{ margin: 0, color: '#9333ea' }}>{vacations.length}</h2>
-        </div>
-      </div>
+      showLoading("جاري مزامنة 1470+ جهاز من الشيت...");
 
-      {/* جدول أحدث المأموريات */}
-      <div style={{ background: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
-        <h3 style={{ marginTop: 0, color: '#1e293b', marginBottom: '15px' }}>أحدث المأموريات الجارية</h3>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'right' }}>
-            <thead>
-              <tr style={{ background: '#f1f5f9', borderBottom: '2px solid #cbd5e1' }}>
-                <th style={{ padding: '12px', color: '#334155' }}>التاريخ</th>
-                <th style={{ padding: '12px', color: '#334155' }}>المهندس</th>
-                <th style={{ padding: '12px', color: '#334155' }}>العميل / المعمل</th>
-                <th style={{ padding: '12px', color: '#334155' }}>الجهاز</th>
-                <th style={{ padding: '12px', color: '#334155' }}>نوع الزيارة</th>
-                <th style={{ padding: '12px', color: '#334155' }}>الحالة</th>
-              </tr>
-            </thead>
-            <tbody>
-              {missions.length > 0 ? (
-                missions.map((mission, index) => (
-                  <tr key={index} style={{ borderBottom: '1px solid #e2e8f0' }}>
-                    <td style={{ padding: '12px', color: '#475569' }}>{mission.التاريخ || mission.Date || '-'}</td>
-                    <td style={{ padding: '12px', color: '#475569' }}>{mission.المهندس || mission.Engineer || '-'}</td>
-                    <td style={{ padding: '12px', color: '#475569' }}>{mission.العميل || mission.Client || '-'}</td>
-                    <td style={{ padding: '12px', color: '#475569' }}>{mission.الجهاز || mission.Device || '-'}</td>
-                    <td style={{ padding: '12px', color: '#475569' }}>{mission.نوع_الزيارة || mission.VisitType || '-'}</td>
-                    <td style={{ padding: '12px', color: '#475569' }}>
-                      <span style={{ 
-                        padding: '4px 8px', 
-                        borderRadius: '4px', 
-                        fontSize: '12px',
-                        background: '#dbeafe', 
-                        color: '#1e40af' 
-                      }}>
-                        {mission.الحالة || mission.Status || 'قيد التنفيذ'}
-                      </span>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="6" style={{ textAlign: 'center', padding: '20px', color: '#64748b' }}>
-                    لا توجد مأموريات مسجلة حالياً.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      try {
+        const res = await fetch(`${API_URL}?action=getAll`);
+        const data = await res.json();
+        hideLoading();
 
-    </div>
-  );
-}
+        if (data.status === "success" && data.devices) {
+          cachedDevices = data.devices;
+          localStorage.setItem("medtech_devices_cache", JSON.stringify(cachedDevices));
+          renderDevices(cachedDevices);
+        }
+      } catch (e) {
+        hideLoading();
+        if (local) {
+          cachedDevices = JSON.parse(local);
+          renderDevices(cachedDevices);
+        } else {
+          document.getElementById("devicesCount").innerText = "تعذر سحب الأجهزة حالياً.";
+        }
+      }
+    }
+
+    function renderDevices(list) {
+      const container = document.getElementById("devicesListContainer");
+      container.innerHTML = "";
+
+      // فلترة حسب صلاحية ومنطقة المستخدم إن لم يكن مدير عام
+      let filtered = list;
+      if (activeUser && activeUser.role !== "مدير عام" && activeUser.region && activeUser.region !== "الكل") {
+        filtered = list.filter(d => d["المنطقة"] === activeUser.region);
+      }
+
+      document.getElementById("devicesCount").innerText = `عدد الأجهزة المتاحة: ${filtered.length}`;
+
+      if (filtered.length === 0) {
+        container.innerHTML = "<p style='text-align:center; padding:20px; color:#94a3b8;'>لا توجد أجهزة مطابقة</p>";
+        return;
+      }
+
+      // عرض أول 60 جهاز للسرعة الفائقة
+      filtered.slice(0, 60).forEach(d => {
+        const card = document.createElement("div");
+        card.className = "device-card";
+        card.innerHTML = `
+          <div class="device-title">
+            <span>${d["اسم العميل / المعمل"] || "عميل غير مسمى"}</span>
+            <span class="badge badge-primary">${d["اسم الجهاز / الموديل"] || "جهاز"}</span>
+          </div>
+          <div class="device-meta">
+            <span><i class="fa-solid fa-barcode"></i> S/N: ${d["الرقم التسلسلي (S/N)"] || "غير مسجل"}</span>
+            <span><i class="fa-solid fa-location-dot"></i> ${d["المنطقة"] || ""} - ${d["المحافظة / المدينة"] || ""}</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function handleSearch() {
+      const q = document.getElementById("deviceSearchInput").value.trim().toLowerCase();
+      if (!q) {
+        renderDevices(cachedDevices);
+        return;
+      }
+
+      const results = cachedDevices.filter(d => 
+        String(d["اسم العميل / المعمل"] || "").toLowerCase().includes(q) ||
+        String(d["الرقم التسلسلي (S/N)"] || "").toLowerCase().includes(q) ||
+        String(d["اسم الجهاز / الموديل"] || "").toLowerCase().includes(q) ||
+        String(d["المحافظة / المدينة"] || "").toLowerCase().includes(q)
+      );
+
+      renderDevices(results);
+    }
+
+    function toggleAddDeviceForm() {
+      const card = document.getElementById("addDeviceCard");
+      card.style.display = card.style.display === "none" ? "block" : "none";
+    }
+
+    async function submitNewDevice() {
+      const client = document.getElementById("devClient").value.trim();
+      const model = document.getElementById("devModel").value.trim();
+      const serial = document.getElementById("devSerial").value.trim();
+      const region = document.getElementById("devRegion").value;
+      const city = document.getElementById("devCity").value.trim();
+
+      if (!client || !model) {
+        alert("يرجى كتابة اسم العميل وموديل الجهاز على الأقل");
+        return;
+      }
+
+      const payload = {
+        clientName: client,
+        model: model,
+        serialNumber: serial,
+        region: region,
+        city: city,
+        status: "يعمل بكفاءة"
+      };
+
+      showLoading("جاري إضافة الجهاز للشيت...");
+      await executeRemote("saveDevice", payload);
+      hideLoading();
+
+      toggleAddDeviceForm();
+      loadDevices(true);
+    }
+
+    // ================= 3. إرسال المأموريات =================
+    async function submitMission() {
+      const payload = {
+        date: document.getElementById("msDate").value,
+        clientName: document.getElementById("msClient").value.trim(),
+        deviceModel: document.getElementById("msModel").value.trim(),
+        serialNumber: document.getElementById("msSerial").value.trim(),
+        visitType: document.getElementById("msVisitType").value,
+        issue: document.getElementById("msIssue").value.trim(),
+        status: document.getElementById("msStatus").value,
+        engineerName: activeUser ? activeUser.name : "",
+        region: activeUser ? activeUser.region : ""
+      };
+
+      if (!payload.clientName) {
+        alert("يرجى كتابة اسم العميل / المستشفى");
+        return;
+      }
+
+      showLoading("جاري تسجيل المأمورية في الشيت...");
+      const ok = await executeRemote("saveMission", payload);
+      hideLoading();
+
+      if (ok) {
+        alert("تم تسجيل المأمورية في الشيت بنجاح!");
+        document.getElementById("msClient").value = "";
+        document.getElementById("msIssue").value = "";
+      }
+    }
+
+    // ================= 4. قطع الغيار =================
+    async function submitSparePart() {
+      const payload = {
+        date: new Date().toISOString().split("T")[0],
+        partName: document.getElementById("spName").value.trim(),
+        deviceModel: document.getElementById("spModel").value.trim(),
+        quantity: document.getElementById("spQty").value,
+        clientName: document.getElementById("spClient").value.trim(),
+        notes: document.getElementById("spNotes").value.trim(),
+        engineerName: activeUser ? activeUser.name : ""
+      };
+
+      if (!payload.partName) {
+        alert("يرجى إدخال اسم أو كود قطعة الغيار");
+        return;
+      }
+
+      showLoading("جاري تسجيل حركة قطعة الغيار...");
+      const ok = await executeRemote("saveSparePart", payload);
+      hideLoading();
+
+      if (ok) {
+        alert("تم تسجيل حركة قطع الغيار بنجاح!");
+        document.getElementById("spName").value = "";
+        document.getElementById("spClient").value = "";
+      }
+    }
+
+    // ================= 5. الإجازات =================
+    async function submitLeave() {
+      const payload = {
+        startDate: document.getElementById("lvStart").value,
+        endDate: document.getElementById("lvEnd").value,
+        type: document.getElementById("lvType").value,
+        notes: document.getElementById("lvNotes").value.trim(),
+        engineerName: activeUser ? activeUser.name : ""
+      };
+
+      showLoading("جاري إرسال طلب الإجازة للشيت...");
+      const ok = await executeRemote("saveLeave", payload);
+      hideLoading();
+
+      if (ok) {
+        alert("تم تقديم طلب الإجازة بنجاح وهو قيد المراجعة!");
+        document.getElementById("lvNotes").value = "";
+      }
+    }
+
+    // ================= الدالة المركزية للإرسال =================
+    async function executeRemote(action, dataObj) {
+      try {
+        const encoded = encodeURIComponent(JSON.stringify(dataObj));
+        const res = await fetch(`${API_URL}?action=${action}&data=${encoded}`);
+        const json = await res.json();
+        return json.status === "success";
+      } catch (err) {
+        alert("حدث خطأ في الاتصال بالشيت، تأكد من الإنترنت.");
+        return false;
+      }
+    }
+  </script>
+</body>
+</html>
