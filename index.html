@@ -3,6 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#0284c7" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="MedTech FSM" />
   <title>MedTech FSM - إدارة الخدمة الميدانية</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -138,6 +142,58 @@
     .search-box i { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
     .search-box input { padding-right: 40px; background: white; }
 
+    /* أزرار تثبيت التطبيق للموبايل */
+    .install-bar {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+      justify-content: center;
+    }
+    .install-btn {
+      flex: 1;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: white;
+      color: var(--text);
+      font-size: 0.8rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+      transition: all 0.2s;
+    }
+    .install-btn:hover { background: #f1f5f9; }
+    .install-btn i { font-size: 1.1rem; }
+    .install-btn.android i { color: #22c55e; }
+    .install-btn.ios i { color: #0f172a; }
+
+    /* نافذة إرشادات التثبيت للآيفون */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-card {
+      background: white;
+      border-radius: 18px;
+      padding: 22px;
+      max-width: 380px;
+      width: 100%;
+      text-align: center;
+    }
+    .modal-card h3 { font-size: 1.1rem; margin-bottom: 12px; color: var(--text); }
+    .modal-step { display: flex; align-items: center; gap: 10px; text-align: right; margin-bottom: 12px; font-size: 0.9rem; color: #334155; }
+    .modal-step i { font-size: 1.2rem; color: var(--primary); }
+
     #loadingOverlay {
       display: none;
       position: fixed;
@@ -163,9 +219,27 @@
 </head>
 <body>
 
+  <!-- شاشة الانتظار -->
   <div id="loadingOverlay">
     <div class="spinner"></div>
     <span id="loadingText">جاري المعالجة...</span>
+  </div>
+
+  <!-- نافذة تثبيت الآيفون المنبثقة -->
+  <div id="iosModal" class="modal-overlay">
+    <div class="modal-card">
+      <i class="fa-brands fa-apple" style="font-size: 2.2rem; color: #0f172a; margin-bottom: 10px;"></i>
+      <h3>تثبيت التطبيق على iPhone</h3>
+      <div class="modal-step">
+        <i class="fa-solid fa-arrow-up-from-bracket"></i>
+        <span>1. اضغط على زر <b>المشاركة (Share)</b> في متصفح Safari بالأسفل.</span>
+      </div>
+      <div class="modal-step">
+        <i class="fa-regular fa-square-plus"></i>
+        <span>2. اختر <b>إضافة إلى الشاشة الرئيسية (Add to Home Screen)</b>.</span>
+      </div>
+      <button class="btn" style="margin-top: 14px;" onclick="closeIosModal()">فهمت ذلك</button>
+    </div>
   </div>
 
   <div class="app-container">
@@ -183,30 +257,47 @@
 
     <main>
 
-      <!-- 1. تسجيل الدخول -->
+      <!-- 1. شاشة تسجيل الدخول -->
       <section id="viewLogin" class="view-section active">
-        <div style="text-align: center; margin: 30px 0 20px;">
+        <div style="text-align: center; margin: 25px 0 15px;">
           <h2 style="font-size: 1.3rem; font-weight: 800;">تسجيل دخول النظام</h2>
-          <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 4px;">متزامن مع جدول المهندسين والصلاحيات</p>
+          <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 4px;">اختر اسم المهندس وأدخل كود الدخول</p>
         </div>
 
         <div class="card">
+          <!-- القائمة المنسدلة للمهندسين بصلاحياتهم -->
           <div class="form-group">
-            <label>كود المهندس أو الاسم</label>
-            <input type="text" id="loginUser" placeholder="ENG-00 أو هشام عاصم" />
+            <label>اختر المهندس</label>
+            <select id="loginUserSelect">
+              <option value="">جاري تحميل قائمة المهندسين من الشيت...</option>
+            </select>
           </div>
+
           <div class="form-group">
             <label>كود الدخول (PIN)</label>
             <input type="password" id="loginPin" placeholder="••••" maxlength="6" inputmode="numeric" />
           </div>
+
           <button class="btn" onclick="executeLogin()">
             <i class="fa-solid fa-right-to-bracket"></i>
-            <span>دخول</span>
+            <span>دخول النظام</span>
           </button>
+
+          <!-- أزرار التثبيت على الهاتف -->
+          <div class="install-bar">
+            <button class="install-btn android" id="androidInstallBtn" onclick="installAndroidApp()">
+              <i class="fa-brands fa-android"></i>
+              <span>تثبيت Android</span>
+            </button>
+            <button class="install-btn ios" onclick="showIosInstallModal()">
+              <i class="fa-brands fa-apple"></i>
+              <span>تثبيت iPhone</span>
+            </button>
+          </div>
         </div>
       </section>
 
-      <!-- 2. الأجهزة والعملاء -->
+      <!-- 2. شاشة الأجهزة والعملاء -->
       <section id="viewDevices" class="view-section">
         <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom: 12px;">
           <h2 style="font-size: 1.15rem; font-weight: 700;">الأجهزة والعملاء</h2>
@@ -254,7 +345,7 @@
         <div id="devicesListContainer"></div>
       </section>
 
-      <!-- 3. المأموريات -->
+      <!-- 3. شاشة المأموريات -->
       <section id="viewMissions" class="view-section">
         <h2 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 12px;">تسجيل مأمورية</h2>
         <div class="card">
@@ -307,7 +398,7 @@
         </div>
       </section>
 
-      <!-- 4. قطع الغيار -->
+      <!-- 4. شاشة قطع الغيار -->
       <section id="viewParts" class="view-section">
         <h2 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 12px;">تسجيل حركة قطع الغيار</h2>
         <div class="card">
@@ -339,7 +430,7 @@
         </div>
       </section>
 
-      <!-- 5. الإجازات -->
+      <!-- 5. شاشة الإجازات -->
       <section id="viewLeaves" class="view-section">
         <h2 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 12px;">طلب إجازة</h2>
         <div class="card">
@@ -361,7 +452,7 @@
 
     </main>
 
-    <!-- التنقل السفلي -->
+    <!-- شريط التنقل السفلي -->
     <nav id="bottomNav" class="bottom-nav" style="display: none;">
       <div class="nav-item active" onclick="switchTab('viewDevices', this)">
         <i class="fa-solid fa-server"></i>
@@ -384,17 +475,27 @@
   </div>
 
   <script>
-    // الرابط المحدث الخاص بـ Google Apps Script
     const API_URL = "https://script.google.com/macros/s/AKfycby-1DX12E3GltEMDOHf700eSCl0N01RhWuH5R19wf9MV2Qhc4wyEqYH1o5n9rkvtsLX1w/exec";
 
     let cachedDevices = [];
+    let cachedEngineers = [];
     let activeUser = null;
+    let deferredPrompt = null;
+
+    // استماع لحدث التثبيت على أندرويد
+    window.addEventListener("beforeinstallprompt", (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+    });
 
     window.addEventListener("DOMContentLoaded", () => {
       const today = new Date().toISOString().split("T")[0];
       if (document.getElementById("msDate")) document.getElementById("msDate").value = today;
       if (document.getElementById("lvStart")) document.getElementById("lvStart").value = today;
       if (document.getElementById("lvEnd")) document.getElementById("lvEnd").value = today;
+
+      // سحب قائمة المهندسين لتغذية القائمة المنسدلة
+      loadEngineersList();
 
       const savedUser = localStorage.getItem("medtech_active_user");
       if (savedUser) {
@@ -420,16 +521,43 @@
       if (el) el.classList.add("active");
     }
 
+    // ================= تغذية القائمة المنسدلة بالمهندسين والصلاحيات =================
+    async function loadEngineersList() {
+      const select = document.getElementById("loginUserSelect");
+      try {
+        const res = await fetch(`${API_URL}?action=getAll`);
+        const data = await res.json();
+        if (data.status === "success" && data.engineers) {
+          cachedEngineers = data.engineers;
+          select.innerHTML = '<option value="">-- اختر المهندس من القائمة --</option>';
+          data.engineers.forEach(eng => {
+            const opt = document.createElement("option");
+            opt.value = eng["كود المهندس"] || eng["الاسم بالكامل"];
+            // عرض الاسم وبجانبه الصلاحية
+            opt.innerText = `${eng["الاسم بالكامل"]} (${eng["الدور / الصلاحية"]})`;
+            select.appendChild(opt);
+          });
+        }
+      } catch (e) {
+        select.innerHTML = '<option value="">تعذر تحميل المهندسين، اكتب الكود يدوياً</option>';
+      }
+    }
+
+    // ================= تسجيل الدخول =================
     async function executeLogin() {
-      const username = document.getElementById("loginUser").value.trim();
+      const username = document.getElementById("loginUserSelect").value.trim();
       const pin = document.getElementById("loginPin").value.trim();
 
-      if (!username || !pin) {
-        alert("يرجى إدخال اسم المستخدم ورقم PIN");
+      if (!username) {
+        alert("يرجى اختيار اسم المهندس من القائمة المنسدلة");
+        return;
+      }
+      if (!pin) {
+        alert("يرجى إدخال كود الدخول (PIN)");
         return;
       }
 
-      showLoading("جاري التحقق من بيانات المهندس...");
+      showLoading("جاري التحقق من الصلاحيات...");
 
       try {
         const res = await fetch(`${API_URL}?action=login&username=${encodeURIComponent(username)}&pin=${encodeURIComponent(pin)}`);
@@ -446,7 +574,7 @@
         }
       } catch (err) {
         hideLoading();
-        alert("تعذر الاتصال بالخادم، تأكد من الإنترنت.");
+        alert("تعذر الاتصال بالشيت، تأكد من الإنترنت.");
       }
     }
 
@@ -465,6 +593,30 @@
       }
     }
 
+    // ================= تثبيت التطبيق على الهواتف =================
+    function installAndroidApp() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === "accepted") {
+            console.log("تمت الموافقة على تثبيت التطبيق");
+          }
+          deferredPrompt = null;
+        });
+      } else {
+        alert("لتثبيت التطبيق على أندرويد:\nاضغط على قائمة المتصفح (⋮) ثم اختر 'تثبيت التطبيق' أو 'إضافة إلى الشاشة الرئيسية'.");
+      }
+    }
+
+    function showIosInstallModal() {
+      document.getElementById("iosModal").style.display = "flex";
+    }
+
+    function closeIosModal() {
+      document.getElementById("iosModal").style.display = "none";
+    }
+
+    // ================= الأجهزة والعملاء =================
     async function loadDevices(forceRefresh = false) {
       const local = localStorage.getItem("medtech_devices_cache");
       if (local && !forceRefresh) {
@@ -560,6 +712,7 @@
       loadDevices(true);
     }
 
+    // ================= المأموريات =================
     async function submitMission() {
       const payload = {
         date: document.getElementById("msDate").value,
@@ -587,6 +740,7 @@
       }
     }
 
+    // ================= قطع الغيار =================
     async function submitSparePart() {
       const payload = {
         date: new Date().toISOString().split("T")[0],
@@ -610,6 +764,7 @@
       }
     }
 
+    // ================= الإجازات =================
     async function submitLeave() {
       const payload = {
         engineerName: activeUser ? activeUser.name : "",
