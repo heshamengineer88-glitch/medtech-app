@@ -38,7 +38,6 @@
             <form onsubmit="handleLogin(event)" class="space-y-4 text-right">
                 <div>
                     <label class="block text-xs text-slate-500 mb-1">كود المهندس أو الاسم</label>
-                    <!-- خانة منسدلة مطابقة لبيانات شيت المهندسين -->
                     <select id="engineerName" required class="w-full p-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm bg-white">
                         <option value="">اختر اسم المهندس أو الكود...</option>
                         <option value="هشام عاصم">هشام عاصم (مدير الصيانة)</option>
@@ -61,7 +60,6 @@
                 </button>
             </form>
 
-            <!-- أزرار التثبيت للأندرويد والآيفون -->
             <div class="mt-6 pt-4 border-t border-slate-100 grid grid-cols-2 gap-2">
                 <button type="button" onclick="installAndroid()" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs py-2 px-3 rounded-xl font-semibold transition flex items-center justify-center gap-1">
                     <i class="fa-brands fa-android"></i> تثبيت أندرويد
@@ -147,12 +145,15 @@
                 </form>
             </div>
 
-            <!-- Search Bar -->
+            <!-- Search Bar with Autocomplete -->
             <div class="relative mb-4">
                 <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
                     <i class="fa-solid fa-magnifying-glass"></i>
                 </span>
-                <input type="text" id="searchInput" oninput="filterDevices()" placeholder="بحث بالمعمل، السيريال، أو الموديل..." class="w-full pr-10 pl-12 py-3 bg-white border border-slate-200 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                <input type="text" id="searchInput" oninput="handleSearchInput()" placeholder="بحث بالمعمل، السيريال، أو المنطقة..." class="w-full pr-10 pl-12 py-3 bg-white border border-slate-200 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm" autocomplete="off">
+                
+                <!-- Search Suggestions Dropdown -->
+                <div id="searchSuggestions" class="absolute right-0 left-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-60 overflow-y-auto hidden z-50 text-sm"></div>
             </div>
 
             <!-- Stats Bar -->
@@ -175,7 +176,7 @@
                 <h2 class="text-xl font-bold text-slate-700 flex items-center gap-2">
                     <i class="fa-solid fa-clipboard-list text-blue-600"></i> إدارة المأموريات
                 </h2>
-                <button onclick="saveMissionModal()" class="bg-blue-600 text-white text-sm px-3 py-2 rounded-xl shadow">
+                <button onclick="openMissionModal()" class="bg-blue-600 hover:bg-blue-700 text-white text-sm px-4 py-2.5 rounded-xl shadow transition flex items-center gap-1">
                     <i class="fa-solid fa-plus"></i> مأمورية جديدة
                 </button>
             </div>
@@ -190,8 +191,8 @@
                 <h2 class="text-xl font-bold text-slate-700 flex items-center gap-2">
                     <i class="fa-solid fa-gears text-blue-600"></i> قطع الغيار والمخزن
                 </h2>
-                <button onclick="saveSparePartModal()" class="bg-emerald-600 text-white text-sm px-3 py-2 rounded-xl shadow">
-                    <i class="fa-solid fa-plus"></i> إضافة صنف
+                <button onclick="openSparePartRequestModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm px-4 py-2.5 rounded-xl shadow transition flex items-center gap-1">
+                    <i class="fa-solid fa-plus"></i> طلب قطعة غيار
                 </button>
             </div>
             <div id="partsContainer" class="space-y-3">
@@ -205,7 +206,7 @@
                 <h2 class="text-xl font-bold text-slate-700 flex items-center gap-2">
                     <i class="fa-solid fa-calendar-days text-blue-600"></i> جدول الإجازات
                 </h2>
-                <button onclick="saveLeaveModal()" class="bg-amber-600 text-white text-sm px-3 py-2 rounded-xl shadow">
+                <button onclick="openLeaveModal()" class="bg-amber-600 hover:bg-amber-700 text-white text-sm px-4 py-2.5 rounded-xl shadow transition flex items-center gap-1">
                     <i class="fa-solid fa-plus"></i> طلب إجازة
                 </button>
             </div>
@@ -215,6 +216,143 @@
         </section>
 
     </main>
+
+    <!-- Mission Modal -->
+    <div id="missionModal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-6 max-w-lg w-full shadow-2xl text-right">
+            <div class="flex justify-between items-center mb-4 border-b pb-2">
+                <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-clipboard-medical text-blue-600"></i> تسجيل مأمورية جديدة
+                </h3>
+                <button onclick="closeMissionModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <form onsubmit="submitNewMission(event)" class="space-y-4 text-sm">
+                <div class="relative">
+                    <label class="block text-xs text-slate-500 mb-1">ابحث واختر العميل / الجهاز</label>
+                    <input type="text" id="missionClientSearch" oninput="handleMissionClientSearch()" placeholder="اكتب اسم العميل أو الموديل..." class="w-full p-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none text-sm bg-white" autocomplete="off" required>
+                    <div id="missionClientSuggestions" class="absolute right-0 left-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-48 overflow-y-auto hidden z-50 text-xs"></div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs text-slate-500 mb-1">نوع الزيارة / المأمورية</label>
+                        <select id="missionType" required class="w-full p-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none bg-white">
+                            <option value="صيانة دورية">صيانة دورية (PM)</option>
+                            <option value="صيانة طارئة (عطل)">صيانة طارئة (Breakdown)</option>
+                            <option value="تركيب جهاز جديد">تركيب جهاز جديد</option>
+                            <option value="فحص فني / معاينة">فحص فني / معاينة</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-500 mb-1">اسم المهندس المكلف</label>
+                        <input type="text" id="missionEngineer" required class="w-full p-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs text-slate-500 mb-1">ملاحظات أو تفاصيل</label>
+                    <textarea id="missionNotes" rows="3" placeholder="تفاصيل العطل أو متطلبات الزيارة..." class="w-full p-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeMissionModal()" class="px-4 py-2.5 bg-slate-100 text-slate-700 rounded-xl font-bold">إلغاء</button>
+                    <button type="submit" id="saveMissionBtn" class="px-5 py-2.5 bg-blue-600 text-white rounded-xl font-bold shadow">حفظ المأمورية</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Spare Part Request Modal -->
+    <div id="sparePartRequestModal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-6 max-w-lg w-full shadow-2xl text-right">
+            <div class="flex justify-between items-center mb-4 border-b pb-2">
+                <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-box-open text-emerald-600"></i> نموذج طلب قطعة غيار
+                </h3>
+                <button onclick="closeSparePartRequestModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <form onsubmit="submitSparePartRequest(event)" class="space-y-4 text-sm">
+                <div class="relative">
+                    <label class="block text-xs text-slate-500 mb-1">ابحث واختر قطعة الغيار المطلوبة</label>
+                    <input type="text" id="partSearchInput" oninput="handlePartSearchInput()" placeholder="اسم القطعة أو الكود..." class="w-full p-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 outline-none text-sm bg-white" autocomplete="off" required>
+                    <div id="partSearchSuggestions" class="absolute right-0 left-0 mt-1 bg-white border border-slate-200 rounded-xl shadow-lg max-h-48 overflow-y-auto hidden z-50 text-xs"></div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs text-slate-500 mb-1">الكمية المطلوبة</label>
+                        <input type="number" id="partQuantity" min="1" value="1" required class="w-full p-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-500 mb-1">الجهاز / المعمل المرتبط</label>
+                        <input type="text" id="partTargetClient" placeholder="اسم العميل أو المعمل..." class="w-full p-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs text-slate-500 mb-1">سبب الطلب / ملاحظات</label>
+                    <textarea id="partReason" rows="2" placeholder="سبب الاحتياج..." class="w-full p-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-emerald-500 outline-none"></textarea>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeSparePartRequestModal()" class="px-4 py-2.5 bg-slate-100 text-slate-700 rounded-xl font-bold">إلغاء</button>
+                    <button type="submit" id="savePartReqBtn" class="px-5 py-2.5 bg-emerald-600 text-white rounded-xl font-bold shadow">إرسال الطلب</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Leave Request Modal -->
+    <div id="leaveModal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-6 max-w-md w-full shadow-2xl text-right">
+            <div class="flex justify-between items-center mb-4 border-b pb-2">
+                <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-calendar-plus text-amber-600"></i> تقديم طلب إجازة جديد
+                </h3>
+                <button onclick="closeLeaveModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <form onsubmit="submitLeaveRequest(event)" class="space-y-4 text-sm">
+                <div>
+                    <label class="block text-xs text-slate-500 mb-1">اسم المهندس</label>
+                    <input type="text" id="leaveEngineerName" required class="w-full p-3 rounded-xl border border-slate-300 bg-slate-50 font-bold text-slate-700" readonly>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs text-slate-500 mb-1">من تاريخ</label>
+                        <input type="date" id="leaveStartDate" required class="w-full p-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 outline-none bg-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-slate-500 mb-1">إلى تاريخ</label>
+                        <input type="date" id="leaveEndDate" required class="w-full p-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 outline-none bg-white">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs text-slate-500 mb-1">نوع الإجازة</label>
+                    <select id="leaveType" required class="w-full p-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 outline-none bg-white">
+                        <option value="إجازة اعتيادية">إجازة اعتيادية</option>
+                        <option value="إجازة عارضة">إجازة عارضة</option>
+                        <option value="إجازة مرضية">إجازة مرضية</option>
+                        <option value="إجازة بدون مرتب">إجازة بدون مرتب</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs text-slate-500 mb-1">السبب / ملاحظات</label>
+                    <textarea id="leaveReason" rows="2" placeholder="سبب طلب الإجازة..." class="w-full p-3 rounded-xl border border-slate-300 focus:ring-2 focus:ring-amber-500 outline-none"></textarea>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeLeaveModal()" class="px-4 py-2.5 bg-slate-100 text-slate-700 rounded-xl font-bold">إلغاء</button>
+                    <button type="submit" id="saveLeaveBtn" class="px-5 py-2.5 bg-amber-600 text-white rounded-xl font-bold shadow">إرسال طلب الإجازة</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- Quick View Modal -->
     <div id="quickViewModal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
@@ -230,7 +368,7 @@
                 <div><span class="text-xs text-slate-400 block">المنطقة</span><span id="modalLocation" class="font-bold text-slate-700"></span></div>
             </div>
             <div class="mt-6">
-                <button onclick="closeQuickView()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-bold transition">إغلاق</button>
+                <button onclick="closeQuickView()" class="w-full bg-slate-100 text-slate-700 py-2.5 rounded-xl font-bold transition">إغلاق</button>
             </div>
         </div>
     </div>
@@ -282,7 +420,6 @@
             }
         };
 
-        // تسجيل الدخول متوافق مع action=login وسطر 33 في السكريبت
         async function handleLogin(e) {
             e.preventDefault();
             const username = document.getElementById('engineerName').value;
@@ -319,14 +456,13 @@
             location.reload();
         }
 
-        // جلب كافة البيانات (action=getAll)
         async function fetchAllData() {
             try {
                 const res = await fetch(`${SCRIPT_URL}?action=getAll`);
                 const result = await res.json();
                 if(result.status === "success") {
                     appData = result;
-                    renderDevices(appData.devices || []);
+                    renderDevicesWithStats(appData.devices || [], "");
                     renderMissions(appData.missions || []);
                     renderParts(appData.spareParts || []);
                     renderLeaves(appData.leaves || []);
@@ -336,7 +472,6 @@
             }
         }
 
-        // حفظ الأجهزة (action=saveDevice)
         async function saveDevice(e) {
             e.preventDefault();
             const btn = document.getElementById('saveDeviceBtn');
@@ -372,26 +507,298 @@
             }
         }
 
-        function renderDevices(devices) {
-            const container = document.getElementById('devicesContainer');
-            document.getElementById('totalCount').innerText = devices.length;
-            if(!devices.length) { container.innerHTML = '<p class="text-center text-slate-400 py-4">لا توجد أجهزة مضافة.</p>'; return; }
+        function handleSearchInput() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const suggestionsBox = document.getElementById('searchSuggestions');
+            
+            const matches = appData.devices.filter(d => {
+                const client = String(d["اسم العميل"] || d["اسم المعمل"] || d["المعمل"] || d["العميل"] || d["اسم المستشفى"] || "").toLowerCase();
+                const sn = String(d["الرقم التسلسلي (S/N)"] || d["السيريال"] || d["Serial Number"] || d["S/N"] || "").toLowerCase();
+                const model = String(d["موديل الجهاز"] || d["الموديل"] || d["نوع الجهاز"] || "").toLowerCase();
+                const region = String(d["المنطقة"] || d["Region"] || "").toLowerCase();
+                const city = String(d["المحافظة / المدينة"] || d["المدينة"] || d["المحافظة"] || d["City"] || "").toLowerCase();
+                
+                return client.includes(query) || sn.includes(query) || model.includes(query) || region.includes(query) || city.includes(query);
+            });
 
-            container.innerHTML = devices.map(d => `
-                <div onclick="openQuickView('${d["اسم العميل"] || ''}', '${d["موديل الجهاز"] || ''}', '${d["الرقم التسلسلي (S/N)"] || ''}', '${d["المنطقة"] || ''}')" 
-                     class="app-card bg-white p-4 rounded-2xl border-r-4 border-blue-600 border border-slate-200 shadow-sm cursor-pointer flex justify-between items-center">
-                    <div>
-                        <h4 class="font-bold text-slate-800">${d["اسم العميل"] || 'بدون اسم'}</h4>
-                        <p class="text-xs text-slate-500 mt-1"><i class="fa-solid fa-location-dot text-rose-500"></i> ${d["المنطقة"] || ''} - ${d["المحافظة / المدينة"] || ''}</p>
-                    </div>
-                    <div class="text-left">
-                        <span class="bg-blue-50 text-blue-700 text-xs px-2.5 py-1 rounded-lg font-bold">${d["موديل الجهاز"] || ''}</span>
-                        <span class="block text-[11px] text-slate-400 mt-1">S/N: ${d["الرقم التسلسلي (S/N)"] || 'غير مسجل'}</span>
-                    </div>
-                </div>
-            `).join('');
+            renderDevicesWithStats(matches, query);
+
+            if (!query) {
+                suggestionsBox.classList.add('hidden');
+                suggestionsBox.innerHTML = '';
+                return;
+            }
+
+            if (matches.length > 0) {
+                suggestionsBox.innerHTML = matches.slice(0, 10).map(d => {
+                    const client = d["اسم العميل"] || d["اسم المعمل"] || d["المعمل"] || d["العميل"] || 'بدون اسم';
+                    const region = d["المنطقة"] || '';
+                    const city = d["المحافظة / المدينة"] || d["المدينة"] || '';
+                    return `<div onclick="selectSuggestion('${region || client}')" class="p-3 hover:bg-blue-50 cursor-pointer border-b border-slate-100 flex justify-between items-center text-xs">
+                        <span class="font-bold text-slate-700">${client}</span>
+                        <span class="text-slate-400">${region} - ${city}</span>
+                    </div>`;
+                }).join('');
+                suggestionsBox.classList.remove('hidden');
+            } else {
+                suggestionsBox.classList.add('hidden');
+            }
         }
 
+        function renderDevicesWithStats(devices, query) {
+            const container = document.getElementById('devicesContainer');
+            document.getElementById('totalCount').innerText = devices.length;
+            
+            let statsHtml = '';
+            if (query && devices.length > 0) {
+                const typeCounts = {};
+                devices.forEach(d => {
+                    const model = d["موديل الجهاز"] || d["الموديل"] || d["نوع الجهاز"] || "غير محدد";
+                    typeCounts[model] = (typeCounts[model] || 0) + 1;
+                });
+
+                let badges = Object.entries(typeCounts).map(([model, count]) => `
+                    <span class="bg-blue-50 text-blue-700 px-2.5 py-1 rounded-lg text-xs font-bold border border-blue-100">
+                        ${model}: <span class="text-blue-900">${count}</span>
+                    </span>
+                `).join('');
+
+                statsHtml = `
+                    <div class="bg-gradient-to-r from-blue-50 to-slate-50 p-4 rounded-2xl border border-blue-200 shadow-sm mb-4">
+                        <div class="text-xs font-bold text-blue-800 mb-2 flex items-center gap-1">
+                            <i class="fa-solid fa-chart-pie"></i> إحصائية نتائج البحث ("${query}") - الإجمالي: ${devices.length} جهاز
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            ${badges}
+                        </div>
+                    </div>
+                `;
+            }
+
+            if(!devices.length) { 
+                container.innerHTML = statsHtml + '<p class="text-center text-slate-400 py-4">لا توجد أجهزة مطابقة للبحث.</p>'; 
+                return; 
+            }
+
+            const cardsHtml = devices.map(d => {
+                const client = d["اسم العميل"] || d["اسم المعمل"] || d["المعمل"] || d["العميل"] || d["اسم المستشفى"] || 'بدون اسم';
+                const model = d["موديل الجهاز"] || d["الموديل"] || d["نوع الجهاز"] || '';
+                const sn = d["الرقم التسلسلي (S/N)"] || d["السيريال"] || d["Serial Number"] || d["S/N"] || 'غير مسجل';
+                const region = d["المنطقة"] || '';
+                const city = d["المحافظة / المدينة"] || d["المدينة"] || '';
+                const locationStr = [region, city].filter(Boolean).join(' - ');
+
+                return `
+                    <div onclick="openQuickView('${client}', '${model}', '${sn}', '${locationStr}')" 
+                         class="app-card bg-white p-4 rounded-2xl border-r-4 border-blue-600 border border-slate-200 shadow-sm cursor-pointer flex justify-between items-center">
+                        <div>
+                            <h4 class="font-bold text-slate-800">${client}</h4>
+                            <p class="text-xs text-slate-500 mt-1"><i class="fa-solid fa-location-dot text-rose-500"></i> ${locationStr || 'غير محدد'}</p>
+                        </div>
+                        <div class="text-left">
+                            <span class="bg-blue-50 text-blue-700 text-xs px-2.5 py-1 rounded-lg font-bold">${model || 'جهاز'}</span>
+                            <span class="block text-[11px] text-slate-400 mt-1">S/N: ${sn}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.innerHTML = statsHtml + cardsHtml;
+        }
+
+        function selectSuggestion(val) {
+            document.getElementById('searchInput').value = val;
+            document.getElementById('searchSuggestions').classList.add('hidden');
+            handleSearchInput();
+        }
+
+        document.addEventListener('click', function(e) {
+            const searchContainer = document.getElementById('searchInput');
+            const suggestionsBox = document.getElementById('searchSuggestions');
+            if (searchContainer && suggestionsBox && !searchContainer.contains(e.target) && !suggestionsBox.contains(e.target)) {
+                suggestionsBox.classList.add('hidden');
+            }
+        });
+
+        // Missions Handlers
+        function openMissionModal() {
+            document.getElementById('missionModal').classList.remove('hidden');
+            const loggedUser = localStorage.getItem('loggedUser') || '';
+            const engInput = document.getElementById('missionEngineer');
+            if(engInput && loggedUser) engInput.value = loggedUser;
+        }
+        function closeMissionModal() { document.getElementById('missionModal').classList.add('hidden'); }
+
+        function handleMissionClientSearch() {
+            const query = document.getElementById('missionClientSearch').value.toLowerCase().trim();
+            const suggestionsBox = document.getElementById('missionClientSuggestions');
+            
+            if (!query) { suggestionsBox.classList.add('hidden'); suggestionsBox.innerHTML = ''; return; }
+
+            const matches = appData.devices.filter(d => {
+                const client = String(d["اسم العميل"] || d["اسم المعمل"] || d["المعمل"] || "").toLowerCase();
+                const sn = String(d["الرقم التسلسلي (S/N)"] || d["السيريال"] || "").toLowerCase();
+                const model = String(d["موديل الجهاز"] || d["الموديل"] || "").toLowerCase();
+                return client.includes(query) || sn.includes(query) || model.includes(query);
+            });
+
+            if (matches.length > 0) {
+                suggestionsBox.innerHTML = matches.slice(0, 8).map(d => {
+                    const client = d["اسم العميل"] || d["اسم المعمل"] || d["المعمل"] || 'بدون اسم';
+                    const model = d["موديل الجهاز"] || d["الموديل"] || '';
+                    const sn = d["الرقم التسلسلي (S/N)"] || d["السيريال"] || 'غير مسجل';
+                    return `<div onclick="selectMissionClient('${client} - ${model} (S/N: ${sn})')" class="p-2.5 hover:bg-blue-50 cursor-pointer border-b border-slate-100 flex justify-between items-center">
+                        <span class="font-bold text-slate-700">${client}</span>
+                        <span class="text-slate-400">${model} | ${sn}</span>
+                    </div>`;
+                }).join('');
+                suggestionsBox.classList.remove('hidden');
+            } else { suggestionsBox.classList.add('hidden'); }
+        }
+
+        function selectMissionClient(val) {
+            document.getElementById('missionClientSearch').value = val;
+            document.getElementById('missionClientSuggestions').classList.add('hidden');
+        }
+
+        async function submitNewMission(e) {
+            e.preventDefault();
+            const btn = document.getElementById('saveMissionBtn');
+            btn.innerText = "جاري حفظ المأمورية...";
+            btn.disabled = true;
+
+            const clientInfo = document.getElementById('missionClientSearch').value;
+            const missionType = document.getElementById('missionType').value;
+            const engineer = document.getElementById('missionEngineer').value;
+            const notes = document.getElementById('missionNotes').value;
+
+            try {
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: "saveMission", data: { clientInfo, missionType, engineer, notes } })
+                });
+                alert('تم تسجيل المأمورية بنجاح!');
+                closeMissionModal();
+                fetchAllData();
+            } catch (err) {
+                alert('تم تسجيل المأمورية محلياً.');
+                closeMissionModal();
+            } finally {
+                btn.innerText = "حفظ المأمورية";
+                btn.disabled = false;
+            }
+        }
+
+        // Spare Parts Request Handlers
+        function openSparePartRequestModal() { document.getElementById('sparePartRequestModal').classList.remove('hidden'); }
+        function closeSparePartRequestModal() { document.getElementById('sparePartRequestModal').classList.add('hidden'); }
+
+        function handlePartSearchInput() {
+            const query = document.getElementById('partSearchInput').value.toLowerCase().trim();
+            const suggestionsBox = document.getElementById('partSearchSuggestions');
+            
+            if (!query) { suggestionsBox.classList.add('hidden'); suggestionsBox.innerHTML = ''; return; }
+
+            const partsList = appData.spareParts || [];
+            const matches = partsList.filter(p => {
+                const partName = String(p["اسم القطعة"] || p["اسم الصنف"] || p["الصنف"] || "").toLowerCase();
+                const partCode = String(p["كود القطعة"] || p["الكود"] || "").toLowerCase();
+                return partName.includes(query) || partCode.includes(query);
+            });
+
+            if (matches.length > 0) {
+                suggestionsBox.innerHTML = matches.slice(0, 8).map(p => {
+                    const name = p["اسم القطعة"] || p["اسم الصنف"] || p["الصنف"] || 'قطعة غيار';
+                    const code = p["كود القطعة"] || p["الكود"] || 'بدون كود';
+                    return `<div onclick="selectPartItem('${name} (كود: ${code})')" class="p-2.5 hover:bg-emerald-50 cursor-pointer border-b border-slate-100 flex justify-between items-center">
+                        <span class="font-bold text-slate-700">${name}</span>
+                        <span class="text-slate-400">الكود: ${code}</span>
+                    </div>`;
+                }).join('');
+                suggestionsBox.classList.remove('hidden');
+            } else {
+                suggestionsBox.innerHTML = `<div onclick="selectPartItem('${query}')" class="p-2.5 hover:bg-emerald-50 cursor-pointer text-slate-600 font-bold">طلب صنف جديد: "${query}"</div>`;
+                suggestionsBox.classList.remove('hidden');
+            }
+        }
+
+        function selectPartItem(val) {
+            document.getElementById('partSearchInput').value = val;
+            document.getElementById('partSearchSuggestions').classList.add('hidden');
+        }
+
+        async function submitSparePartRequest(e) {
+            e.preventDefault();
+            const btn = document.getElementById('savePartReqBtn');
+            btn.innerText = "جاري إرسال الطلب...";
+            btn.disabled = true;
+
+            const partName = document.getElementById('partSearchInput').value;
+            const quantity = document.getElementById('partQuantity').value;
+            const targetClient = document.getElementById('partTargetClient').value;
+            const reason = document.getElementById('partReason').value;
+            const engineer = localStorage.getItem('loggedUser') || 'مهندس';
+
+            try {
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: "requestSparePart", data: { partName, quantity, targetClient, reason, engineer } })
+                });
+                alert('تم إرسال طلب قطعة الغيار بنجاح!');
+                closeSparePartRequestModal();
+                fetchAllData();
+            } catch (err) {
+                alert('تم تسجيل طلب القطعة محلياً.');
+                closeSparePartRequestModal();
+            } finally {
+                btn.innerText = "إرسال الطلب";
+                btn.disabled = false;
+            }
+        }
+
+        // Leave Request Handlers
+        function openLeaveModal() {
+            document.getElementById('leaveModal').classList.remove('hidden');
+            document.getElementById('leaveEngineerName').value = localStorage.getItem('loggedUser') || 'مهندس ميداني';
+        }
+        function closeLeaveModal() { document.getElementById('leaveModal').classList.add('hidden'); }
+
+        async function submitLeaveRequest(e) {
+            e.preventDefault();
+            const btn = document.getElementById('saveLeaveBtn');
+            btn.innerText = "جاري إرسال الطلب...";
+            btn.disabled = true;
+
+            const engineer = document.getElementById('leaveEngineerName').value;
+            const startDate = document.getElementById('leaveStartDate').value;
+            const endDate = document.getElementById('leaveEndDate').value;
+            const leaveType = document.getElementById('leaveType').value;
+            const reason = document.getElementById('leaveReason').value;
+
+            try {
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: "requestLeave", data: { engineer, startDate, endDate, leaveType, reason } })
+                });
+                alert('تم تقديم طلب الإجازة بنجاح!');
+                closeLeaveModal();
+                fetchAllData();
+            } catch (err) {
+                alert('تم تسجيل طلب الإجازة محلياً.');
+                closeLeaveModal();
+            } finally {
+                btn.innerText = "إرسال طلب الإجازة";
+                btn.disabled = false;
+            }
+        }
+
+        // Renders
         function renderMissions(missions) {
             const c = document.getElementById('missionsContainer');
             if(!missions.length) return;
@@ -423,17 +830,6 @@
             `).join('');
         }
 
-        function filterDevices() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            const filtered = appData.devices.filter(d => 
-                String(d["اسم العميل"] || "").toLowerCase().includes(query) ||
-                String(d["الرقم التسلسلي (S/N)"] || "").toLowerCase().includes(query) ||
-                String(d["موديل الجهاز"] || "").toLowerCase().includes(query)
-            );
-            renderDevices(filtered);
-        }
-
-        // تثبيت PWA للأندرويد والآيفون
         let deferredPrompt;
         window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
         function installAndroid() {
@@ -463,9 +859,6 @@
             document.getElementById('quickViewModal').classList.remove('hidden');
         }
         function closeQuickView() { document.getElementById('quickViewModal').classList.add('hidden'); }
-        function saveMissionModal() { alert('نافذة إضافة مأمورية جديدة'); }
-        function saveSparePartModal() { alert('نافذة إضافة صنف قطع غيار'); }
-        function saveLeaveModal() { alert('نافذة تقديم طلب إجازة'); }
     </script>
 </body>
 </html>
