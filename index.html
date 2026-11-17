@@ -130,7 +130,7 @@
     .btn-accent { background: var(--accent); }
     .btn-danger { background: var(--danger); }
 
-    .device-card, .mission-card, .issue-card {
+    .device-card, .mission-card, .issue-card, .part-card {
       background: white;
       border: 1px solid var(--border);
       border-radius: 14px;
@@ -144,18 +144,20 @@
       transition: all 0.2s ease;
       box-shadow: 0 2px 6px rgba(0,0,0,0.03);
     }
-    .device-card:active, .mission-card:active, .issue-card:active {
+    .device-card:active, .mission-card:active, .issue-card:active, .part-card:active {
       transform: scale(0.98);
       background-color: #f8fafc;
     }
 
     .issue-card { border-right-color: var(--danger); }
+    .part-card { border-right-color: #8b5cf6; }
 
     .badge { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: 700; }
     .badge-primary { background: var(--primary-light); color: var(--primary-dark); }
     .badge-success { background: #dcfce7; color: #166534; }
     .badge-warning { background: #fef3c7; color: #92400e; }
     .badge-danger { background: #fee2e2; color: #991b1b; }
+    .badge-purple { background: #ede9fe; color: #6d28d9; }
 
     .search-box { position: relative; margin-bottom: 12px; }
     .search-box i { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
@@ -187,7 +189,26 @@
     }
     .autocomplete-item:hover { background-color: var(--primary-light); color: var(--primary-dark); }
 
-    /* شبكة الإحصائيات السريعة */
+    /* شبكة تصنيفات الأجهزة المفصلة */
+    .category-pills-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-top: 8px;
+      margin-bottom: 10px;
+    }
+    .cat-pill {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .cat-title { font-size: 0.72rem; color: var(--text-muted); font-weight: 700; }
+    .cat-count { font-size: 0.95rem; font-weight: 800; color: var(--primary); }
+
     .stats-summary-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -204,7 +225,6 @@
     .stat-number { font-size: 1.4rem; font-weight: 800; color: var(--primary-dark); }
     .stat-desc { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; margin-top: 2px; }
 
-    /* تفاصيل الجهاز المنبثقة */
     .details-modal {
       display: none;
       position: fixed;
@@ -224,10 +244,8 @@
       overflow-y: auto;
       animation: slideUp 0.25s ease-out;
     }
-    @keyframes slideUp {
-      from { transform: translateY(100%); }
-      to { transform: translateY(0); }
-    }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
     .details-header {
       display: flex;
       justify-content: space-between;
@@ -251,68 +269,29 @@
     .detail-label { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; margin-bottom: 2px; }
     .detail-val { font-size: 0.88rem; font-weight: 700; color: var(--text); word-break: break-word; }
 
-    .install-bar {
-      display: flex;
-      gap: 10px;
-      margin-top: 18px;
-      justify-content: center;
-    }
+    .install-bar { display: flex; gap: 10px; margin-top: 18px; justify-content: center; }
     .install-btn {
-      flex: 1;
-      padding: 10px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      background: white;
-      color: var(--text);
-      font-size: 0.8rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      cursor: pointer;
+      flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--border);
+      background: white; color: var(--text); font-size: 0.8rem; font-weight: 600;
+      display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer;
     }
     .install-btn.android i { color: #22c55e; }
     .install-btn.ios i { color: #0f172a; }
 
     .modal-overlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.6);
-      z-index: 1000;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
+      display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; padding: 20px;
     }
-    .modal-card {
-      background: white;
-      border-radius: 18px;
-      padding: 22px;
-      max-width: 380px;
-      width: 100%;
-      text-align: center;
-    }
+    .modal-card { background: white; border-radius: 18px; padding: 22px; max-width: 380px; width: 100%; text-align: center; }
 
     #loadingOverlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(15, 23, 42, 0.5);
-      z-index: 999;
-      justify-content: center;
-      align-items: center;
-      color: white;
-      flex-direction: column;
-      gap: 12px;
-      font-weight: 600;
+      display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.5); z-index: 999; justify-content: center; align-items: center;
+      color: white; flex-direction: column; gap: 12px; font-weight: 600;
     }
     .spinner {
-      width: 38px; height: 38px;
-      border: 4px solid rgba(255,255,255,0.3);
-      border-top-color: white;
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
+      width: 38px; height: 38px; border: 4px solid rgba(255,255,255,0.3); border-top-color: white;
+      border-radius: 50%; animation: spin 0.8s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
   </style>
@@ -391,7 +370,6 @@
     </div>
   </div>
 
-  <!-- نافذة تثبيت iPhone -->
   <div id="iosModal" class="modal-overlay">
     <div class="modal-card">
       <i class="fa-brands fa-apple" style="font-size: 2.2rem; color: #0f172a; margin-bottom: 10px;"></i>
@@ -455,7 +433,7 @@
         </div>
       </section>
 
-      <!-- 2. شاشة الأجهزة والعملاء -->
+      <!-- 2. شاشة الأجهزة والعملاء (مع إحصائيات المنطقة والنوع) -->
       <section id="viewDevices" class="view-section">
         <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom: 12px;">
           <h2 style="font-size: 1.15rem; font-weight: 700;">الأجهزة والعملاء</h2>
@@ -466,26 +444,11 @@
 
         <div id="addDeviceCard" class="card" style="display: none; border-color: var(--accent);">
           <h3 style="font-size: 0.95rem; margin-bottom: 10px; color: var(--accent);">إضافة جهاز جديد للشيت</h3>
-          <div class="form-group">
-            <label>اسم العميل / المعمل</label>
-            <input type="text" id="devClient" />
-          </div>
-          <div class="form-group">
-            <label>اسم الجهاز / الموديل</label>
-            <input type="text" id="devModel" />
-          </div>
-          <div class="form-group">
-            <label>الشركة المصنعة</label>
-            <input type="text" id="devMaker" placeholder="A.M.S / NEO MEDICA / HUMAN GMBH" />
-          </div>
-          <div class="form-group">
-            <label>التصنيف</label>
-            <input type="text" id="devCategory" placeholder="AUTO CHEMISTRY / HEMATOLOGY" />
-          </div>
-          <div class="form-group">
-            <label>الرقم التسلسلي (S/N)</label>
-            <input type="text" id="devSerial" />
-          </div>
+          <div class="form-group"><label>اسم العميل / المعمل</label><input type="text" id="devClient" /></div>
+          <div class="form-group"><label>اسم الجهاز / الموديل</label><input type="text" id="devModel" /></div>
+          <div class="form-group"><label>الشركة المصنعة</label><input type="text" id="devMaker" placeholder="A.M.S / NEO MEDICA / HUMAN GMBH" /></div>
+          <div class="form-group"><label>التصنيف</label><input type="text" id="devCategory" placeholder="AUTO CHEMISTRY / HEMATOLOGY / MANUAL CHEM." /></div>
+          <div class="form-group"><label>الرقم التسلسلي (S/N)</label><input type="text" id="devSerial" /></div>
           <div class="form-group">
             <label>المنطقة</label>
             <select id="devRegion">
@@ -495,24 +458,65 @@
               <option value="الصعيد">الصعيد</option>
             </select>
           </div>
-          <div class="form-group">
-            <label>المحافظة / المدينة</label>
-            <input type="text" id="devCity" />
-          </div>
-          <div class="form-group">
-            <label>نوع العقد</label>
-            <input type="text" id="devContract" placeholder="ضمان / عقد شامل / زيارات" />
-          </div>
+          <div class="form-group"><label>المحافظة / المدينة</label><input type="text" id="devCity" /></div>
+          <div class="form-group"><label>نوع العقد</label><input type="text" id="devContract" placeholder="ضمان / عقد شامل" /></div>
           <button class="btn btn-accent" onclick="submitNewDevice()">حفظ في الشيت</button>
+        </div>
+
+        <!-- فلاتر سريعة للبحث باسم الجهاز أو المنطقة -->
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:10px;">
+          <div>
+            <select id="deviceRegionFilter" onchange="handleDeviceFilters()">
+              <option value="الكل">كل المناطق</option>
+              <option value="منطقة الدلتا">منطقة الدلتا</option>
+              <option value="المنطقة الشمالية">المنطقة الشمالية</option>
+              <option value="القاهرة الكبرى">القاهرة الكبرى</option>
+              <option value="الصعيد">الصعيد</option>
+            </select>
+          </div>
+          <div>
+            <select id="deviceCategoryFilter" onchange="handleDeviceFilters()">
+              <option value="الكل">كل التصنيفات</option>
+              <option value="AUTO CHEMISTRY">Auto Chemistry</option>
+              <option value="MANUAL CHEM.">Manual Chemistry</option>
+              <option value="HEMATOLOGY">Hematology</option>
+              <option value="IMMUNOLOGY">Immunology</option>
+            </select>
+          </div>
         </div>
 
         <div class="search-box">
           <i class="fa-solid fa-magnifying-glass"></i>
-          <input type="text" id="deviceSearchInput" placeholder="بحث بالمعمل، المحافظة، المنطقة، السيريال، أو الموديل..." oninput="handleSearch()" autocomplete="off" />
+          <input type="text" id="deviceSearchInput" placeholder="بحث باسم الجهاز، المعمل، المحافظة، السيريال..." oninput="handleDeviceFilters()" autocomplete="off" />
           <div id="autocompleteList" class="autocomplete-list"></div>
         </div>
 
-        <div id="devicesCount" style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;"></div>
+        <!-- لوحة أعداد وإحصائيات المنطقة والتصنيفات -->
+        <div class="card" style="padding:12px; margin-bottom:12px; background:#f0f9ff; border-color:#bae6fd;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:0.85rem; font-weight:700; color:var(--primary-dark);" id="deviceStatsTitle">إجمالي الأجهزة:</span>
+            <span class="badge badge-primary" style="font-size:0.85rem;" id="deviceTotalCountBadge">0</span>
+          </div>
+          <div class="category-pills-grid">
+            <div class="cat-pill">
+              <span class="cat-title">Auto Chemistry</span>
+              <span class="cat-count" id="countAutoChem">0</span>
+            </div>
+            <div class="cat-pill">
+              <span class="cat-title">Manual Chem.</span>
+              <span class="cat-count" id="countManualChem">0</span>
+            </div>
+            <div class="cat-pill">
+              <span class="cat-title">Hematology</span>
+              <span class="cat-count" id="countHematology">0</span>
+            </div>
+            <div class="cat-pill">
+              <span class="cat-title">Immunology</span>
+              <span class="cat-count" id="countImmunology">0</span>
+            </div>
+          </div>
+        </div>
+
         <div id="devicesListContainer"></div>
       </section>
 
@@ -520,15 +524,8 @@
       <section id="viewMissions" class="view-section">
         <h2 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 12px;">تسجيل وتوزيع مأمورية</h2>
         <div class="card">
-          <div class="form-group">
-            <label>التاريخ</label>
-            <input type="date" id="msDate" />
-          </div>
-
-          <div class="form-group">
-            <label>المهندس المسؤول</label>
-            <select id="msEngineerSelect"></select>
-          </div>
+          <div class="form-group"><label>التاريخ</label><input type="date" id="msDate" /></div>
+          <div class="form-group"><label>المهندس المسؤول</label><select id="msEngineerSelect"></select></div>
 
           <div class="form-group">
             <label>العميل / المعمل (اكتب للبحث واختيار العميل)</label>
@@ -541,18 +538,9 @@
             </small>
           </div>
 
-          <div class="form-group">
-            <label>المحافظة / المدينة</label>
-            <input type="text" id="msCity" placeholder="المحافظة" />
-          </div>
-          <div class="form-group">
-            <label>موديل الجهاز</label>
-            <input type="text" id="msModel" placeholder="موديل الجهاز" />
-          </div>
-          <div class="form-group">
-            <label>الرقم التسلسلي (S/N)</label>
-            <input type="text" id="msSerial" placeholder="الرقم التسلسلي S/N" />
-          </div>
+          <div class="form-group"><label>المحافظة / المدينة</label><input type="text" id="msCity" placeholder="المحافظة" /></div>
+          <div class="form-group"><label>موديل الجهاز</label><input type="text" id="msModel" placeholder="موديل الجهاز" /></div>
+          <div class="form-group"><label>الرقم التسلسلي (S/N)</label><input type="text" id="msSerial" placeholder="الرقم التسلسلي S/N" /></div>
           <div class="form-group">
             <label>نوع الزيارة</label>
             <select id="msVisitType">
@@ -562,10 +550,7 @@
               <option value="معايرة وفحص">معايرة وفحص</option>
             </select>
           </div>
-          <div class="form-group">
-            <label>وصف العطل / المطلوب</label>
-            <textarea id="msIssue" rows="3" placeholder="اكتب تقرير الصيانة والإجراء المتبع..."></textarea>
-          </div>
+          <div class="form-group"><label>وصف العطل / المطلوب</label><textarea id="msIssue" rows="3" placeholder="تقرير الصيانة..."></textarea></div>
           <div class="form-group">
             <label>الحالة</label>
             <select id="msStatus">
@@ -574,10 +559,7 @@
               <option value="معلق">معلق</option>
             </select>
           </div>
-          <div class="form-group">
-            <label>ملاحظات</label>
-            <input type="text" id="msNotes" />
-          </div>
+          <div class="form-group"><label>ملاحظات</label><input type="text" id="msNotes" /></div>
           <button class="btn" onclick="submitMission()">
             <i class="fa-solid fa-paper-plane"></i>
             <span>حفظ المأمورية والتحديث بالشيت</span>
@@ -585,34 +567,26 @@
         </div>
       </section>
 
-      <!-- 4. شاشة عرض المأموريات اليومية ومحرك الإحصائيات المتقدم -->
+      <!-- 4. شاشة عرض المأموريات اليومية والإحصائيات المتقدمة -->
       <section id="viewDailyMissions" class="view-section">
         <h2 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 12px;">المأموريات والإحصائيات</h2>
         
-        <!-- فلترة مخصصة بالفترة والمهندس والمنطقة -->
         <div class="card" style="padding: 12px; margin-bottom: 12px; background:#f0f9ff; border-color:#bae6fd;">
           <div style="font-size:0.82rem; font-weight:700; color:var(--primary-dark); margin-bottom:8px;">
             <i class="fa-solid fa-filter"></i> فلترة مخصصة للفترة والمهندس:
           </div>
           <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:8px;">
-            <div>
-              <label style="font-size:0.75rem;">من تاريخ</label>
-              <input type="date" id="filterFromDate" onchange="applyAdvancedStatsFilter()" />
-            </div>
-            <div>
-              <label style="font-size:0.75rem;">إلى تاريخ</label>
-              <input type="date" id="filterToDate" onchange="applyAdvancedStatsFilter()" />
-            </div>
+            <div><label style="font-size:0.75rem;">من تاريخ</label><input type="date" id="filterFromDate" onchange="applyAdvancedStatsFilter()" /></div>
+            <div><label style="font-size:0.75rem;">إلى تاريخ</label><input type="date" id="filterToDate" onchange="applyAdvancedStatsFilter()" /></div>
           </div>
           <div class="form-group" style="margin-bottom:6px;">
             <label style="font-size:0.75rem;">المهندس / المشرف</label>
             <select id="filterEngineerSelect" onchange="applyAdvancedStatsFilter()">
-              <option value="الكل">كل المهندسين</option>
+              <option value="الكل">كل المهندسين والمشرفين</option>
             </select>
           </div>
         </div>
 
-        <!-- شبكة ملخص الإحصائيات -->
         <div class="stats-summary-grid">
           <div class="stat-box">
             <div class="stat-number" id="statMissionsCount">0</div>
@@ -624,14 +598,12 @@
           </div>
         </div>
 
-        <!-- ملخص المناطق المجمعة -->
         <div id="regionsStatsSummary" style="margin-bottom:12px; font-size:0.8rem; color:#475569;"></div>
-
         <h3 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 8px;">سجل المأموريات المطابقة</h3>
         <div id="dailyMissionsContainer"></div>
       </section>
 
-      <!-- 5. قسم الأعطال الجديد (Issues & Breakdown Reporting) -->
+      <!-- 5. قسم الأعطال والبلاغات -->
       <section id="viewIssues" class="view-section">
         <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom: 12px;">
           <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--danger);">
@@ -642,10 +614,8 @@
           </button>
         </div>
 
-        <!-- نموذج تسجيل عطل جديد -->
         <div id="addIssueCard" class="card" style="display: none; border-color: var(--danger);">
-          <h3 style="font-size: 0.95rem; margin-bottom: 10px; color: var(--danger);">تسجيل بلاغ عطل فني جديد</h3>
-          
+          <h3 style="font-size: 0.95rem; margin-bottom: 10px; color: var(--danger);">تسجيل بلاغ عطل جديد</h3>
           <div class="form-group">
             <label>العميل / المعمل (بحث وإكمال تلقائي)</label>
             <div style="position: relative;">
@@ -653,27 +623,10 @@
               <div id="issueClientAutocomplete" class="autocomplete-list"></div>
             </div>
           </div>
-
-          <div class="form-group">
-            <label>موديل الجهاز</label>
-            <input type="text" id="issueModel" />
-          </div>
-
-          <div class="form-group">
-            <label>الرقم التسلسلي (S/N)</label>
-            <input type="text" id="issueSerial" />
-          </div>
-
-          <div class="form-group">
-            <label>المحافظة / المدينة</label>
-            <input type="text" id="issueCity" />
-          </div>
-
-          <div class="form-group">
-            <label>تفاصيل ووصف العطل</label>
-            <textarea id="issueDescription" rows="3" placeholder="اشرح تفاصيل المشكلة بدقة..."></textarea>
-          </div>
-
+          <div class="form-group"><label>موديل الجهاز</label><input type="text" id="issueModel" /></div>
+          <div class="form-group"><label>الرقم التسلسلي (S/N)</label><input type="text" id="issueSerial" /></div>
+          <div class="form-group"><label>المحافظة / المدينة</label><input type="text" id="issueCity" /></div>
+          <div class="form-group"><label>تفاصيل ووصف العطل</label><textarea id="issueDescription" rows="3" placeholder="اشرح المشكلة..."></textarea></div>
           <div class="form-group">
             <label>مستوى الأولوية</label>
             <select id="issuePriority">
@@ -683,7 +636,6 @@
               <option value="منخفضة">منخفضة</option>
             </select>
           </div>
-
           <button class="btn btn-danger" onclick="submitNewIssue()">
             <i class="fa-solid fa-paper-plane"></i>
             <span>إرسال البلاغ وتحديث الشيت</span>
@@ -699,61 +651,91 @@
         <div id="issuesListContainer"></div>
       </section>
 
-      <!-- 6. شاشة قطع الغيار -->
+      <!-- 6. شاشة قطع الغيار التفاعلية (Interactive Spare Parts) -->
       <section id="viewParts" class="view-section">
-        <h2 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 12px;">تسجيل حركة قطع الغيار</h2>
-        <div class="card">
-          <div class="form-group">
-            <label>العميل</label>
-            <input type="text" id="spClient" />
+        <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom: 12px;">
+          <h2 style="font-size: 1.15rem; font-weight: 700; color: #6d28d9;">
+            <i class="fa-solid fa-gears"></i> قطع الغيار
+          </h2>
+          <button class="btn" style="width: auto; padding: 6px 14px; font-size: 0.8rem; background:#8b5cf6;" onclick="toggleAddPartForm()">
+            <i class="fa-solid fa-plus"></i> حركة صرف
+          </button>
+        </div>
+
+        <!-- ملخص إحصائي سريع لقطع الغيار -->
+        <div class="stats-summary-grid">
+          <div class="stat-box">
+            <div class="stat-number" id="statPartsDispensed" style="color:#6d28d9;">0</div>
+            <div class="stat-desc">إجمالي المنصرف</div>
           </div>
-          <div class="form-group">
-            <label>الجهاز</label>
-            <input type="text" id="spModel" />
+          <div class="stat-box">
+            <div class="stat-number" id="statPartsNeeded" style="color:var(--warning);">0</div>
+            <div class="stat-desc">مطلوب توفيره</div>
           </div>
+        </div>
+
+        <!-- نموذج تسجيل صرف قطعة غيار -->
+        <div id="addPartCard" class="card" style="display: none; border-color: #8b5cf6;">
+          <h3 style="font-size: 0.95rem; margin-bottom: 10px; color: #6d28d9;">تسجيل حركة صرف أو طلب قطعة غيار</h3>
+
           <div class="form-group">
-            <label>قطعة الغيار</label>
-            <input type="text" id="spName" />
+            <label>العميل / المعمل (بحث وإكمال تلقائي)</label>
+            <div style="position: relative;">
+              <input type="text" id="spClientInput" placeholder="اكتب للبحث واختيار العميل..." oninput="handlePartClientSearch()" autocomplete="off" />
+              <div id="spClientAutocomplete" class="autocomplete-list"></div>
+            </div>
           </div>
+
+          <div class="form-group"><label>الجهاز / الموديل المتوافق</label><input type="text" id="spModel" placeholder="CA-200 / CA-430 / BH-3300P" /></div>
+
           <div class="form-group">
-            <label>الكمية</label>
-            <input type="number" id="spQty" value="1" min="1" />
+            <label>اسم أو كود قطعة الغيار (اكتب للبحث واختيار القطعة)</label>
+            <div style="position: relative;">
+              <input type="text" id="spNameInput" placeholder="مثال: Halogen Lamp 12V/20W / فالف سحب / فلتر..." oninput="handlePartNameSearch()" autocomplete="off" />
+              <div id="spNameAutocomplete" class="autocomplete-list"></div>
+            </div>
           </div>
+
+          <div class="form-group"><label>الكمية</label><input type="number" id="spQty" value="1" min="1" /></div>
+          
           <div class="form-group">
             <label>الحالة</label>
             <select id="spStatus">
               <option value="تم الصرف">تم الصرف</option>
-              <option value="تالف مسترجع">تالف مسترجع</option>
               <option value="مطلوب توفيره">مطلوب توفيره</option>
+              <option value="تالف مسترجع">تالف مسترجع</option>
             </select>
           </div>
-          <button class="btn" onclick="submitSparePart()">حفظ الحركة</button>
+          <button class="btn" style="background:#8b5cf6;" onclick="submitSparePart()">
+            <i class="fa-solid fa-box-open"></i>
+            <span>حفظ الحركة في الشيت</span>
+          </button>
         </div>
+
+        <!-- شريط البحث التفاعلي في سجلات قطع الغيار -->
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="partsSearchInput" placeholder="بحث باسم القطعة، الموديل، العميل أو المهندس..." oninput="renderPartsList()" autocomplete="off" />
+        </div>
+
+        <div id="partsSummaryText" style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;"></div>
+        <div id="partsListContainer"></div>
       </section>
 
       <!-- 7. شاشة الإجازات -->
       <section id="viewLeaves" class="view-section">
         <h2 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 12px;">طلب إجازة</h2>
         <div class="card">
-          <div class="form-group">
-            <label>من تاريخ</label>
-            <input type="date" id="lvStart" />
-          </div>
-          <div class="form-group">
-            <label>إلى تاريخ</label>
-            <input type="date" id="lvEnd" />
-          </div>
-          <div class="form-group">
-            <label>السبب</label>
-            <textarea id="lvReason" rows="3" placeholder="سبب الإجازة"></textarea>
-          </div>
+          <div class="form-group"><label>من تاريخ</label><input type="date" id="lvStart" /></div>
+          <div class="form-group"><label>إلى تاريخ</label><input type="date" id="lvEnd" /></div>
+          <div class="form-group"><label>السبب</label><textarea id="lvReason" rows="3" placeholder="سبب الإجازة..."></textarea></div>
           <button class="btn" onclick="submitLeave()">إرسال الطلب</button>
         </div>
       </section>
 
     </main>
 
-    <!-- شريط التنقل السفلي الشامل -->
+    <!-- شريط التنقل السفلي المتكامل -->
     <nav id="bottomNav" class="bottom-nav" style="display: none;">
       <div class="nav-item active" onclick="switchTab('viewDevices', this)">
         <i class="fa-solid fa-server"></i>
@@ -772,7 +754,7 @@
         <span>الأعطال</span>
       </div>
       <div class="nav-item" onclick="switchTab('viewParts', this)">
-        <i class="fa-solid fa-gears"></i>
+        <i class="fa-solid fa-gears" style="color:#8b5cf6;"></i>
         <span>قطع الغيار</span>
       </div>
       <div class="nav-item" onclick="switchTab('viewLeaves', this)">
@@ -784,13 +766,13 @@
   </div>
 
   <script>
-    // الرابط المحدث والنهائي الخاص بـ Google Apps Script
     const API_URL = "https://script.google.com/macros/s/AKfycbwBlW8jNNp-RLwU10xp4sfZ5wjuj5MrfnQIsPubeITkxM-396LGXCW6M5LISv-X1lgj/exec";
 
     let cachedDevices = [];
     let cachedEngineers = [];
     let cachedMissions = [];
     let cachedIssues = [];
+    let cachedParts = [];
     let activeUser = null;
     let deferredPrompt = null;
     let selectedDeviceForMission = null;
@@ -819,7 +801,6 @@
         loadDevices();
       }
 
-      // إغلاق قوائم الإكمال التلقائي عند النقر خارجها
       document.addEventListener("click", (e) => {
         if (!e.target.closest(".search-box")) {
           document.getElementById("autocompleteList").style.display = "none";
@@ -829,6 +810,12 @@
         }
         if (!e.target.closest("#issueClientInput") && !e.target.closest("#issueClientAutocomplete")) {
           document.getElementById("issueClientAutocomplete").style.display = "none";
+        }
+        if (!e.target.closest("#spClientInput") && !e.target.closest("#spClientAutocomplete")) {
+          document.getElementById("spClientAutocomplete").style.display = "none";
+        }
+        if (!e.target.closest("#spNameInput") && !e.target.closest("#spNameAutocomplete")) {
+          document.getElementById("spNameAutocomplete").style.display = "none";
         }
       });
     });
@@ -852,12 +839,16 @@
         applyAdvancedStatsFilter();
       } else if (viewId === "viewIssues") {
         renderIssuesList();
+      } else if (viewId === "viewParts") {
+        renderPartsList();
       } else if (viewId === "viewMissions") {
         populateMissionDropdowns();
+      } else if (viewId === "viewDevices") {
+        handleDeviceFilters();
       }
     }
 
-    // ================= 1. تسجيل الدخول وقائمة المهندسين =================
+    // ================= 1. تسجيل الدخول =================
     async function loadEngineersList() {
       const select = document.getElementById("loginUserSelect");
       const filterSelect = document.getElementById("filterEngineerSelect");
@@ -869,6 +860,7 @@
           cachedEngineers = data.engineers;
           if (data.missions) cachedMissions = data.missions;
           if (data.issues) cachedIssues = data.issues;
+          if (data.spareParts) cachedParts = data.spareParts;
 
           select.innerHTML = '<option value="">-- اختر المهندس من القائمة --</option>';
           if (filterSelect) filterSelect.innerHTML = '<option value="الكل">كل المهندسين والمشرفين</option>';
@@ -948,12 +940,12 @@
     function showIosInstallModal() { document.getElementById("iosModal").style.display = "flex"; }
     function closeIosModal() { document.getElementById("iosModal").style.display = "none"; }
 
-    // ================= 2. الأجهزة والعملاء =================
+    // ================= 2. الأجهزة والعملاء (بحث متقدم وتفصيل التصنيفات) =================
     async function loadDevices(forceRefresh = false) {
       const local = localStorage.getItem("medtech_devices_cache");
       if (local && !forceRefresh) {
         cachedDevices = JSON.parse(local);
-        renderDevices(cachedDevices);
+        handleDeviceFilters();
         populateMissionDropdowns();
         return;
       }
@@ -968,38 +960,87 @@
           cachedDevices = data.devices;
           if (data.missions) cachedMissions = data.missions;
           if (data.issues) cachedIssues = data.issues;
+          if (data.spareParts) cachedParts = data.spareParts;
 
           localStorage.setItem("medtech_devices_cache", JSON.stringify(cachedDevices));
-          renderDevices(cachedDevices);
+          handleDeviceFilters();
           populateMissionDropdowns();
         }
       } catch (e) {
         hideLoading();
         if (local) {
           cachedDevices = JSON.parse(local);
-          renderDevices(cachedDevices);
+          handleDeviceFilters();
           populateMissionDropdowns();
         }
       }
+    }
+
+    function handleDeviceFilters() {
+      const q = document.getElementById("deviceSearchInput").value.trim().toLowerCase();
+      const selectedReg = document.getElementById("deviceRegionFilter").value;
+      const selectedCat = document.getElementById("deviceCategoryFilter").value;
+
+      let filtered = cachedDevices;
+
+      // تطبيق صلاحيات المستخدم
+      if (activeUser && activeUser.role !== "مدير عام" && activeUser.region && activeUser.region !== "الكل") {
+        filtered = filtered.filter(d => d["المنطقة"] === activeUser.region);
+      }
+
+      // فلترة المنطقة
+      if (selectedReg !== "الكل") {
+        filtered = filtered.filter(d => d["المنطقة"] === selectedReg);
+      }
+
+      // فلترة التصنيف
+      if (selectedCat !== "الكل") {
+        filtered = filtered.filter(d => String(d["التصنيف"] || "").toUpperCase().includes(selectedCat.toUpperCase()));
+      }
+
+      // البحث بالاسم أو السيريال أو المحافظة
+      if (q) {
+        filtered = filtered.filter(d => 
+          String(d["اسم الجهاز / الموديل"] || "").toLowerCase().includes(q) ||
+          String(d["اسم العميل / المعمل"] || "").toLowerCase().includes(q) ||
+          String(d["المحافظة / المدينة"] || "").toLowerCase().includes(q) ||
+          String(d["المنطقة"] || "").toLowerCase().includes(q) ||
+          String(d["الرقم التسلسلي (S/N)"] || "").toLowerCase().includes(q)
+        );
+      }
+
+      // تحديث أعداد كل تصنيف بناءً على النتائج المفلترة
+      let autoChem = 0, manualChem = 0, hematology = 0, immunology = 0;
+      filtered.forEach(d => {
+        const cat = String(d["التصنيف"] || "").toUpperCase();
+        if (cat.includes("AUTO")) autoChem++;
+        else if (cat.includes("MANUAL") || cat.includes("CHEM")) manualChem++;
+        else if (cat.includes("HEM")) hematology++;
+        else if (cat.includes("IMM")) immunology++;
+      });
+
+      document.getElementById("countAutoChem").innerText = autoChem;
+      document.getElementById("countManualChem").innerText = manualChem;
+      document.getElementById("countHematology").innerText = hematology;
+      document.getElementById("countImmunology").innerText = immunology;
+      document.getElementById("deviceTotalCountBadge").innerText = filtered.length;
+
+      const titleRegionText = selectedReg === "الكل" ? "كل المناطق" : selectedReg;
+      document.getElementById("deviceStatsTitle").innerText = `أجهزة (${titleRegionText}):`;
+
+      renderDevices(filtered);
     }
 
     function renderDevices(list) {
       const container = document.getElementById("devicesListContainer");
       container.innerHTML = "";
 
-      let filtered = list;
-      if (activeUser && activeUser.role !== "مدير عام" && activeUser.region && activeUser.region !== "الكل") {
-        filtered = list.filter(d => d["المنطقة"] === activeUser.region);
-      }
-
-      document.getElementById("devicesCount").innerText = `عدد الأجهزة المتاحة: ${filtered.length}`;
-
-      if (filtered.length === 0) {
+      if (list.length === 0) {
         container.innerHTML = "<p style='text-align:center; padding:20px; color:#94a3b8;'>لا توجد أجهزة مطابقة للبحث</p>";
         return;
       }
 
-      filtered.slice(0, 80).forEach((d) => {
+      list.slice(0, 80).forEach((d) => {
         const card = document.createElement("div");
         card.className = "device-card";
         card.onclick = () => showDeviceDetails(d);
@@ -1010,6 +1051,7 @@
           </div>
           <div style="font-size:0.8rem; color:var(--text-muted); display:flex; flex-wrap:wrap; gap:12px; margin-top:4px;">
             <span><i class="fa-solid fa-barcode"></i> S/N: ${d["الرقم التسلسلي (S/N)"] || "غير مسجل"}</span>
+            <span><i class="fa-solid fa-layer-group"></i> ${d["التصنيف"] || "عام"}</span>
             <span><i class="fa-solid fa-location-dot"></i> ${d["المنطقة"] || ""} - ${d["المحافظة / المدينة"] || ""}</span>
           </div>
           <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px; font-size:0.75rem;">
@@ -1063,15 +1105,8 @@
       document.getElementById("deviceModal").style.display = "flex";
     }
 
-    function closeDeviceDetails(e) {
-      if (e.target.id === "deviceModal") {
-        document.getElementById("deviceModal").style.display = "none";
-      }
-    }
-
-    function closeDeviceModalDirect() {
-      document.getElementById("deviceModal").style.display = "none";
-    }
+    function closeDeviceDetails(e) { if (e.target.id === "deviceModal") document.getElementById("deviceModal").style.display = "none"; }
+    function closeDeviceModalDirect() { document.getElementById("deviceModal").style.display = "none"; }
 
     function startMissionForThisDevice() {
       if (!selectedDeviceForMission) return;
@@ -1100,56 +1135,6 @@
       document.getElementById("issueModel").value = selectedDeviceForMission["اسم الجهاز / الموديل"] || "";
       document.getElementById("issueSerial").value = selectedDeviceForMission["الرقم التسلسلي (S/N)"] || "";
       document.getElementById("issueCity").value = selectedDeviceForMission["المحافظة / المدينة"] || "";
-    }
-
-    function handleSearch() {
-      const q = document.getElementById("deviceSearchInput").value.trim().toLowerCase();
-      const autoList = document.getElementById("autocompleteList");
-
-      if (!q) {
-        autoList.style.display = "none";
-        renderDevices(cachedDevices);
-        return;
-      }
-
-      const results = cachedDevices.filter(d => 
-        String(d["اسم العميل / المعمل"] || "").toLowerCase().includes(q) ||
-        String(d["المحافظة / المدينة"] || "").toLowerCase().includes(q) ||
-        String(d["المنطقة"] || "").toLowerCase().includes(q) ||
-        String(d["الرقم التسلسلي (S/N)"] || "").toLowerCase().includes(q) ||
-        String(d["اسم الجهاز / الموديل"] || "").toLowerCase().includes(q)
-      );
-
-      autoList.innerHTML = "";
-      const suggestions = [];
-
-      results.forEach(d => {
-        const client = d["اسم العميل / المعمل"];
-        const city = d["المحافظة / المدينة"];
-        const model = d["اسم الجهاز / الموديل"];
-        if (client && !suggestions.includes(client)) suggestions.push(client);
-        if (city && !suggestions.includes(city) && city.toLowerCase().includes(q)) suggestions.push(city);
-        if (model && !suggestions.includes(model) && model.toLowerCase().includes(q)) suggestions.push(model);
-      });
-
-      if (suggestions.length > 0) {
-        suggestions.slice(0, 6).forEach(text => {
-          const item = document.createElement("div");
-          item.className = "autocomplete-item";
-          item.innerHTML = `<span><i class="fa-solid fa-magnifying-glass" style="margin-left:6px; color:#94a3b8;"></i> ${text}</span> <small style="color:#64748b;">اختيار</small>`;
-          item.onclick = () => {
-            document.getElementById("deviceSearchInput").value = text;
-            autoList.style.display = "none";
-            handleSearch();
-          };
-          autoList.appendChild(item);
-        });
-        autoList.style.display = "block";
-      } else {
-        autoList.style.display = "none";
-      }
-
-      renderDevices(results);
     }
 
     function toggleAddDeviceForm() {
@@ -1210,10 +1195,7 @@
       const q = input.value.trim().toLowerCase();
       const autoList = document.getElementById("msClientAutocomplete");
 
-      if (!q) {
-        autoList.style.display = "none";
-        return;
-      }
+      if (!q) { autoList.style.display = "none"; return; }
 
       let eligibleDevices = cachedDevices;
       if (activeUser && activeUser.role !== "مدير عام" && activeUser.region && activeUser.region !== "الكل") {
@@ -1228,10 +1210,7 @@
       );
 
       autoList.innerHTML = "";
-      if (matched.length === 0) {
-        autoList.style.display = "none";
-        return;
-      }
+      if (matched.length === 0) { autoList.style.display = "none"; return; }
 
       matched.slice(0, 7).forEach(dev => {
         const item = document.createElement("div");
@@ -1296,7 +1275,7 @@
       }
     }
 
-    // ================= 4. المأموريات اليومية والإحصائيات المتقدمة =================
+    // ================= 4. المأموريات والإحصائيات =================
     function applyAdvancedStatsFilter() {
       const from = document.getElementById("filterFromDate").value || "1970-01-01";
       const to = document.getElementById("filterToDate").value || "2099-12-31";
@@ -1304,7 +1283,6 @@
 
       if (!activeUser) return;
 
-      // فلترة المأموريات
       let filteredM = cachedMissions.filter(m => {
         const d = String(m["التاريخ"] || "").substring(0, 10);
         const inDate = d >= from && d <= to;
@@ -1315,7 +1293,6 @@
         return inDate && inEng && inRegion;
       });
 
-      // فلترة الأعطال
       let filteredI = cachedIssues.filter(i => {
         const d = String(i["التاريخ"] || "").substring(0, 10);
         const inDate = d >= from && d <= to;
@@ -1329,7 +1306,6 @@
       document.getElementById("statMissionsCount").innerText = filteredM.length;
       document.getElementById("statIssuesCount").innerText = filteredI.length;
 
-      // ملخص مجمل حسب المناطق
       const regMap = {};
       filteredM.forEach(m => {
         const r = m["المنطقة"] || "غير محدد";
@@ -1342,18 +1318,17 @@
         regMap[r].i++;
       });
 
-      let summaryHtml = "<b>إجمالي المناطق للفترة:</b> ";
+      let summaryHtml = "<b>إجمالي المناطق بالفترة:</b> ";
       for (const r in regMap) {
         summaryHtml += `<span class="badge badge-primary" style="margin-left:4px;">${r}: ${regMap[r].m} زيارة / ${regMap[r].i} عطل</span>`;
       }
       document.getElementById("regionsStatsSummary").innerHTML = summaryHtml;
 
-      // رسم بطاقات المأموريات المطابقة
       const container = document.getElementById("dailyMissionsContainer");
       container.innerHTML = "";
 
       if (filteredM.length === 0) {
-        container.innerHTML = "<p style='text-align:center; padding:20px; color:#94a3b8;'>لا توجد مأموريات مطابقة لهذا النطاق والفلترة</p>";
+        container.innerHTML = "<p style='text-align:center; padding:20px; color:#94a3b8;'>لا توجد مأموريات مطابقة لهذا النطاق</p>";
         return;
       }
 
@@ -1376,7 +1351,7 @@
       });
     }
 
-    // ================= 5. قسم الأعطال والبلاغات (Issues) =================
+    // ================= 5. الأعطال =================
     function toggleAddIssueForm() {
       const card = document.getElementById("addIssueCard");
       card.style.display = card.style.display === "none" ? "block" : "none";
@@ -1470,7 +1445,6 @@
 
       if (!activeUser) return;
 
-      // فلترة الأعطال حسب الصلاحية والمنطقة
       let filtered = cachedIssues;
       if (activeUser.role !== "مدير عام" && activeUser.region && activeUser.region !== "الكل") {
         filtered = filtered.filter(i => i["المنطقة"] === activeUser.region);
@@ -1514,28 +1488,174 @@
       });
     }
 
-    // ================= 6. قطع الغيار =================
+    // ================= 6. قطع الغيار التفاعلية والبحث الذكي =================
+    function toggleAddPartForm() {
+      const card = document.getElementById("addPartCard");
+      card.style.display = card.style.display === "none" ? "block" : "none";
+    }
+
+    function handlePartClientSearch() {
+      const input = document.getElementById("spClientInput");
+      const q = input.value.trim().toLowerCase();
+      const autoList = document.getElementById("spClientAutocomplete");
+
+      if (!q) { autoList.style.display = "none"; return; }
+
+      let eligibleDevices = cachedDevices;
+      if (activeUser && activeUser.role !== "مدير عام" && activeUser.region && activeUser.region !== "الكل") {
+        eligibleDevices = cachedDevices.filter(d => d["المنطقة"] === activeUser.region);
+      }
+
+      const matched = eligibleDevices.filter(d => 
+        String(d["اسم العميل / المعمل"] || "").toLowerCase().includes(q) ||
+        String(d["اسم الجهاز / الموديل"] || "").toLowerCase().includes(q)
+      );
+
+      autoList.innerHTML = "";
+      if (matched.length === 0) { autoList.style.display = "none"; return; }
+
+      matched.slice(0, 6).forEach(dev => {
+        const item = document.createElement("div");
+        item.className = "autocomplete-item";
+        item.innerHTML = `
+          <div style="display:flex; flex-direction:column; text-align:right;">
+            <strong>${dev["اسم العميل / المعمل"]}</strong>
+            <small style="color:var(--text-muted);">${dev["اسم الجهاز / الموديل"]}</small>
+          </div>
+          <span class="badge badge-purple">تحديد</span>
+        `;
+        item.onclick = () => {
+          document.getElementById("spClientInput").value = dev["اسم العميل / المعمل"] || "";
+          document.getElementById("spModel").value = dev["اسم الجهاز / الموديل"] || "";
+          autoList.style.display = "none";
+        };
+        autoList.appendChild(item);
+      });
+      autoList.style.display = "block";
+    }
+
+    function handlePartNameSearch() {
+      const input = document.getElementById("spNameInput");
+      const q = input.value.trim().toLowerCase();
+      const autoList = document.getElementById("spNameAutocomplete");
+
+      if (!q) { autoList.style.display = "none"; return; }
+
+      // اقتراحات قطع الغيار المسجلة سابقاً
+      const uniqueParts = [];
+      cachedParts.forEach(p => {
+        const name = p["قطعة الغيار"] || p["partName"];
+        if (name && !uniqueParts.includes(name) && name.toLowerCase().includes(q)) {
+          uniqueParts.push(name);
+        }
+      });
+
+      autoList.innerHTML = "";
+      if (uniqueParts.length === 0) { autoList.style.display = "none"; return; }
+
+      uniqueParts.slice(0, 5).forEach(part => {
+        const item = document.createElement("div");
+        item.className = "autocomplete-item";
+        item.innerHTML = `<span><i class="fa-solid fa-gear" style="color:#8b5cf6; margin-left:6px;"></i> ${part}</span> <small style="color:#8b5cf6;">اختيار</small>`;
+        item.onclick = () => {
+          document.getElementById("spNameInput").value = part;
+          autoList.style.display = "none";
+        };
+        autoList.appendChild(item);
+      });
+      autoList.style.display = "block";
+    }
+
     async function submitSparePart() {
+      const client = document.getElementById("spClientInput").value.trim();
+      const partName = document.getElementById("spNameInput").value.trim();
+      const model = document.getElementById("spModel").value.trim();
+      const qty = document.getElementById("spQty").value;
+      const status = document.getElementById("spStatus").value;
+
+      if (!partName) { alert("يرجى تحديد قطعة الغيار"); return; }
+
+      const devObj = cachedDevices.find(d => d["اسم العميل / المعمل"] === client);
+      const targetRegion = devObj ? devObj["المنطقة"] : (activeUser ? activeUser.region : "");
+
       const payload = {
         date: new Date().toISOString().split("T")[0],
         engineerName: activeUser ? activeUser.name : "",
-        region: activeUser ? activeUser.region : "",
-        clientName: document.getElementById("spClient").value.trim(),
-        deviceModel: document.getElementById("spModel").value.trim(),
-        partName: document.getElementById("spName").value.trim(),
-        quantity: document.getElementById("spQty").value,
-        status: document.getElementById("spStatus").value
+        region: targetRegion,
+        clientName: client,
+        deviceModel: model,
+        partName: partName,
+        quantity: qty,
+        status: status
       };
 
-      if (!payload.partName) { alert("يرجى تحديد قطعة الغيار"); return; }
-
-      showLoading("جاري تسجيل حركة قطعة الغيار...");
+      showLoading("جاري تسجيل حركة قطعة الغيار بالشيت...");
       const ok = await executeRemote("saveSparePart", payload);
       hideLoading();
+
       if (ok) {
         alert("تم تسجيل حركة قطع الغيار بنجاح!");
-        document.getElementById("spName").value = "";
+        document.getElementById("spNameInput").value = "";
+        document.getElementById("spClientInput").value = "";
+        toggleAddPartForm();
+        loadDevices(true);
       }
+    }
+
+    function renderPartsList() {
+      const container = document.getElementById("partsListContainer");
+      const q = document.getElementById("partsSearchInput").value.trim().toLowerCase();
+      container.innerHTML = "";
+
+      if (!activeUser) return;
+
+      let filtered = cachedParts;
+      if (activeUser.role !== "مدير عام" && activeUser.region && activeUser.region !== "الكل") {
+        filtered = filtered.filter(p => p["المنطقة"] === activeUser.region);
+      }
+
+      if (q) {
+        filtered = filtered.filter(p => 
+          String(p["قطعة الغيار"] || "").toLowerCase().includes(q) ||
+          String(p["الجهاز"] || "").toLowerCase().includes(q) ||
+          String(p["العميل"] || "").toLowerCase().includes(q) ||
+          String(p["المهندس"] || "").toLowerCase().includes(q)
+        );
+      }
+
+      // إحصائيات سريعة للقطع
+      let dispensed = 0, needed = 0;
+      filtered.forEach(p => {
+        const qty = parseInt(p["الكمية"] || 1, 10);
+        if (p["الحالة"] === "تم الصرف") dispensed += qty;
+        else if (p["الحالة"] === "مطلوب توفيره") needed += qty;
+      });
+
+      document.getElementById("statPartsDispensed").innerText = dispensed;
+      document.getElementById("statPartsNeeded").innerText = needed;
+      document.getElementById("partsSummaryText").innerText = `عدد حركات قطع الغيار في النطاق: ${filtered.length}`;
+
+      if (filtered.length === 0) {
+        container.innerHTML = "<p style='text-align:center; padding:20px; color:#94a3b8;'>لا توجد حركات قطع غيار مسجلة</p>";
+        return;
+      }
+
+      filtered.forEach(p => {
+        const card = document.createElement("div");
+        card.className = "part-card";
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="color:var(--text); font-size:0.92rem;">${p["قطعة الغيار"] || "قطعة غير محددة"}</strong>
+            <span class="badge ${p["الحالة"] === "تم الصرف" ? "badge-success" : (p["الحالة"] === "تالف مسترجع" ? "badge-danger" : "badge-warning")}">${p["الحالة"] || "تم الصرف"}</span>
+          </div>
+          <div style="font-size:0.8rem; color:var(--text-muted); display:flex; flex-direction:column; gap:2px; margin-top:3px;">
+            <span><i class="fa-solid fa-stethoscope"></i> الجهاز: <b>${p["الجهاز"] || "عام"}</b> | الكمية: <b>${p["الكمية"] || 1}</b></span>
+            <span><i class="fa-solid fa-hospital"></i> العميل: ${p["العميل"] || "غير محدد"} (${p["المنطقة"] || ""})</span>
+            <span><i class="fa-solid fa-user-gear"></i> المهندس: ${p["المهندس"] || ""} | التاريخ: ${String(p["التاريخ"] || "").substring(0,10)}</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
     }
 
     // ================= 7. الإجازات =================
