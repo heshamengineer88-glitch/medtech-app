@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-// رابط الـ Google Apps Script الذي أرسلته
+// رابط الـ Google Apps Script الخاص بك
 const API_URL = "https://script.google.com/macros/s/AKfycbzC_p1uhBpZkgFZBL7JGtE9ug7MB8tOimDt835DeEgmFwh__GbqSGpyyrB4NlYrOjYN5w/exec";
 
 export default function App() {
@@ -38,7 +38,7 @@ export default function App() {
       });
   }, []);
 
-  // دالة تسجيل الدخول باستخدام رقم الدخول الموجود في شيت المهندسين
+  // دالة تسجيل الدخول باستخدام رقم الكود
   const handleLogin = (e) => {
     e.preventDefault();
     const foundUser = engineers.find(eng => String(eng.الكود || eng.رقم_الدخول || eng.Code) === String(loginCode));
@@ -59,7 +59,7 @@ export default function App() {
 
   if (error) {
     return (
-      <div style={{ padding: '20px', color: 'red', fontFamily: 'Cairo, sans-serif', textAlign: 'center' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', color: '#ef4444', fontFamily: 'Cairo, sans-serif' }}>
         <h2>{error}</h2>
       </div>
     );
@@ -68,18 +68,18 @@ export default function App() {
   // إذا لم يتم تسجيل الدخول بعد
   if (!currentUser) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#f4f6f9', fontFamily: 'Cairo, sans-serif' }}>
-        <form onSubmit={handleLogin} style={{ background: 'white', padding: '30px', borderRadius: '10px', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', width: '350px', textAlign: 'center' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#f8fafc', fontFamily: 'Cairo, sans-serif' }}>
+        <form onSubmit={handleLogin} style={{ background: 'white', padding: '30px', borderRadius: '10px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', width: '350px', textAlign: 'center' }}>
           <h2 style={{ color: '#1e293b', marginBottom: '20px' }}>MedTech FSM</h2>
-          <p style={{ color: '#64748b', marginBottom: '20px' }}>الرجاء إدخال رقم الدخول الخاص بك</p>
+          <p style={{ color: '#64748b', marginBottom: '15px' }}>الرجاء إدخال رقم الدخول الخاص بك</p>
           <input 
             type="password" 
-            placeholder="رقم الدخول (الكود)" 
-            value={loginCode} 
+            placeholder="رقم الدخول" 
+            value={loginCode}
             onChange={(e) => setLoginCode(e.target.value)}
-            style={{ width: '100%', padding: '10px', marginBottom: '15px', borderRadius: '5px', border: '1px solid #cbd5e1', textAlign: 'center', fontSize: '16px' }}
+            style={{ width: '100%', padding: '10px', marginBottom: '15px', borderRadius: '5px', border: '1px solid #cbd5e1', textAlign: 'center', fontSize: '16px', boxSizing: 'border-box' }}
           />
-          <button type="submit" style={{ width: '100%', padding: '10px', background: '#0284c7', color: 'white', border: 'none', borderRadius: '5px', fontSize: '16px', cursor: 'pointer' }}>
+          <button type="submit" style={{ width: '100%', padding: '10px', background: '#2563eb', color: 'white', border: 'none', borderRadius: '5px', fontSize: '16px', cursor: 'pointer' }}>
             دخول للنظام
           </button>
         </form>
@@ -88,80 +88,93 @@ export default function App() {
   }
 
   return (
-    <div style={{ fontFamily: 'Cairo, sans-serif', background: '#f8fafc', minHeight: '100vh', direction: 'rtl' }}>
+    <div style={{ padding: '20px', background: '#f8fafc', minHeight: '100vh', fontFamily: 'Cairo, sans-serif', direction: 'rtl' }}>
+      
       {/* الشريط العلوي */}
-      <header style={{ background: '#1e293b', color: 'white', padding: '15px 30px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div>
-          <h1 style={{ margin: 0, fontSize: '20px' }}>MedTech FSM - إدارة الصيانة الميدانية</h1>
-          <span style={{ fontSize: '14px', color: '#94a3b8' }}>مرحباً، {currentUser.الاسم || currentUser.Name} ({currentUser.الوظيفة || currentUser.Role})</span>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'white', padding: '15px 20px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', marginBottom: '20px' }}>
+        <h2 style={{ margin: 0, color: '#1e293b' }}>MedTech FSM - إدارة الصيانة الميدانية</h2>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+          <span style={{ color: '#475569', fontWeight: 'bold' }}>
+            مرحباً، {currentUser.الاسم || currentUser.Name} ({currentUser.الوظيفة || currentUser.Role})
+          </span>
+          <button 
+            onClick={() => setCurrentUser(null)} 
+            style={{ background: '#ef4444', color: 'white', border: 'none', padding: '8px 15px', borderRadius: '5px', cursor: 'pointer' }}
+          >
+            خروج
+          </button>
         </div>
-        <button onClick={() => setCurrentUser(null)} style={{ background: '#ef4444', color: 'white', border: 'none', padding: '8px 15px', borderRadius: '5px', cursor: 'pointer' }}>
-          [خروج]
-        </button>
-      </header>
+      </div>
 
       {/* لوحة المؤشرات (Dashboard Cards) */}
-      <div style={{ padding: '30px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '30px' }}>
-          <div style={{ background: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', textAlign: 'center' }}>
-            <h4 style={{ margin: '0 0 10px 0', color: '#64748b' }}>إجمالي المأموريات</h4>
-            <h2 style={{ margin: 0, color: '#0284c7' }}>{missions.length}</h2>
-          </div>
-          <div style={{ background: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', textAlign: 'center' }}>
-            <h4 style={{ margin: '0 0 10px 0', color: '#64748b' }}>الأجهزة المسجلة</h4>
-            <h2 style={{ margin: 0, color: '#059669' }}>{devices.length}</h2>
-          </div>
-          <div style={{ background: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', textAlign: 'center' }}>
-            <h4 style={{ margin: '0 0 10px 0', color: '#64748b' }}>طلبات قطع الغيار</h4>
-            <h2 style={{ margin: 0, color: '#d97706' }}>{spareParts.length}</h2>
-          </div>
-          <div style={{ background: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', textAlign: 'center' }}>
-            <h4 style={{ margin: '0 0 10px 0', color: '#64748b' }}>طلبات الإجازات</h4>
-            <h2 style={{ margin: 0, color: '#7c3aed' }}>{vacations.length}</h2>
-          </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '15px', marginBottom: '20px' }}>
+        <div style={{ background: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', textAlign: 'center' }}>
+          <h4 style={{ margin: '0 0 10px 0', color: '#64748b' }}>إجمالي المأموريات</h4>
+          <h2 style={{ margin: 0, color: '#2563eb' }}>{missions.length}</h2>
         </div>
+        <div style={{ background: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', textAlign: 'center' }}>
+          <h4 style={{ margin: '0 0 10px 0', color: '#64748b' }}>الأجهزة المسجلة</h4>
+          <h2 style={{ margin: 0, color: '#16a34a' }}>{devices.length}</h2>
+        </div>
+        <div style={{ background: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', textAlign: 'center' }}>
+          <h4 style={{ margin: '0 0 10px 0', color: '#64748b' }}>طلبات قطع الغيار</h4>
+          <h2 style={{ margin: 0, color: '#d97706' }}>{spareParts.length}</h2>
+        </div>
+        <div style={{ background: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', textAlign: 'center' }}>
+          <h4 style={{ margin: '0 0 10px 0', color: '#64748b' }}>طلبات الإجازات</h4>
+          <h2 style={{ margin: 0, color: '#9333ea' }}>{vacations.length}</h2>
+        </div>
+      </div>
 
-        {/* جدول أحدث المأموريات */}
-        <div style={{ background: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
-          <h3 style={{ marginTop: 0, color: '#1e293b' }}>أحدث المأموريات الجارية</h3>
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'right' }}>
-              <thead>
-                <tr style={{ background: '#f1f5f9', color: '#334155' }}>
-                  <th style={{ padding: '12px', borderBottom: '1px solid #e2e8f0' }}>التاريخ</th>
-                  <th style={{ padding: '12px', borderBottom: '1px solid #e2e8f0' }}>المهندس</th>
-                  <th style={{ padding: '12px', borderBottom: '1px solid #e2e8f0' }}>العميل / المعمل</th>
-                  <th style={{ padding: '12px', borderBottom: '1px solid #e2e8f0' }}>الجهاز</th>
-                  <th style={{ padding: '12px', borderBottom: '1px solid #e2e8f0' }}>نوع الزيارة</th>
-                  <th style={{ padding: '12px', borderBottom: '1px solid #e2e8f0' }}>الحالة</th>
-                </tr>
-              </thead>
-              <tbody>
-                {missions.map((mission, index) => (
-                  <tr key={index} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                    <td style={{ padding: '12px' }}>{mission.التاريخ || mission.Date || '-'}</td>
-                    <td style={{ padding: '12px' }}>{mission.المهندس || mission.Engineer || '-'}</td>
-                    <td style={{ padding: '12px' }}>{mission.العميل || mission.Client || '-'}</td>
-                    <td style={{ padding: '12px' }}>{mission.الجهاز || mission.Device || '-'}</td>
-                    <td style={{ padding: '12px' }}>{mission.نوع_الزيارة || mission.VisitType || '-'}</td>
-                    <td style={{ padding: '12px' }}>
+      {/* جدول أحدث المأموريات */}
+      <div style={{ background: 'white', padding: '20px', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+        <h3 style={{ marginTop: 0, color: '#1e293b', marginBottom: '15px' }}>أحدث المأموريات الجارية</h3>
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'right' }}>
+            <thead>
+              <tr style={{ background: '#f1f5f9', borderBottom: '2px solid #cbd5e1' }}>
+                <th style={{ padding: '12px', color: '#334155' }}>التاريخ</th>
+                <th style={{ padding: '12px', color: '#334155' }}>المهندس</th>
+                <th style={{ padding: '12px', color: '#334155' }}>العميل / المعمل</th>
+                <th style={{ padding: '12px', color: '#334155' }}>الجهاز</th>
+                <th style={{ padding: '12px', color: '#334155' }}>نوع الزيارة</th>
+                <th style={{ padding: '12px', color: '#334155' }}>الحالة</th>
+              </tr>
+            </thead>
+            <tbody>
+              {missions.length > 0 ? (
+                missions.map((mission, index) => (
+                  <tr key={index} style={{ borderBottom: '1px solid #e2e8f0' }}>
+                    <td style={{ padding: '12px', color: '#475569' }}>{mission.التاريخ || mission.Date || '-'}</td>
+                    <td style={{ padding: '12px', color: '#475569' }}>{mission.المهندس || mission.Engineer || '-'}</td>
+                    <td style={{ padding: '12px', color: '#475569' }}>{mission.العميل || mission.Client || '-'}</td>
+                    <td style={{ padding: '12px', color: '#475569' }}>{mission.الجهاز || mission.Device || '-'}</td>
+                    <td style={{ padding: '12px', color: '#475569' }}>{mission.نوع_الزيارة || mission.VisitType || '-'}</td>
+                    <td style={{ padding: '12px', color: '#475569' }}>
                       <span style={{ 
-                        padding: '4px 10px', 
+                        padding: '4px 8px', 
                         borderRadius: '4px', 
                         fontSize: '12px',
-                        background: mission.الحالة === 'مكتملة' ? '#dcfce7' : '#fef9c3',
-                        color: mission.الحالة === 'مكتملة' ? '#166534' : '#854d0e'
+                        background: '#dbeafe', 
+                        color: '#1e40af' 
                       }}>
                         {mission.الحالة || mission.Status || 'قيد التنفيذ'}
                       </span>
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="6" style={{ textAlign: 'center', padding: '20px', color: '#64748b' }}>
+                    لا توجد مأموريات مسجلة حالياً.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
       </div>
+
     </div>
   );
 }
