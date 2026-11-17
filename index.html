@@ -20,6 +20,8 @@
       --primary-dark: #0369a1;
       --primary-light: #e0f2fe;
       --accent: #059669;
+      --danger: #dc2626;
+      --warning: #d97706;
       --bg: #f8fafc;
       --card-bg: #ffffff;
       --text: #0f172a;
@@ -31,12 +33,12 @@
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; -webkit-tap-highlight-color: transparent; }
     body { background-color: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
-    .app-container { width: 100%; max-width: 500px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; background: var(--card-bg); position: relative; }
+    .app-container { width: 100%; max-width: 520px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; background: var(--card-bg); position: relative; }
 
     header {
       background: var(--primary);
       color: white;
-      padding: 16px 20px;
+      padding: 14px 18px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -46,10 +48,10 @@
       box-shadow: 0 2px 8px rgba(2, 132, 199, 0.2);
     }
 
-    .brand { display: flex; align-items: center; gap: 10px; font-size: 1.15rem; font-weight: 700; }
+    .brand { display: flex; align-items: center; gap: 8px; font-size: 1.15rem; font-weight: 700; }
     .user-pill { background: rgba(255,255,255,0.18); padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; display: flex; align-items: center; gap: 8px; }
 
-    main { flex: 1; padding: 16px; padding-bottom: 90px; }
+    main { flex: 1; padding: 14px; padding-bottom: 95px; }
 
     nav.bottom-nav {
       position: fixed;
@@ -57,50 +59,54 @@
       left: 50%;
       transform: translateX(-50%);
       width: 100%;
-      max-width: 500px;
+      max-width: 520px;
       background: white;
       border-top: 1px solid var(--border);
       display: flex;
       justify-content: space-around;
-      padding: 8px 0;
+      padding: 6px 0;
       z-index: 100;
-      box-shadow: 0 -4px 12px rgba(0,0,0,0.04);
+      box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
     }
 
     .nav-item {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 3px;
+      gap: 2px;
       color: var(--text-muted);
-      font-size: 0.72rem;
+      font-size: 0.68rem;
       font-weight: 500;
-      padding: 6px 8px;
+      padding: 4px 6px;
       cursor: pointer;
       transition: all 0.2s ease;
+      flex: 1;
+      text-align: center;
     }
 
+    .nav-item i { font-size: 1.15rem; }
     .nav-item.active { color: var(--primary); font-weight: 700; }
     .view-section { display: none; }
-    .view-section.active { display: block; }
+    .view-section.active { display: block; animation: fadeIn 0.2s ease-in-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
 
     .card {
       background: white;
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 18px;
+      padding: 16px;
       margin-bottom: 14px;
       box-shadow: var(--shadow);
     }
 
-    .form-group { margin-bottom: 14px; position: relative; }
-    label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+    .form-group { margin-bottom: 12px; position: relative; }
+    label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--text); margin-bottom: 5px; }
     input, select, textarea {
       width: 100%;
-      padding: 12px 14px;
+      padding: 11px 13px;
       border: 1px solid var(--border);
       border-radius: 10px;
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       outline: none;
       background: #fafafa;
     }
@@ -108,12 +114,12 @@
 
     .btn {
       width: 100%;
-      padding: 13px;
+      padding: 12px;
       background: var(--primary);
       color: white;
       border: none;
       border-radius: 10px;
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 700;
       cursor: pointer;
       display: flex;
@@ -122,36 +128,36 @@
       gap: 8px;
     }
     .btn-accent { background: var(--accent); }
+    .btn-danger { background: var(--danger); }
 
-    .device-card, .mission-card {
+    .device-card, .mission-card, .issue-card {
       background: white;
       border: 1px solid var(--border);
       border-radius: 14px;
-      padding: 14px 16px;
+      padding: 14px;
       margin-bottom: 10px;
       border-right: 5px solid var(--primary);
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 5px;
       cursor: pointer;
       transition: all 0.2s ease;
       box-shadow: 0 2px 6px rgba(0,0,0,0.03);
     }
-    .device-card:active, .mission-card:active {
+    .device-card:active, .mission-card:active, .issue-card:active {
       transform: scale(0.98);
       background-color: #f8fafc;
     }
-    .device-card:hover, .mission-card:hover {
-      border-color: var(--primary);
-      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.12);
-    }
+
+    .issue-card { border-right-color: var(--danger); }
 
     .badge { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: 700; }
     .badge-primary { background: var(--primary-light); color: var(--primary-dark); }
     .badge-success { background: #dcfce7; color: #166534; }
     .badge-warning { background: #fef3c7; color: #92400e; }
+    .badge-danger { background: #fee2e2; color: #991b1b; }
 
-    .search-box { position: relative; margin-bottom: 14px; }
+    .search-box { position: relative; margin-bottom: 12px; }
     .search-box i { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
     .search-box input { padding-right: 40px; background: white; }
 
@@ -166,7 +172,7 @@
       margin-top: 4px;
       max-height: 220px;
       overflow-y: auto;
-      z-index: 60;
+      z-index: 80;
       box-shadow: 0 10px 25px rgba(0,0,0,0.1);
       display: none;
     }
@@ -181,6 +187,24 @@
     }
     .autocomplete-item:hover { background-color: var(--primary-light); color: var(--primary-dark); }
 
+    /* شبكة الإحصائيات السريعة */
+    .stats-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .stat-box {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+    }
+    .stat-number { font-size: 1.4rem; font-weight: 800; color: var(--primary-dark); }
+    .stat-desc { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; margin-top: 2px; }
+
+    /* تفاصيل الجهاز المنبثقة */
     .details-modal {
       display: none;
       position: fixed;
@@ -193,7 +217,7 @@
     .details-sheet {
       background: white;
       width: 100%;
-      max-width: 500px;
+      max-width: 520px;
       border-radius: 24px 24px 0 0;
       padding: 22px 20px 30px;
       max-height: 85vh;
@@ -215,37 +239,27 @@
     .details-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 12px;
+      gap: 10px;
       margin-bottom: 16px;
     }
     .detail-item {
       background: #f8fafc;
-      padding: 10px 12px;
+      padding: 9px 11px;
       border-radius: 10px;
       border: 1px solid #edf2f7;
     }
-    .detail-label {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      font-weight: 600;
-      margin-bottom: 2px;
-    }
-    .detail-val {
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: var(--text);
-      word-break: break-word;
-    }
+    .detail-label { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; margin-bottom: 2px; }
+    .detail-val { font-size: 0.88rem; font-weight: 700; color: var(--text); word-break: break-word; }
 
     .install-bar {
       display: flex;
       gap: 10px;
-      margin-top: 20px;
+      margin-top: 18px;
       justify-content: center;
     }
     .install-btn {
       flex: 1;
-      padding: 10px 12px;
+      padding: 10px;
       border-radius: 10px;
       border: 1px solid var(--border);
       background: white;
@@ -257,11 +271,7 @@
       justify-content: center;
       gap: 6px;
       cursor: pointer;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-      transition: all 0.2s;
     }
-    .install-btn:hover { background: #f1f5f9; }
-    .install-btn i { font-size: 1.1rem; }
     .install-btn.android i { color: #22c55e; }
     .install-btn.ios i { color: #0f172a; }
 
@@ -283,9 +293,6 @@
       width: 100%;
       text-align: center;
     }
-    .modal-card h3 { font-size: 1.1rem; margin-bottom: 12px; color: var(--text); }
-    .modal-step { display: flex; align-items: center; gap: 10px; text-align: right; margin-bottom: 12px; font-size: 0.9rem; color: #334155; }
-    .modal-step i { font-size: 1.2rem; color: var(--primary); }
 
     #loadingOverlay {
       display: none;
@@ -368,31 +375,30 @@
           <div class="detail-val" id="modalDevStatus">-</div>
         </div>
         <div class="detail-item" style="grid-column: span 2; background: #f0fdf4; border-color: #bbf7d0;">
-          <div class="detail-label" style="color: #166534;"><i class="fa-solid fa-clock-rotate-left"></i> آخر زيارة / مأمورية مسجلة</div>
-          <div class="detail-val" id="modalDevLastVisit" style="color: #15803d; font-size: 0.88rem;">لا توجد مأموريات مسجلة مؤخراً</div>
+          <div class="detail-label" style="color: #166534;"><i class="fa-solid fa-clock-rotate-left"></i> آخر مأمورية / زيارة</div>
+          <div class="detail-val" id="modalDevLastVisit" style="color: #15803d; font-size: 0.85rem;">لا توجد زيارات مسجلة مؤخراً</div>
         </div>
       </div>
 
-      <button class="btn" id="btnQuickMission" onclick="startMissionForThisDevice()">
-        <i class="fa-solid fa-route"></i>
-        <span>تسجيل مأمورية لهذا الجهاز فوراً</span>
-      </button>
+      <div style="display:flex; gap:10px;">
+        <button class="btn" style="flex:1;" onclick="startMissionForThisDevice()">
+          <i class="fa-solid fa-route"></i> مأمورية للجهاز
+        </button>
+        <button class="btn btn-danger" style="flex:1;" onclick="reportIssueForThisDevice()">
+          <i class="fa-solid fa-triangle-exclamation"></i> إبلاغ عن عطل
+        </button>
+      </div>
     </div>
   </div>
 
+  <!-- نافذة تثبيت iPhone -->
   <div id="iosModal" class="modal-overlay">
     <div class="modal-card">
       <i class="fa-brands fa-apple" style="font-size: 2.2rem; color: #0f172a; margin-bottom: 10px;"></i>
-      <h3>تثبيت التطبيق على iPhone</h3>
-      <div class="modal-step">
-        <i class="fa-solid fa-arrow-up-from-bracket"></i>
-        <span>1. اضغط على زر <b>المشاركة (Share)</b> في متصفح Safari بالأسفل.</span>
-      </div>
-      <div class="modal-step">
-        <i class="fa-regular fa-square-plus"></i>
-        <span>2. اختر <b>إضافة إلى الشاشة الرئيسية (Add to Home Screen)</b>.</span>
-      </div>
-      <button class="btn" style="margin-top: 14px;" onclick="closeIosModal()">فهمت ذلك</button>
+      <h3 style="font-size:1.1rem; margin-bottom:10px;">تثبيت التطبيق على iPhone</h3>
+      <p style="font-size:0.88rem; color:#475569; margin-bottom:8px;">1. اضغط على زر <b>المشاركة (Share)</b> في Safari.</p>
+      <p style="font-size:0.88rem; color:#475569; margin-bottom:14px;">2. اختر <b>إضافة إلى الشاشة الرئيسية</b>.</p>
+      <button class="btn" onclick="closeIosModal()">فهمت ذلك</button>
     </div>
   </div>
 
@@ -525,23 +531,27 @@
           </div>
 
           <div class="form-group">
-            <label>العميل / المعمل (في نطاق المنطقة)</label>
-            <select id="msClientSelect" onchange="onMissionClientSelect(this.value)">
-              <option value="">-- اختر العميل --</option>
-            </select>
+            <label>العميل / المعمل (اكتب للبحث واختيار العميل)</label>
+            <div style="position: relative;">
+              <input type="text" id="msClientInput" placeholder="اكتب اسم المعمل أو المستشفى..." oninput="handleMissionClientSearch()" autocomplete="off" />
+              <div id="msClientAutocomplete" class="autocomplete-list"></div>
+            </div>
+            <small style="font-size: 0.75rem; color: var(--text-muted); margin-top: 4px; display: block;">
+              <i class="fa-solid fa-wand-magic-sparkles" style="color: var(--primary);"></i> بمجرد اختيار العميل ستُملأ باقي البيانات تلقائياً.
+            </small>
           </div>
 
           <div class="form-group">
             <label>المحافظة / المدينة</label>
-            <input type="text" id="msCity" />
+            <input type="text" id="msCity" placeholder="المحافظة" />
           </div>
           <div class="form-group">
             <label>موديل الجهاز</label>
-            <input type="text" id="msModel" />
+            <input type="text" id="msModel" placeholder="موديل الجهاز" />
           </div>
           <div class="form-group">
             <label>الرقم التسلسلي (S/N)</label>
-            <input type="text" id="msSerial" />
+            <input type="text" id="msSerial" placeholder="الرقم التسلسلي S/N" />
           </div>
           <div class="form-group">
             <label>نوع الزيارة</label>
@@ -575,17 +585,121 @@
         </div>
       </section>
 
-      <!-- 4. شاشة عرض المأموريات اليومية -->
+      <!-- 4. شاشة عرض المأموريات اليومية ومحرك الإحصائيات المتقدم -->
       <section id="viewDailyMissions" class="view-section">
-        <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom: 12px;">
-          <h2 style="font-size: 1.15rem; font-weight: 700;">المأموريات اليومية</h2>
-          <input type="date" id="dailyMissionsDateFilter" style="width: auto; padding: 6px 10px; font-size: 0.82rem;" onchange="renderDailyMissions()" />
+        <h2 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 12px;">المأموريات والإحصائيات</h2>
+        
+        <!-- فلترة مخصصة بالفترة والمهندس والمنطقة -->
+        <div class="card" style="padding: 12px; margin-bottom: 12px; background:#f0f9ff; border-color:#bae6fd;">
+          <div style="font-size:0.82rem; font-weight:700; color:var(--primary-dark); margin-bottom:8px;">
+            <i class="fa-solid fa-filter"></i> فلترة مخصصة للفترة والمهندس:
+          </div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:8px;">
+            <div>
+              <label style="font-size:0.75rem;">من تاريخ</label>
+              <input type="date" id="filterFromDate" onchange="applyAdvancedStatsFilter()" />
+            </div>
+            <div>
+              <label style="font-size:0.75rem;">إلى تاريخ</label>
+              <input type="date" id="filterToDate" onchange="applyAdvancedStatsFilter()" />
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:6px;">
+            <label style="font-size:0.75rem;">المهندس / المشرف</label>
+            <select id="filterEngineerSelect" onchange="applyAdvancedStatsFilter()">
+              <option value="الكل">كل المهندسين</option>
+            </select>
+          </div>
         </div>
-        <div id="dailyMissionsSummary" style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;"></div>
+
+        <!-- شبكة ملخص الإحصائيات -->
+        <div class="stats-summary-grid">
+          <div class="stat-box">
+            <div class="stat-number" id="statMissionsCount">0</div>
+            <div class="stat-desc">إجمالي الزيارات بالفترة</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-number" id="statIssuesCount" style="color:var(--danger);">0</div>
+            <div class="stat-desc">إجمالي الأعطال بالفترة</div>
+          </div>
+        </div>
+
+        <!-- ملخص المناطق المجمعة -->
+        <div id="regionsStatsSummary" style="margin-bottom:12px; font-size:0.8rem; color:#475569;"></div>
+
+        <h3 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 8px;">سجل المأموريات المطابقة</h3>
         <div id="dailyMissionsContainer"></div>
       </section>
 
-      <!-- 5. شاشة قطع الغيار -->
+      <!-- 5. قسم الأعطال الجديد (Issues & Breakdown Reporting) -->
+      <section id="viewIssues" class="view-section">
+        <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom: 12px;">
+          <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--danger);">
+            <i class="fa-solid fa-triangle-exclamation"></i> بلاغات الأعطال
+          </h2>
+          <button class="btn btn-danger" style="width: auto; padding: 6px 14px; font-size: 0.8rem;" onclick="toggleAddIssueForm()">
+            <i class="fa-solid fa-plus"></i> إبلاغ عن عطل
+          </button>
+        </div>
+
+        <!-- نموذج تسجيل عطل جديد -->
+        <div id="addIssueCard" class="card" style="display: none; border-color: var(--danger);">
+          <h3 style="font-size: 0.95rem; margin-bottom: 10px; color: var(--danger);">تسجيل بلاغ عطل فني جديد</h3>
+          
+          <div class="form-group">
+            <label>العميل / المعمل (بحث وإكمال تلقائي)</label>
+            <div style="position: relative;">
+              <input type="text" id="issueClientInput" placeholder="اكتب للبحث واختيار العميل..." oninput="handleIssueClientSearch()" autocomplete="off" />
+              <div id="issueClientAutocomplete" class="autocomplete-list"></div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>موديل الجهاز</label>
+            <input type="text" id="issueModel" />
+          </div>
+
+          <div class="form-group">
+            <label>الرقم التسلسلي (S/N)</label>
+            <input type="text" id="issueSerial" />
+          </div>
+
+          <div class="form-group">
+            <label>المحافظة / المدينة</label>
+            <input type="text" id="issueCity" />
+          </div>
+
+          <div class="form-group">
+            <label>تفاصيل ووصف العطل</label>
+            <textarea id="issueDescription" rows="3" placeholder="اشرح تفاصيل المشكلة بدقة..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>مستوى الأولوية</label>
+            <select id="issuePriority">
+              <option value="حرجة (جهاز متوقف)">حرجة (جهاز متوقف)</option>
+              <option value="عالية">عالية</option>
+              <option value="متوسطة" selected>متوسطة</option>
+              <option value="منخفضة">منخفضة</option>
+            </select>
+          </div>
+
+          <button class="btn btn-danger" onclick="submitNewIssue()">
+            <i class="fa-solid fa-paper-plane"></i>
+            <span>إرسال البلاغ وتحديث الشيت</span>
+          </button>
+        </div>
+
+        <div class="search-box">
+          <i class="fa-solid fa-magnifying-glass"></i>
+          <input type="text" id="issueSearchInput" placeholder="بحث في الأعطال بالمعمل، الجهاز، السيريال أو المهندس..." oninput="renderIssuesList()" autocomplete="off" />
+        </div>
+
+        <div id="issuesSummaryText" style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px;"></div>
+        <div id="issuesListContainer"></div>
+      </section>
+
+      <!-- 6. شاشة قطع الغيار -->
       <section id="viewParts" class="view-section">
         <h2 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 12px;">تسجيل حركة قطع الغيار</h2>
         <div class="card">
@@ -617,7 +731,7 @@
         </div>
       </section>
 
-      <!-- 6. شاشة الإجازات -->
+      <!-- 7. شاشة الإجازات -->
       <section id="viewLeaves" class="view-section">
         <h2 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 12px;">طلب إجازة</h2>
         <div class="card">
@@ -639,7 +753,7 @@
 
     </main>
 
-    <!-- شريط التنقل السفلي -->
+    <!-- شريط التنقل السفلي الشامل -->
     <nav id="bottomNav" class="bottom-nav" style="display: none;">
       <div class="nav-item active" onclick="switchTab('viewDevices', this)">
         <i class="fa-solid fa-server"></i>
@@ -647,11 +761,15 @@
       </div>
       <div class="nav-item" onclick="switchTab('viewMissions', this)">
         <i class="fa-solid fa-route"></i>
-        <span>تسجيل مأمورية</span>
+        <span>مأمورية</span>
       </div>
       <div class="nav-item" onclick="switchTab('viewDailyMissions', this)">
-        <i class="fa-solid fa-calendar-check"></i>
-        <span>المأموريات اليومية</span>
+        <i class="fa-solid fa-chart-line"></i>
+        <span>الإحصائيات</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('viewIssues', this)">
+        <i class="fa-solid fa-triangle-exclamation" style="color:var(--danger);"></i>
+        <span>الأعطال</span>
       </div>
       <div class="nav-item" onclick="switchTab('viewParts', this)">
         <i class="fa-solid fa-gears"></i>
@@ -667,11 +785,12 @@
 
   <script>
     // الرابط المحدث والنهائي الخاص بـ Google Apps Script
-    const API_URL = "https://script.google.com/macros/s/AKfycbzzglryvvQdZJHgQ4UeBHHYZFSTgMFZyQGyt2jyCmF2-N0mVFO5m93bfsZDxauHvh0IBA/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbwBlW8jNNp-RLwU10xp4sfZ5wjuj5MrfnQIsPubeITkxM-396LGXCW6M5LISv-X1lgj/exec";
 
     let cachedDevices = [];
     let cachedEngineers = [];
     let cachedMissions = [];
+    let cachedIssues = [];
     let activeUser = null;
     let deferredPrompt = null;
     let selectedDeviceForMission = null;
@@ -683,10 +802,13 @@
 
     window.addEventListener("DOMContentLoaded", () => {
       const today = new Date().toISOString().split("T")[0];
+      const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split("T")[0];
+
       if (document.getElementById("msDate")) document.getElementById("msDate").value = today;
       if (document.getElementById("lvStart")) document.getElementById("lvStart").value = today;
       if (document.getElementById("lvEnd")) document.getElementById("lvEnd").value = today;
-      if (document.getElementById("dailyMissionsDateFilter")) document.getElementById("dailyMissionsDateFilter").value = today;
+      if (document.getElementById("filterFromDate")) document.getElementById("filterFromDate").value = monthStart;
+      if (document.getElementById("filterToDate")) document.getElementById("filterToDate").value = today;
 
       loadEngineersList();
 
@@ -697,9 +819,16 @@
         loadDevices();
       }
 
+      // إغلاق قوائم الإكمال التلقائي عند النقر خارجها
       document.addEventListener("click", (e) => {
         if (!e.target.closest(".search-box")) {
           document.getElementById("autocompleteList").style.display = "none";
+        }
+        if (!e.target.closest("#msClientInput") && !e.target.closest("#msClientAutocomplete")) {
+          document.getElementById("msClientAutocomplete").style.display = "none";
+        }
+        if (!e.target.closest("#issueClientInput") && !e.target.closest("#issueClientAutocomplete")) {
+          document.getElementById("issueClientAutocomplete").style.display = "none";
         }
       });
     });
@@ -720,27 +849,42 @@
       if (el) el.classList.add("active");
 
       if (viewId === "viewDailyMissions") {
-        renderDailyMissions();
+        applyAdvancedStatsFilter();
+      } else if (viewId === "viewIssues") {
+        renderIssuesList();
       } else if (viewId === "viewMissions") {
         populateMissionDropdowns();
       }
     }
 
-    // ================= 1. قائمة المهندسين وتسجيل الدخول =================
+    // ================= 1. تسجيل الدخول وقائمة المهندسين =================
     async function loadEngineersList() {
       const select = document.getElementById("loginUserSelect");
+      const filterSelect = document.getElementById("filterEngineerSelect");
+
       try {
         const res = await fetch(`${API_URL}?action=getAll`);
         const data = await res.json();
         if (data.status === "success" && data.engineers) {
           cachedEngineers = data.engineers;
           if (data.missions) cachedMissions = data.missions;
+          if (data.issues) cachedIssues = data.issues;
+
           select.innerHTML = '<option value="">-- اختر المهندس من القائمة --</option>';
+          if (filterSelect) filterSelect.innerHTML = '<option value="الكل">كل المهندسين والمشرفين</option>';
+
           data.engineers.forEach(eng => {
             const opt = document.createElement("option");
             opt.value = eng["كود المهندس"] || eng["الاسم بالكامل"];
-            opt.innerText = `${eng["الاسم بالكامل"]} (${eng["الدور / الصلاحية"]})`;
+            opt.innerText = `${eng["الاسم بالكامل"]} (${eng["الدور / الصلاحية"]}) - ${eng["المنطقة"]}`;
             select.appendChild(opt);
+
+            if (filterSelect) {
+              const optFilter = document.createElement("option");
+              optFilter.value = eng["الاسم بالكامل"];
+              optFilter.innerText = `${eng["الاسم بالكامل"]} (${eng["المنطقة"]})`;
+              filterSelect.appendChild(optFilter);
+            }
           });
         }
       } catch (e) {
@@ -814,7 +958,7 @@
         return;
       }
 
-      showLoading("جاري مزامنة بيانات الأجهزة والمأموريات...");
+      showLoading("جاري مزامنة بيانات الشيت بالكامل...");
       try {
         const res = await fetch(`${API_URL}?action=getAll`);
         const data = await res.json();
@@ -823,6 +967,8 @@
         if (data.status === "success" && data.devices) {
           cachedDevices = data.devices;
           if (data.missions) cachedMissions = data.missions;
+          if (data.issues) cachedIssues = data.issues;
+
           localStorage.setItem("medtech_devices_cache", JSON.stringify(cachedDevices));
           renderDevices(cachedDevices);
           populateMissionDropdowns();
@@ -934,10 +1080,26 @@
       const missionTabNav = document.querySelectorAll(".nav-item")[1];
       switchTab("viewMissions", missionTabNav);
 
-      document.getElementById("msClientSelect").value = selectedDeviceForMission["اسم العميل / المعمل"] || "";
+      document.getElementById("msClientInput").value = selectedDeviceForMission["اسم العميل / المعمل"] || "";
       document.getElementById("msModel").value = selectedDeviceForMission["اسم الجهاز / الموديل"] || "";
       document.getElementById("msSerial").value = selectedDeviceForMission["الرقم التسلسلي (S/N)"] || "";
       document.getElementById("msCity").value = selectedDeviceForMission["المحافظة / المدينة"] || "";
+    }
+
+    function reportIssueForThisDevice() {
+      if (!selectedDeviceForMission) return;
+      closeDeviceModalDirect();
+
+      const issueTabNav = document.querySelectorAll(".nav-item")[3];
+      switchTab("viewIssues", issueTabNav);
+
+      const addIssueCard = document.getElementById("addIssueCard");
+      if (addIssueCard.style.display !== "block") addIssueCard.style.display = "block";
+
+      document.getElementById("issueClientInput").value = selectedDeviceForMission["اسم العميل / المعمل"] || "";
+      document.getElementById("issueModel").value = selectedDeviceForMission["اسم الجهاز / الموديل"] || "";
+      document.getElementById("issueSerial").value = selectedDeviceForMission["الرقم التسلسلي (S/N)"] || "";
+      document.getElementById("issueCity").value = selectedDeviceForMission["المحافظة / المدينة"] || "";
     }
 
     function handleSearch() {
@@ -1020,15 +1182,12 @@
       loadDevices(true);
     }
 
-    // ================= 3. إدارة المأموريات وتوزيع المهندسين والعملاء =================
+    // ================= 3. المأموريات والبحث التفاعلي =================
     function populateMissionDropdowns() {
       if (!activeUser) return;
 
       const engSelect = document.getElementById("msEngineerSelect");
-      const clientSelect = document.getElementById("msClientSelect");
-
       engSelect.innerHTML = "";
-      clientSelect.innerHTML = '<option value="">-- اختر العميل من القائمة --</option>';
 
       let eligibleEngineers = cachedEngineers;
       if (activeUser.role === "مهندس صيانة") {
@@ -1044,38 +1203,62 @@
         if (eng["الاسم بالكامل"] === activeUser.name) opt.selected = true;
         engSelect.appendChild(opt);
       });
+    }
+
+    function handleMissionClientSearch() {
+      const input = document.getElementById("msClientInput");
+      const q = input.value.trim().toLowerCase();
+      const autoList = document.getElementById("msClientAutocomplete");
+
+      if (!q) {
+        autoList.style.display = "none";
+        return;
+      }
 
       let eligibleDevices = cachedDevices;
-      if (activeUser.role !== "مدير عام" && activeUser.region && activeUser.region !== "الكل") {
+      if (activeUser && activeUser.role !== "مدير عام" && activeUser.region && activeUser.region !== "الكل") {
         eligibleDevices = cachedDevices.filter(d => d["المنطقة"] === activeUser.region);
       }
 
-      const uniqueClients = [];
-      eligibleDevices.forEach(d => {
-        const cName = d["اسم العميل / المعمل"];
-        if (cName && !uniqueClients.includes(cName)) {
-          uniqueClients.push(cName);
-          const opt = document.createElement("option");
-          opt.value = cName;
-          opt.innerText = `${cName} - ${d["المحافظة / المدينة"] || ""}`;
-          clientSelect.appendChild(opt);
-        }
-      });
-    }
+      const matched = eligibleDevices.filter(d => 
+        String(d["اسم العميل / المعمل"] || "").toLowerCase().includes(q) ||
+        String(d["الرقم التسلسلي (S/N)"] || "").toLowerCase().includes(q) ||
+        String(d["اسم الجهاز / الموديل"] || "").toLowerCase().includes(q) ||
+        String(d["المحافظة / المدينة"] || "").toLowerCase().includes(q)
+      );
 
-    function onMissionClientSelect(clientName) {
-      if (!clientName) return;
-      const device = cachedDevices.find(d => d["اسم العميل / المعمل"] === clientName);
-      if (device) {
-        document.getElementById("msCity").value = device["المحافظة / المدينة"] || "";
-        document.getElementById("msModel").value = device["اسم الجهاز / الموديل"] || "";
-        document.getElementById("msSerial").value = device["الرقم التسلسلي (S/N)"] || "";
+      autoList.innerHTML = "";
+      if (matched.length === 0) {
+        autoList.style.display = "none";
+        return;
       }
+
+      matched.slice(0, 7).forEach(dev => {
+        const item = document.createElement("div");
+        item.className = "autocomplete-item";
+        item.innerHTML = `
+          <div style="display:flex; flex-direction:column; gap:2px; text-align:right;">
+            <strong style="color:var(--text); font-size:0.86rem;">${dev["اسم العميل / المعمل"]}</strong>
+            <span style="font-size:0.75rem; color:var(--text-muted);">${dev["اسم الجهاز / الموديل"]} | S/N: ${dev["الرقم التسلسلي (S/N)"] || "غير مسجل"} (${dev["المحافظة / المدينة"] || ""})</span>
+          </div>
+          <span class="badge badge-primary" style="font-size:0.7rem;">اختيار</span>
+        `;
+        item.onclick = () => {
+          document.getElementById("msClientInput").value = dev["اسم العميل / المعمل"] || "";
+          document.getElementById("msCity").value = dev["المحافظة / المدينة"] || "";
+          document.getElementById("msModel").value = dev["اسم الجهاز / الموديل"] || "";
+          document.getElementById("msSerial").value = dev["الرقم التسلسلي (S/N)"] || "";
+          autoList.style.display = "none";
+        };
+        autoList.appendChild(item);
+      });
+
+      autoList.style.display = "block";
     }
 
     async function submitMission() {
       const engName = document.getElementById("msEngineerSelect").value;
-      const clientName = document.getElementById("msClientSelect").value || document.getElementById("msClient").value;
+      const clientName = document.getElementById("msClientInput").value.trim();
 
       if (!clientName) { alert("يرجى تحديد العميل"); return; }
       if (!engName) { alert("يرجى اختيار المهندس المسؤول"); return; }
@@ -1103,36 +1286,78 @@
 
       if (ok) {
         alert("تم تسجيل المأمورية وتحديث حالة الجهاز في الشيت بنجاح!");
+        document.getElementById("msClientInput").value = "";
+        document.getElementById("msCity").value = "";
+        document.getElementById("msModel").value = "";
+        document.getElementById("msSerial").value = "";
         document.getElementById("msIssue").value = "";
         document.getElementById("msNotes").value = "";
         loadDevices(true);
       }
     }
 
-    // ================= 4. عرض المأموريات اليومية =================
-    function renderDailyMissions() {
-      const container = document.getElementById("dailyMissionsContainer");
-      const filterDate = document.getElementById("dailyMissionsDateFilter").value;
-      container.innerHTML = "";
+    // ================= 4. المأموريات اليومية والإحصائيات المتقدمة =================
+    function applyAdvancedStatsFilter() {
+      const from = document.getElementById("filterFromDate").value || "1970-01-01";
+      const to = document.getElementById("filterToDate").value || "2099-12-31";
+      const selectedEng = document.getElementById("filterEngineerSelect").value;
 
       if (!activeUser) return;
 
-      let filtered = cachedMissions.filter(m => String(m["التاريخ"] || "").startsWith(filterDate));
+      // فلترة المأموريات
+      let filteredM = cachedMissions.filter(m => {
+        const d = String(m["التاريخ"] || "").substring(0, 10);
+        const inDate = d >= from && d <= to;
+        const inEng = (selectedEng === "الكل") || (m["اسم المهندس"] === selectedEng);
+        let inRegion = true;
+        if (activeUser.role === "مهندس صيانة") inRegion = m["اسم المهندس"] === activeUser.name;
+        else if (activeUser.role === "مشرف منطقة" && activeUser.region !== "الكل") inRegion = m["المنطقة"] === activeUser.region;
+        return inDate && inEng && inRegion;
+      });
 
-      if (activeUser.role === "مهندس صيانة") {
-        filtered = filtered.filter(m => m["اسم المهندس"] === activeUser.name);
-      } else if (activeUser.role === "مشرف منطقة" && activeUser.region && activeUser.region !== "الكل") {
-        filtered = filtered.filter(m => m["المنطقة"] === activeUser.region);
+      // فلترة الأعطال
+      let filteredI = cachedIssues.filter(i => {
+        const d = String(i["التاريخ"] || "").substring(0, 10);
+        const inDate = d >= from && d <= to;
+        const inEng = (selectedEng === "الكل") || (i["اسم المهندس"] === selectedEng);
+        let inRegion = true;
+        if (activeUser.role === "مهندس صيانة") inRegion = i["اسم المهندس"] === activeUser.name;
+        else if (activeUser.role === "مشرف منطقة" && activeUser.region !== "الكل") inRegion = i["المنطقة"] === activeUser.region;
+        return inDate && inEng && inRegion;
+      });
+
+      document.getElementById("statMissionsCount").innerText = filteredM.length;
+      document.getElementById("statIssuesCount").innerText = filteredI.length;
+
+      // ملخص مجمل حسب المناطق
+      const regMap = {};
+      filteredM.forEach(m => {
+        const r = m["المنطقة"] || "غير محدد";
+        if (!regMap[r]) regMap[r] = { m: 0, i: 0 };
+        regMap[r].m++;
+      });
+      filteredI.forEach(i => {
+        const r = i["المنطقة"] || "غير محدد";
+        if (!regMap[r]) regMap[r] = { m: 0, i: 0 };
+        regMap[r].i++;
+      });
+
+      let summaryHtml = "<b>إجمالي المناطق للفترة:</b> ";
+      for (const r in regMap) {
+        summaryHtml += `<span class="badge badge-primary" style="margin-left:4px;">${r}: ${regMap[r].m} زيارة / ${regMap[r].i} عطل</span>`;
       }
+      document.getElementById("regionsStatsSummary").innerHTML = summaryHtml;
 
-      document.getElementById("dailyMissionsSummary").innerText = `مأموريات تاريخ ${filterDate} (العدد: ${filtered.length})`;
+      // رسم بطاقات المأموريات المطابقة
+      const container = document.getElementById("dailyMissionsContainer");
+      container.innerHTML = "";
 
-      if (filtered.length === 0) {
-        container.innerHTML = "<p style='text-align:center; padding:25px; color:#94a3b8;'>لا توجد مأموريات مسجلة لهذا اليوم</p>";
+      if (filteredM.length === 0) {
+        container.innerHTML = "<p style='text-align:center; padding:20px; color:#94a3b8;'>لا توجد مأموريات مطابقة لهذا النطاق والفلترة</p>";
         return;
       }
 
-      filtered.forEach(m => {
+      filteredM.forEach(m => {
         const card = document.createElement("div");
         card.className = "mission-card";
         card.innerHTML = `
@@ -1140,18 +1365,156 @@
             <span style="font-weight:700; color:var(--text);">${m["اسم العميل / المعمل"] || "عميل غير محدد"}</span>
             <span class="badge ${m["الحالة"] === "تمت بنجاح" ? "badge-success" : "badge-warning"}">${m["الحالة"] || "معلق"}</span>
           </div>
-          <div style="font-size:0.82rem; color:var(--text-muted); margin-top:4px; display:flex; flex-direction:column; gap:3px;">
+          <div style="font-size:0.82rem; color:var(--text-muted); margin-top:4px; display:flex; flex-direction:column; gap:2px;">
+            <span><i class="fa-solid fa-calendar-day"></i> التاريخ: <b>${String(m["التاريخ"]).substring(0,10)}</b></span>
             <span><i class="fa-solid fa-user-gear"></i> المهندس: <b>${m["اسم المهندس"] || ""}</b> (${m["المنطقة"] || ""})</span>
             <span><i class="fa-solid fa-stethoscope"></i> الجهاز: ${m["موديل الجهاز"] || ""} | S/N: ${m["الرقم التسلسلي (S/N)"] || "غير مسجل"}</span>
-            <span><i class="fa-solid fa-clipboard-check"></i> الزيارة: ${m["نوع الزيارة"] || ""}</span>
-            ${m["وصف العطل / المطلوب"] ? `<span style="color:#334155;"><i class="fa-solid fa-wrench"></i> الإجراء: ${m["وصف العطل / المطلوب"]}</span>` : ""}
+            <span><i class="fa-solid fa-clipboard-check"></i> نوع الزيارة: ${m["نوع الزيارة"] || ""}</span>
           </div>
         `;
         container.appendChild(card);
       });
     }
 
-    // ================= 5. قطع الغيار =================
+    // ================= 5. قسم الأعطال والبلاغات (Issues) =================
+    function toggleAddIssueForm() {
+      const card = document.getElementById("addIssueCard");
+      card.style.display = card.style.display === "none" ? "block" : "none";
+    }
+
+    function handleIssueClientSearch() {
+      const input = document.getElementById("issueClientInput");
+      const q = input.value.trim().toLowerCase();
+      const autoList = document.getElementById("issueClientAutocomplete");
+
+      if (!q) { autoList.style.display = "none"; return; }
+
+      let eligibleDevices = cachedDevices;
+      if (activeUser && activeUser.role !== "مدير عام" && activeUser.region && activeUser.region !== "الكل") {
+        eligibleDevices = cachedDevices.filter(d => d["المنطقة"] === activeUser.region);
+      }
+
+      const matched = eligibleDevices.filter(d => 
+        String(d["اسم العميل / المعمل"] || "").toLowerCase().includes(q) ||
+        String(d["الرقم التسلسلي (S/N)"] || "").toLowerCase().includes(q) ||
+        String(d["اسم الجهاز / الموديل"] || "").toLowerCase().includes(q)
+      );
+
+      autoList.innerHTML = "";
+      if (matched.length === 0) { autoList.style.display = "none"; return; }
+
+      matched.slice(0, 6).forEach(dev => {
+        const item = document.createElement("div");
+        item.className = "autocomplete-item";
+        item.innerHTML = `
+          <div style="display:flex; flex-direction:column; text-align:right;">
+            <strong>${dev["اسم العميل / المعمل"]}</strong>
+            <small style="color:var(--text-muted);">${dev["اسم الجهاز / الموديل"]} (${dev["الرقم التسلسلي (S/N)"] || "S/N"})</small>
+          </div>
+          <span class="badge badge-primary">تحديد</span>
+        `;
+        item.onclick = () => {
+          document.getElementById("issueClientInput").value = dev["اسم العميل / المعمل"] || "";
+          document.getElementById("issueModel").value = dev["اسم الجهاز / الموديل"] || "";
+          document.getElementById("issueSerial").value = dev["الرقم التسلسلي (S/N)"] || "";
+          document.getElementById("issueCity").value = dev["المحافظة / المدينة"] || "";
+          autoList.style.display = "none";
+        };
+        autoList.appendChild(item);
+      });
+      autoList.style.display = "block";
+    }
+
+    async function submitNewIssue() {
+      const client = document.getElementById("issueClientInput").value.trim();
+      const desc = document.getElementById("issueDescription").value.trim();
+
+      if (!client || !desc) {
+        alert("يرجى كتابة اسم العميل ووصف العطل");
+        return;
+      }
+
+      const devObj = cachedDevices.find(d => d["اسم العميل / المعمل"] === client);
+      const targetRegion = devObj ? devObj["المنطقة"] : (activeUser ? activeUser.region : "");
+
+      const payload = {
+        date: new Date().toISOString().split("T")[0],
+        region: targetRegion,
+        engineerName: activeUser ? activeUser.name : "",
+        clientName: client,
+        city: document.getElementById("issueCity").value.trim(),
+        deviceModel: document.getElementById("issueModel").value.trim(),
+        serialNumber: document.getElementById("issueSerial").value.trim(),
+        issueDescription: desc,
+        priority: document.getElementById("issuePriority").value,
+        status: "مفتوح"
+      };
+
+      showLoading("جاري إرسال بلاغ العطل وتحديث الشيت...");
+      const ok = await executeRemote("saveIssue", payload);
+      hideLoading();
+
+      if (ok) {
+        alert("تم تسجيل بلاغ العطل وتحديث حالة الجهاز إلى 'يحتاج صيانة' بنجاح!");
+        document.getElementById("issueClientInput").value = "";
+        document.getElementById("issueDescription").value = "";
+        toggleAddIssueForm();
+        loadDevices(true);
+      }
+    }
+
+    function renderIssuesList() {
+      const container = document.getElementById("issuesListContainer");
+      const q = document.getElementById("issueSearchInput").value.trim().toLowerCase();
+      container.innerHTML = "";
+
+      if (!activeUser) return;
+
+      // فلترة الأعطال حسب الصلاحية والمنطقة
+      let filtered = cachedIssues;
+      if (activeUser.role !== "مدير عام" && activeUser.region && activeUser.region !== "الكل") {
+        filtered = filtered.filter(i => i["المنطقة"] === activeUser.region);
+      }
+
+      if (q) {
+        filtered = filtered.filter(i => 
+          String(i["اسم العميل / المعمل"] || "").toLowerCase().includes(q) ||
+          String(i["موديل الجهاز"] || "").toLowerCase().includes(q) ||
+          String(i["الرقم التسلسلي (S/N)"] || "").toLowerCase().includes(q) ||
+          String(i["اسم المهندس"] || "").toLowerCase().includes(q)
+        );
+      }
+
+      document.getElementById("issuesSummaryText").innerText = `عدد بلاغات الأعطال في النطاق: ${filtered.length}`;
+
+      if (filtered.length === 0) {
+        container.innerHTML = "<p style='text-align:center; padding:20px; color:#94a3b8;'>لا توجد أعطال مسجلة حالياً</p>";
+        return;
+      }
+
+      filtered.forEach(i => {
+        const card = document.createElement("div");
+        card.className = "issue-card";
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="color:var(--text);">${i["اسم العميل / المعمل"] || "عميل غير محدد"}</strong>
+            <span class="badge ${i["الحالة"] === "تم الإصلاح" ? "badge-success" : "badge-danger"}">${i["الحالة"] || "مفتوح"}</span>
+          </div>
+          <div style="font-size:0.82rem; color:#334155; margin-top:3px;">
+            <b>العطل:</b> ${i["تفاصيل العطل"] || "لا توجد تفاصيل"}
+          </div>
+          <div style="font-size:0.75rem; color:var(--text-muted); display:flex; flex-wrap:wrap; gap:10px; margin-top:3px;">
+            <span><i class="fa-solid fa-stethoscope"></i> ${i["موديل الجهاز"] || ""} (S/N: ${i["الرقم التسلسلي (S/N)"] || ""})</span>
+            <span><i class="fa-solid fa-location-dot"></i> ${i["المنطقة"] || ""}</span>
+            <span><i class="fa-solid fa-user"></i> المهندس: ${i["اسم المهندس"] || ""}</span>
+            <span class="badge badge-warning">${i["الأولوية"] || "متوسطة"}</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // ================= 6. قطع الغيار =================
     async function submitSparePart() {
       const payload = {
         date: new Date().toISOString().split("T")[0],
@@ -1175,7 +1538,7 @@
       }
     }
 
-    // ================= 6. الإجازات =================
+    // ================= 7. الإجازات =================
     async function submitLeave() {
       const payload = {
         engineerName: activeUser ? activeUser.name : "",
