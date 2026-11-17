@@ -15,7 +15,7 @@
         .app-card:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 pb-20">
+<body class="bg-slate-50 text-slate-800 pb-24">
 
     <!-- Top Header -->
     <header class="bg-blue-600 text-white shadow-md sticky top-0 z-50">
@@ -37,159 +37,161 @@
     <!-- Main Content Container -->
     <main class="max-w-4xl mx-auto px-4 py-6">
 
-        <!-- Section Title & Actions -->
-        <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-bold text-slate-700 flex items-center gap-2">
-                <i class="fa-solid fa-boxes-stacked text-blue-600"></i> دليل الأجهزة والعملاء
+        <!-- TAB 1: DEVICES SECTION -->
+        <section id="tab-devices" class="tab-content">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-bold text-slate-700 flex items-center gap-2">
+                    <i class="fa-solid fa-boxes-stacked text-blue-600"></i> دليل الأجهزة والعملاء
+                </h2>
+                <div class="flex gap-2">
+                    <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm px-3 py-2 rounded-xl shadow transition flex items-center gap-1">
+                        <i class="fa-solid fa-file-excel"></i> تصدير
+                    </button>
+                    <button onclick="toggleAddForm()" class="bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-2 rounded-xl shadow transition flex items-center gap-1">
+                        <i class="fa-solid fa-plus"></i> جهاز جديد
+                    </button>
+                </div>
+            </div>
+
+            <!-- Add Form (Hidden by default) -->
+            <div id="addDeviceForm" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-slate-200 mb-6 transition-all">
+                <h3 class="text-md font-bold mb-3 text-slate-600 border-b pb-2">إضافة جهاز جديد للشيت</h3>
+                <form onsubmit="saveDevice(event)" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                    <div>
+                        <label class="block text-slate-500 mb-1">اسم العميل / المعمل</label>
+                        <input type="text" id="clientName" required placeholder="مثال: مستشفى المنصورة الدولي" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-slate-500 mb-1">موديل الجهاز</label>
+                        <input type="text" id="deviceModel" required placeholder="مثال: CA-430" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-slate-500 mb-1">الرقم التسلسلي (S/N)</label>
+                        <input type="text" id="deviceSN" required placeholder="مثال: CA430TY00174" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-slate-500 mb-1">المنطقة</label>
+                        <select id="deviceRegion" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                            <option value="منطقة الدلتا">منطقة الدلتا</option>
+                            <option value="المنطقة الشمالية">المنطقة الشمالية</option>
+                            <option value="القاهرة الكبرى">القاهرة الكبرى</option>
+                            <option value="الصعيد">الصعيد</option>
+                        </select>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-slate-500 mb-1">المحافظة / المدينة</label>
+                        <input type="text" id="deviceCity" required placeholder="الدقهلية" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div class="md:col-span-2 flex justify-end gap-2 mt-2">
+                        <button type="button" onclick="toggleAddForm()" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-xl">إلغاء</button>
+                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-xl shadow">حفظ الجهاز في الشيت</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4 text-center">
+                <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+                    <span class="block text-xs text-slate-400">إجمالي الأجهزة</span>
+                    <span class="text-lg font-bold text-blue-600">1470</span>
+                </div>
+                <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm cursor-pointer hover:bg-blue-50" onclick="alert('فلترة الدلتا')">
+                    <span class="block text-xs text-slate-400">منطقة الدلتا</span>
+                    <span class="text-lg font-bold text-emerald-600">دلتا مصر</span>
+                </div>
+                <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm cursor-pointer hover:bg-blue-50" onclick="alert('فلترة الشمالية')">
+                    <span class="block text-xs text-slate-400">المنطقة الشمالية</span>
+                    <span class="text-lg font-bold text-amber-600">الشمالية</span>
+                </div>
+                <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm cursor-pointer hover:bg-blue-50" onclick="alert('عرض الكل')">
+                    <span class="block text-xs text-slate-400">عرض الكل</span>
+                    <span class="text-lg font-bold text-slate-700"><i class="fa-solid fa-rotate-right"></i></span>
+                </div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="relative mb-6">
+                <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </span>
+                <input type="text" id="searchInput" placeholder="بحث بالمعمل، السيريال، أو الموديل..." class="w-full pr-10 pl-12 py-3 bg-white border border-slate-200 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                <button onclick="alert('تم تفعيل مسح الباركود')" class="absolute inset-y-0 left-0 flex items-center pl-3 text-blue-600 hover:text-blue-800" title="مسح باركود سريع">
+                    <i class="fa-solid fa-barcode text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Devices List -->
+            <div class="space-y-3">
+                <div onclick="openQuickView('مستشفي الجمهورية', 'CA-200', 'CA200TY00050', 'المنطقة الشمالية - الاسكندرية')" class="app-card bg-white p-4 rounded-2xl border-r-4 border-blue-600 border border-slate-200 shadow-sm cursor-pointer flex justify-between items-center">
+                    <div>
+                        <h4 class="font-bold text-slate-800">مستشفي الجمهورية</h4>
+                        <p class="text-xs text-slate-500 mt-1"><i class="fa-solid fa-location-dot text-rose-500"></i> المنطقة الشمالية - الاسكندرية</p>
+                    </div>
+                    <div class="text-left">
+                        <span class="bg-blue-50 text-blue-700 text-xs px-2.5 py-1 rounded-lg font-bold">CA-200</span>
+                        <span class="block text-[11px] text-slate-400 mt-1">S/N: CA200TY00050</span>
+                    </div>
+                </div>
+                <div onclick="openQuickView('معمل الزهراء', 'CA-200', 'غير مسجل', 'المنطقة الشمالية - الاسكندرية')" class="app-card bg-white p-4 rounded-2xl border-r-4 border-blue-600 border border-slate-200 shadow-sm cursor-pointer flex justify-between items-center">
+                    <div>
+                        <h4 class="font-bold text-slate-800">معمل الزهراء</h4>
+                        <p class="text-xs text-slate-500 mt-1"><i class="fa-solid fa-location-dot text-rose-500"></i> المنطقة الشمالية - الاسكندرية</p>
+                    </div>
+                    <div class="text-left">
+                        <span class="bg-blue-50 text-blue-700 text-xs px-2.5 py-1 rounded-lg font-bold">CA-200</span>
+                        <span class="block text-[11px] text-slate-400 mt-1">S/N: غير مسجل</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: MISSIONS SECTION -->
+        <section id="tab-missions" class="tab-content hidden">
+            <h2 class="text-xl font-bold text-slate-700 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-clipboard-list text-blue-600"></i> إدارة المأموريات
             </h2>
-            <div class="flex gap-2">
-                <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm px-3 py-2 rounded-xl shadow transition flex items-center gap-1">
-                    <i class="fa-solid fa-file-excel"></i> تصدير
-                </button>
-                <button onclick="toggleAddForm()" class="bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-2 rounded-xl shadow transition flex items-center gap-1">
-                    <i class="fa-solid fa-plus"></i> جهاز جديد
-                </button>
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm text-center text-slate-500">
+                <i class="fa-solid fa-calendar-check text-4xl text-blue-500 mb-2"></i>
+                <p>قسم المأموريات والزيارات الميدانية جاهز هنا.</p>
             </div>
-        </div>
+        </section>
 
-        <!-- Hidden Add Form (Matches Sheet Structure strictly without modifying headers) -->
-        <div id="addDeviceForm" class="hidden bg-white p-4 rounded-2xl shadow-sm border border-slate-200 mb-6 transition-all">
-            <h3 class="text-md font-bold mb-3 text-slate-600 border-b pb-2">إضافة جهاز جديد للشيت</h3>
-            <form onsubmit="saveDevice(event)" class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
-                <div>
-                    <label class="block text-slate-500 mb-1">اسم العميل / المعمل</label>
-                    <input type="text" id="clientName" required placeholder="مثال: مستشفى المنصورة الدولي" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
-                </div>
-                <div>
-                    <label class="block text-slate-500 mb-1">موديل الجهاز</label>
-                    <input type="text" id="deviceModel" required placeholder="مثال: CA-430" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
-                </div>
-                <div>
-                    <label class="block text-slate-500 mb-1">الرقم التسلسلي (S/N)</label>
-                    <input type="text" id="deviceSN" required placeholder="مثال: CA430TY00174" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
-                </div>
-                <div>
-                    <label class="block text-slate-500 mb-1">المنطقة</label>
-                    <select id="deviceRegion" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
-                        <option value="منطقة الدلتا">منطقة الدلتا</option>
-                        <option value="المنطقة الشمالية">المنطقة الشمالية</option>
-                        <option value="القاهرة الكبرى">القاهرة الكبرى</option>
-                        <option value="الصعيد">الصعيد</option>
-                    </select>
-                </div>
-                <div class="md:col-span-2">
-                    <label class="block text-slate-500 mb-1">المحافظة / المدينة</label>
-                    <input type="text" id="deviceCity" required placeholder="الدقهلية" class="w-full p-2.5 rounded-xl border border-slate-300 focus:ring-2 focus:ring-blue-500 outline-none">
-                </div>
-                <div class="md:col-span-2 flex justify-end gap-2 mt-2">
-                    <button type="button" onclick="toggleAddForm()" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-xl">إلغاء</button>
-                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-xl shadow">حفظ الجهاز في الشيت</button>
-                </div>
-            </form>
-        </div>
+        <!-- TAB 3: SPARE PARTS SECTION -->
+        <section id="tab-parts" class="tab-content hidden">
+            <h2 class="text-xl font-bold text-slate-700 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-gears text-blue-600"></i> قطع الغيار والمخزن
+            </h2>
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm text-center text-slate-500">
+                <i class="fa-solid fa-box-archive text-4xl text-emerald-500 mb-2"></i>
+                <p>متابعة قطع الغيار والمكونات الحساسة.</p>
+            </div>
+        </section>
 
-        <!-- Stats Bar (New Added Feature) -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4 text-center">
-            <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
-                <span class="block text-xs text-slate-400">إجمالي الأجهزة</span>
-                <span id="totalCount" class="text-lg font-bold text-blue-600">1470</span>
+        <!-- TAB 4: VACATIONS SECTION -->
+        <section id="tab-vacations" class="tab-content hidden">
+            <h2 class="text-xl font-bold text-slate-700 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-calendar-days text-blue-600"></i> جدول الإجازات
+            </h2>
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm text-center text-slate-500">
+                <i class="fa-solid fa-umbrella-beach text-4xl text-amber-500 mb-2"></i>
+                <p>إدارة طلبات الإجازات والأيام المتاحة.</p>
             </div>
-            <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm cursor-pointer hover:bg-blue-50" onclick="filterByRegion('الدلتا')">
-                <span class="block text-xs text-slate-400">منطقة الدلتا</span>
-                <span class="text-lg font-bold text-emerald-600">دلتا مصر</span>
-            </div>
-            <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm cursor-pointer hover:bg-blue-50" onclick="filterByRegion('الشمالية')">
-                <span class="block text-xs text-slate-400">المنطقة الشمالية</span>
-                <span class="text-lg font-bold text-amber-600">الشمالية</span>
-            </div>
-            <div class="bg-white p-3 rounded-xl border border-slate-200 shadow-sm cursor-pointer hover:bg-blue-50" onclick="resetFilter()">
-                <span class="block text-xs text-slate-400">عرض الكل</span>
-                <span class="text-lg font-bold text-slate-700"><i class="fa-solid fa-rotate-right"></i></span>
-            </div>
-        </div>
-
-        <!-- Search Bar with Barcode Shortcut -->
-        <div class="relative mb-6">
-            <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
-                <i class="fa-solid fa-magnifying-glass"></i>
-            </span>
-            <input type="text" id="searchInput" oninput="searchDevices()" placeholder="بحث بالمعمل، السيريال، أو الموديل..." class="w-full pr-10 pl-12 py-3 bg-white border border-slate-200 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
-            <button onclick="mockBarcodeScan()" class="absolute inset-y-0 left-0 flex items-center pl-3 text-blue-600 hover:text-blue-800" title="مسح باركود سريع">
-                <i class="fa-solid fa-barcode text-lg"></i>
-            </button>
-        </div>
-
-        <!-- Devices List Container -->
-        <div id="devicesList" class="space-y-3">
-            <!-- Sample Card 1 -->
-            <div onclick="openQuickView('مستشفي الجمهورية', 'CA-200', 'CA200TY00050', 'المنطقة الشمالية - الاسكندرية')" class="app-card bg-white p-4 rounded-2xl border-r-4 border-blue-600 border border-slate-200 shadow-sm cursor-pointer flex justify-between items-center">
-                <div>
-                    <h4 class="font-bold text-slate-800">مستشفي الجمهورية</h4>
-                    <p class="text-xs text-slate-500 mt-1 flex items-center gap-1">
-                        <i class="fa-solid fa-location-dot text-rose-500"></i> المنطقة الشمالية - الاسكندرية
-                    </p>
-                </div>
-                <div class="text-left">
-                    <span class="bg-blue-50 text-blue-700 text-xs px-2.5 py-1 rounded-lg font-bold">CA-200</span>
-                    <span class="block text-[11px] text-slate-400 mt-1">S/N: CA200TY00050</span>
-                </div>
-            </div>
-
-            <!-- Sample Card 2 -->
-            <div onclick="openQuickView('معمل الزهراء', 'CA-200', 'غير مسجل', 'المنطقة الشمالية - الاسكندرية')" class="app-card bg-white p-4 rounded-2xl border-r-4 border-blue-600 border border-slate-200 shadow-sm cursor-pointer flex justify-between items-center">
-                <div>
-                    <h4 class="font-bold text-slate-800">معمل الزهراء</h4>
-                    <p class="text-xs text-slate-500 mt-1 flex items-center gap-1">
-                        <i class="fa-solid fa-location-dot text-rose-500"></i> المنطقة الشمالية - الاسكندرية
-                    </p>
-                </div>
-                <div class="text-left">
-                    <span class="bg-blue-50 text-blue-700 text-xs px-2.5 py-1 rounded-lg font-bold">CA-200</span>
-                    <span class="block text-[11px] text-slate-400 mt-1">S/N: غير مسجل</span>
-                </div>
-            </div>
-            
-            <!-- Sample Card 3 -->
-            <div onclick="openQuickView('مستشفى الكلى و المسالك البولية بميت غمر', 'CA-200', 'CA200TY00042', 'منطقة الدلتا - الدقهلية')" class="app-card bg-white p-4 rounded-2xl border-r-4 border-emerald-600 border border-slate-200 shadow-sm cursor-pointer flex justify-between items-center">
-                <div>
-                    <h4 class="font-bold text-slate-800">مستشفى الكلى و المسالك البولية بميت غمر</h4>
-                    <p class="text-xs text-slate-500 mt-1 flex items-center gap-1">
-                        <i class="fa-solid fa-location-dot text-rose-500"></i> منطقة الدلتا - الدقهلية
-                    </p>
-                </div>
-                <div class="text-left">
-                    <span class="bg-emerald-50 text-emerald-700 text-xs px-2.5 py-1 rounded-lg font-bold">CA-200</span>
-                    <span class="block text-[11px] text-slate-400 mt-1">S/N: CA200TY00042</span>
-                </div>
-            </div>
-        </div>
+        </section>
 
     </main>
 
-    <!-- Quick View Modal (New Feature) -->
+    <!-- Quick View Modal -->
     <div id="quickViewModal" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl animate-fade-in">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full shadow-2xl">
             <div class="flex justify-between items-center mb-4 border-b pb-2">
                 <h3 class="font-bold text-slate-800 text-lg">تفاصيل الجهاز السريعة</h3>
                 <button onclick="closeQuickView()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             <div class="space-y-3 text-sm">
-                <div>
-                    <span class="text-xs text-slate-400 block">اسم العميل</span>
-                    <span id="modalClient" class="font-bold text-slate-700"></span>
-                </div>
-                <div>
-                    <span class="text-xs text-slate-400 block">موديل الجهاز</span>
-                    <span id="modalModel" class="font-bold text-blue-600"></span>
-                </div>
-                <div>
-                    <span class="text-xs text-slate-400 block">الرقم التسلسلي (S/N)</span>
-                    <span id="modalSN" class="font-bold text-slate-700"></span>
-                </div>
-                <div>
-                    <span class="text-xs text-slate-400 block">المنطقة والمحافظة</span>
-                    <span id="modalLocation" class="font-bold text-slate-700"></span>
-                </div>
+                <div><span class="text-xs text-slate-400 block">اسم العميل</span><span id="modalClient" class="font-bold text-slate-700"></span></div>
+                <div><span class="text-xs text-slate-400 block">موديل الجهاز</span><span id="modalModel" class="font-bold text-blue-600"></span></div>
+                <div><span class="text-xs text-slate-400 block">الرقم التسلسلي (S/N)</span><span id="modalSN" class="font-bold text-slate-700"></span></div>
+                <div><span class="text-xs text-slate-400 block">المنطقة والمحافظة</span><span id="modalLocation" class="font-bold text-slate-700"></span></div>
             </div>
             <div class="mt-6">
                 <button onclick="closeQuickView()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-bold transition">إغلاق</button>
@@ -199,41 +201,50 @@
 
     <!-- Bottom Navigation Bar -->
     <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-lg py-2 px-6 flex justify-around items-center z-40 text-xs">
-        <a href="#" class="flex flex-col items-center text-blue-600 font-bold">
-            <i class="fa-solid fa-laptop-medical text-lg mb-1"><span>الأجهزة</span></i>
-        </a>
-        <a href="#" class="flex flex-col items-center text-slate-400 hover:text-slate-600">
-            <i class="fa-solid fa-clipboard-list text-lg mb-1"><span>المأموريات</span></i>
-        </a>
-        <a href="#" class="flex flex-col items-center text-slate-400 hover:text-slate-600">
-            <i class="fa-solid fa-gears text-lg mb-1"><span>قطع الغيار</span></i>
-        </a>
-        <a href="#" class="flex flex-col items-center text-slate-400 hover:text-slate-600">
-            <i class="fa-solid fa-calendar-days text-lg mb-1"><span>الإجازات</span></i>
-        </a>
+        <button onclick="switchTab('devices', this)" class="nav-btn flex flex-col items-center text-blue-600 font-bold transition">
+            <i class="fa-solid fa-laptop-medical text-lg mb-1"></i><span>الأجهزة</span>
+        </button>
+        <button onclick="switchTab('missions', this)" class="nav-btn flex flex-col items-center text-slate-400 hover:text-blue-600 transition">
+            <i class="fa-solid fa-clipboard-list text-lg mb-1"></i><span>المأموريات</span>
+        </button>
+        <button onclick="switchTab('parts', this)" class="nav-btn flex flex-col items-center text-slate-400 hover:text-blue-600 transition">
+            <i class="fa-solid fa-gears text-lg mb-1"></i><span>قطع الغيار</span>
+        </button>
+        <button onclick="switchTab('vacations', this)" class="nav-btn flex flex-col items-center text-slate-400 hover:text-blue-600 transition">
+            <i class="fa-solid fa-calendar-days text-lg mb-1"></i><span>الإجازات</span>
+        </button>
     </nav>
 
-    <!-- JavaScript Interactions -->
+    <!-- JavaScript -->
     <script>
+        function switchTab(tabName, btnElement) {
+            // إخفاء كل الأقسام
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            // إظهار القسم المطلوب
+            document.getElementById('tab-' + tabName).classList.remove('hidden');
+
+            // إعادة تعيين ألوان الأيقونات في شريط التنقل السفلي
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-blue-600', 'font-bold');
+                btn.classList.add('text-slate-400');
+            });
+            // تلوين الزر النشط
+            btnElement.classList.remove('text-slate-400');
+            btnElement.classList.add('text-blue-600', 'font-bold');
+        }
+
         function toggleAddForm() {
-            const form = document.getElementById('addDeviceForm');
-            form.classList.toggle('hidden');
+            document.getElementById('addDeviceForm').classList.toggle('hidden');
         }
 
         function saveDevice(e) {
             e.preventDefault();
-            alert('تم حفظ البيانات بنظافة دون المساس بهيكل جوجل شيتس الأساسي!');
+            alert('تم حفظ البيانات بنظافة دون المساس بهيكل جوجل شيتس!');
             toggleAddForm();
         }
 
         function exportToExcel() {
-            alert('جاري تجهيز وتصدير البيانات لملف Excel...');
-        }
-
-        function mockBarcodeScan() {
-            const searchInput = document.getElementById('searchInput');
-            searchInput.value = 'CA200TY';
-            searchDevices();
+            alert('جاري تصدير البيانات...');
         }
 
         function openQuickView(client, model, sn, location) {
@@ -248,25 +259,8 @@
             document.getElementById('quickViewModal').classList.add('hidden');
         }
 
-        function searchDevices() {
-            // محاكاة عملية البحث السريع
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            console.log("Searching for:", query);
-        }
-
-        function filterByRegion(region) {
-            alert('فلترة سريعة حسب: ' + region);
-        }
-
-        function resetFilter() {
-            document.getElementById('searchInput').value = '';
-            alert('إعادة تعيين الفلتر');
-        }
-
         function logout() {
-            if(confirm('هل تريد تسجيل الخروج؟')) {
-                alert('تم تسجيل الخروج بنجاح');
-            }
+            if(confirm('هل تريد تسجيل الخروج؟')) alert('تم تسجيل الخروج');
         }
     </script>
 </body>
