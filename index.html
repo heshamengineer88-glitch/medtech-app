@@ -1,6 +1,3 @@
-web_app_url = "https://script.google.com/macros/s/AKfycbwEZSQGiYW3F20SgLUCjE_GT2AtY3jCopZcVc_5ZSCZhbPVqSs0V5g_2OSP9TLvljzU0Q/exec"
-
-updated_html_v5 = f"""<!DOCTYPE html>
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -17,16 +14,12 @@ updated_html_v5 = f"""<!DOCTYPE html>
   <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
-    body {{ font-family: 'Cairo', sans-serif; background-color: #f1f5f9; }}
-    .tab-active {{ border-bottom: 3px solid #0284c7; color: #0284c7; font-weight: 700; }}
     body { font-family: 'Cairo', sans-serif; background-color: #f1f5f9; }
     .tab-active { border-bottom: 3px solid #0284c7; color: #0284c7; font-weight: 700; }
   </style>
   <script>
-    (function() {{
     (function() {
       const iconSvg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%230284c7'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' fill='white' font-family='Arial, sans-serif' font-weight='bold' font-size='220'%3EM%2B%3C/text%3E%3C/svg%3E";
-      const manifestObj = {{
       const manifestObj = {
         name: "MedTech FSM - إدارة صيانة الأجهزة الطبية",
         short_name: "MedTech FSM",
@@ -39,24 +32,15 @@ updated_html_v5 = f"""<!DOCTYPE html>
         dir: "rtl",
         lang: "ar",
         icons: [
-          {{ src: iconSvg, sizes: "192x192", type: "image/svg+xml", purpose: "any maskable" }},
-          {{ src: iconSvg, sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" }}
           { src: iconSvg, sizes: "192x192", type: "image/svg+xml", purpose: "any maskable" },
           { src: iconSvg, sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" }
         ]
-      }};
-      const blob = new Blob([JSON.stringify(manifestObj)], {{ type: "application/manifest+json" }});
       };
       const blob = new Blob([JSON.stringify(manifestObj)], { type: "application/manifest+json" });
       document.getElementById("dynamicManifest").setAttribute("href", URL.createObjectURL(blob));
 
-      if ("serviceWorker" in navigator) {{
       if ("serviceWorker" in navigator) {
         const swCode = "self.addEventListener('install', e => self.skipWaiting()); self.addEventListener('activate', e => self.clients.claim()); self.addEventListener('fetch', e => e.respondWith(fetch(e.request).catch(() => caches.match(e.request))));";
-        const swBlob = new Blob([swCode], {{ type: "application/javascript" }});
-        navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(() => {{}});
-      }}
-    }})();
         const swBlob = new Blob([swCode], { type: "application/javascript" });
         navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(() => {});
       }
@@ -74,7 +58,7 @@ updated_html_v5 = f"""<!DOCTYPE html>
 
       <div id="syncBadgeLogin" class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 mb-5">
         <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-        <span>جاري مزامنة البيانات من Google Sheets...</span>
+        <span>جاري جلب البيانات من Google Sheets...</span>
       </div>
 
       <div class="text-right mb-4">
@@ -84,22 +68,12 @@ updated_html_v5 = f"""<!DOCTYPE html>
       </div>
 
       <div class="text-right mb-6">
-        <label class="block text-sm font-bold text-slate-700 mb-1">كود الدخول السري (4 أرقام)</label>
+        <label class="block text-sm font-bold text-slate-700 mb-1">كود الدخول السري (PIN)</label>
         <input id="pinInput" type="password" inputmode="numeric" maxlength="4" placeholder="••••" class="w-full border border-slate-300 rounded-xl p-3 text-center text-2xl tracking-widest bg-slate-50 focus:outline-none focus:ring-2 focus:ring-sky-500" />
       </div>
 
       <button onclick="handleLogin()" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-3 rounded-xl shadow-lg transition">تسجيل الدخول</button>
-      <p id="loginError" class="text-red-600 text-sm font-semibold mt-3 hidden">كود الدخول غير صحيح! جرب مرة أخرى.</p>
-
-      <button id="installPwaBtn" onclick="triggerInstallPWA()" class="hidden w-full mt-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl shadow transition text-sm">📲 تثبيت التطبيق على الهاتف</button>
-
-      <div class="mt-6 pt-4 border-t border-slate-100 text-xs text-slate-400 text-right space-y-1">
-        <p><strong>أكواد الدخول الافتراضية:</strong></p>
-        <p>• المدير العام (د. أحمد العيسوي): <code>1111</code></p>
-        <p>• مشرف المنطقة الشمالية (م. خالد الضوي): <code>2222</code></p>
-        <p>• مشرف منطقة الدلتا (م. أحمد رضا): <code>5555</code></p>
-        <p>• مهندس صيانة: <code>1234</code></p>
-      </div>
+      <p id="loginError" class="text-red-600 text-sm font-semibold mt-3 hidden">اسم المستخدم أو كود الدخول غير صحيح!</p>
     </div>
   </div>
 
@@ -115,7 +89,7 @@ updated_html_v5 = f"""<!DOCTYPE html>
           </div>
         </div>
         <div class="flex items-center gap-3">
-          <button onclick="syncFromGoogleSheets(true)" id="syncHeaderBtn" title="تحديث البيانات من Google Sheets" class="bg-emerald-700 hover:bg-emerald-600 text-xs px-3 py-2 rounded-lg font-bold transition flex items-center gap-1.5">
+          <button onclick="syncAllData(true)" id="syncHeaderBtn" title="تحديث البيانات من الشيت" class="bg-emerald-700 hover:bg-emerald-600 text-xs px-3 py-2 rounded-lg font-bold transition flex items-center gap-1.5">
             <span>🔄</span>
             <span id="syncStatusText">متصل بالشيت</span>
           </button>
@@ -134,7 +108,6 @@ updated_html_v5 = f"""<!DOCTYPE html>
           <button onclick="switchTab('devices')" id="tab-devices" class="py-3">الأجهزة والعملاء</button>
           <button onclick="switchTab('parts')" id="tab-parts" class="py-3">طلبات قطع الغيار</button>
           <button onclick="switchTab('leaves')" id="tab-leaves" class="py-3">الإجازات</button>
-          <button onclick="switchTab('excel')" id="tab-excel" class="py-3 text-emerald-700 font-bold">📊 استيراد وتصدير Excel</button>
         </div>
       </nav>
     </header>
@@ -144,7 +117,7 @@ updated_html_v5 = f"""<!DOCTYPE html>
       <section id="view-dashboard" class="space-y-6">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4" id="kpiCards"></div>
 
-        <!-- ALERTS BANNER FOR UPCOMING / OVERDUE PM VISITS (7 DAYS WARNING) -->
+        <!-- PM ALERTS BANNER -->
         <div id="pmAlertsBox" class="hidden bg-amber-50 border-r-4 border-amber-500 rounded-xl p-5 shadow-sm space-y-3">
           <div class="flex items-center justify-between">
             <h2 class="font-extrabold text-amber-900 text-base flex items-center gap-2">
@@ -178,7 +151,7 @@ updated_html_v5 = f"""<!DOCTYPE html>
                 <tr>
                   <th class="p-3">التاريخ</th>
                   <th class="p-3">المهندس</th>
-                  <th class="p-3">العميل / المعمل</th>
+                  <th class="p-3">العميل</th>
                   <th class="p-3">الجهاز</th>
                   <th class="p-3">نوع الزيارة</th>
                   <th class="p-3">الحالة</th>
@@ -198,10 +171,7 @@ updated_html_v5 = f"""<!DOCTYPE html>
             <select id="visitEngFilter" onchange="renderVisits()" class="border rounded-xl px-3 py-2 text-sm bg-white font-semibold">
               <option value="all">كل المهندسين</option>
             </select>
-            <select id="visitClientFilter" onchange="renderVisits()" class="border rounded-xl px-3 py-2 text-sm bg-white font-semibold">
-              <option value="all">كل العملاء / المعامل</option>
-            </select>
-            <button onclick="openVisitModal()" class="bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded-xl text-sm font-bold">+ إضافة مأمورية جديدة</button>
+            <button onclick="openVisitModal()" class="bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded-xl text-sm font-bold">+ تسجيل مأمورية جديدة</button>
           </div>
         </div>
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto">
@@ -214,9 +184,8 @@ updated_html_v5 = f"""<!DOCTYPE html>
                 <th class="p-3">العميل</th>
                 <th class="p-3">الجهاز (S/N)</th>
                 <th class="p-3">نوع الزيارة</th>
-                <th class="p-3">الوصف</th>
+                <th class="p-3">وصف العطل</th>
                 <th class="p-3">الحالة</th>
-                <th class="p-3">إجراء</th>
               </tr>
             </thead>
             <tbody id="visitsTableBody" class="divide-y"></tbody>
@@ -228,33 +197,27 @@ updated_html_v5 = f"""<!DOCTYPE html>
       <section id="view-devices" class="hidden space-y-4">
         <div class="flex flex-wrap justify-between items-center gap-3">
           <div>
-            <h2 class="font-bold text-xl">قاعدة بيانات الأجهزة الطبية والزيارات الدورية</h2>
-            <p class="text-xs text-slate-500 mt-0.5">يتم حساب الزيارة القادمة تلقائياً بعد 30 يوماً من آخر زيارة، مع تحذير قبل 7 أيام.</p>
+            <h2 class="font-bold text-xl">قاعدة بيانات الأجهزة والعملاء</h2>
+            <p class="text-xs text-slate-500 mt-0.5">يتم حساب موعد الصيانة الدورية تلقائياً بعد 30 يوماً من آخر زيارة مسجلة في الشيت.</p>
           </div>
           <div class="flex flex-wrap items-center gap-2">
-            <select id="pmFilterSelect" onchange="renderDevices()" class="border rounded-xl px-3 py-2 text-sm bg-white font-semibold">
-              <option value="all">كل الأجهزة</option>
-              <option value="warning">⚠️ تنبيه (متبقي ≤ 7 أيام أو متأخر)</option>
-              <option value="overdue">🔴 متأخرة عن الموعد</option>
-              <option value="ok">🟢 في الموعد السليم</option>
-            </select>
             <input id="deviceSearch" onkeyup="renderDevices()" type="text" placeholder="بحث باسم العميل، الجهاز، أو S/N..." class="border rounded-xl px-4 py-2 text-sm w-64 bg-white" />
-            <button onclick="openModal('deviceModal')" class="bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded-xl text-sm font-bold">+ إضافة جهاز</button>
+            <button onclick="openModal('deviceModal')" class="bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded-xl text-sm font-bold">+ إضافة جهاز جديد</button>
           </div>
         </div>
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto">
           <table class="w-full text-sm text-right">
             <thead class="bg-slate-800 text-white">
               <tr>
-                <th class="p-3">الكود</th>
+                <th class="p-3">كود الجهاز</th>
                 <th class="p-3">الموديل</th>
                 <th class="p-3">S/N</th>
                 <th class="p-3">العميل / المعمل</th>
-                <th class="p-3">المنطقة / المدينة</th>
+                <th class="p-3">المنطقة</th>
                 <th class="p-3">آخر زيارة</th>
                 <th class="p-3">الزيارة القادمة (+30 يوم)</th>
-                <th class="p-3">تنبيه المتابعة</th>
-                <th class="p-3">تحديث الزيارة</th>
+                <th class="p-3">حالة التنبيه</th>
+                <th class="p-3">إجراء زيارة</th>
               </tr>
             </thead>
             <tbody id="devicesTableBody" class="divide-y"></tbody>
@@ -265,21 +228,21 @@ updated_html_v5 = f"""<!DOCTYPE html>
       <!-- TAB: SPARE PARTS -->
       <section id="view-parts" class="hidden space-y-4">
         <div class="flex justify-between items-center">
-          <h2 class="font-bold text-xl">طلبات قطع الغيار</h2>
-          <button onclick="openPartModal()" class="bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded-xl text-sm font-bold">+ طلب قطعة غيار</button>
+          <h2 class="font-bold text-xl">حركة طلبات قطع الغيار</h2>
+          <button onclick="openModal('partModal')" class="bg-sky-600 hover:bg-sky-700 text-white px-4 py-2 rounded-xl text-sm font-bold">+ طلب قطعة غيار</button>
         </div>
         <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-x-auto">
           <table class="w-full text-sm text-right">
             <thead class="bg-slate-800 text-white">
               <tr>
                 <th class="p-3">التاريخ</th>
+                <th class="p-3">كود القطعة</th>
+                <th class="p-3">اسم القطعة</th>
+                <th class="p-3">الموديل</th>
+                <th class="p-3">الكمية</th>
                 <th class="p-3">المهندس</th>
                 <th class="p-3">العميل</th>
-                <th class="p-3">الجهاز</th>
-                <th class="p-3">قطعة الغيار (Part Name / No)</th>
-                <th class="p-3">الكمية</th>
-                <th class="p-3">الحالة</th>
-                <th class="p-3">اعتماد</th>
+                <th class="p-3">ملاحظات</th>
               </tr>
             </thead>
             <tbody id="partsTableBody" class="divide-y"></tbody>
@@ -298,526 +261,263 @@ updated_html_v5 = f"""<!DOCTYPE html>
             <thead class="bg-slate-800 text-white">
               <tr>
                 <th class="p-3">المهندس</th>
-                <th class="p-3">المنطقة</th>
                 <th class="p-3">من تاريخ</th>
                 <th class="p-3">إلى تاريخ</th>
-                <th class="p-3">السبب</th>
+                <th class="p-3">النوع</th>
                 <th class="p-3">الحالة</th>
-                <th class="p-3">اعتماد</th>
+                <th class="p-3">ملاحظات</th>
               </tr>
             </thead>
             <tbody id="leavesTableBody" class="divide-y"></tbody>
           </table>
         </div>
       </section>
-
-      <!-- TAB: EXCEL -->
-      <section id="view-excel" class="hidden space-y-6">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
-            <h2 class="font-bold text-lg text-sky-900">📥 استيراد البيانات من ملف Excel</h2>
-            <p class="text-sm text-slate-600">ارفع ملف الإكسيل المجهز (<code>.xlsx</code> أو <code>.xls</code>) لإضافة البيانات دفعة واحدة ومزامنتها مع Google Sheets.</p>
-            <div>
-              <label class="block text-sm font-bold mb-1">1. اختر نوع البيانات المراد استيرادها:</label>
-              <select id="importType" class="w-full border rounded-xl p-2.5 bg-slate-50">
-                <option value="visits">المأموريات اليومية (ورقة المأموريات)</option>
-                <option value="devices">الأجهزة والعملاء (ورقة الأجهزة والعملاء)</option>
-                <option value="engineers">المهندسين (ورقة المهندسين)</option>
-              </select>
-            </div>
-            <div>
-              <label class="block text-sm font-bold mb-1">2. اختر ملف الإكسيل:</label>
-              <input type="file" id="excelFileInput" accept=".xlsx,.xls,.csv" onchange="previewExcelFile(event)" class="w-full border border-dashed border-sky-400 rounded-xl p-4 bg-sky-50 text-sm cursor-pointer" />
-            </div>
-            <div class="flex flex-wrap gap-3 pt-2">
-              <button onclick="downloadTemplate()" class="bg-slate-100 hover:bg-slate-200 text-slate-800 px-4 py-2 rounded-xl text-xs font-bold border">⬇️ تحميل قالب Excel فارغ</button>
-              <button id="confirmImportBtn" onclick="commitExcelImport()" class="hidden bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-xl text-sm font-bold shadow">✅ تأكيد وحفظ البيانات المستوردة</button>
-            </div>
-          </div>
-
-          <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4 flex flex-col justify-between">
-            <div class="space-y-3">
-              <h2 class="font-bold text-lg text-emerald-900">📤 تصدير كافة بيانات النظام إلى Excel</h2>
-              <p class="text-sm text-slate-600">تصدير تقرير شامل بصيغة <code>.xlsx</code> يحتوي على أوراق منفصلة للمأموريات، الأجهزة (شاملة تاريخ آخر زيارة والزيارة القادمة)، قطع الغيار، والإجازات.</p>
-            </div>
-            <button onclick="exportAllToExcel()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl shadow transition">تصدير التقرير الشامل الآن (.xlsx)</button>
-          </div>
-        </div>
-
-        <div id="excelPreviewContainer" class="hidden bg-white rounded-2xl shadow-sm border border-slate-200 p-5 space-y-3">
-          <div class="flex justify-between items-center">
-            <h3 class="font-bold text-base text-slate-800">معاينة البيانات قبل الحفظ (<span id="previewCount">0</span> صف)</h3>
-            <span class="text-xs text-amber-600 font-semibold">يرجى مراجعة البيانات ثم الضغط على "تأكيد وحفظ"</span>
-          </div>
-          <div class="overflow-x-auto max-h-80">
-            <table class="w-full text-xs text-right border">
-              <thead id="previewThead" class="bg-slate-100 font-bold"></thead>
-              <tbody id="previewTbody" class="divide-y"></tbody>
-            </table>
-          </div>
-        </div>
-      </section>
     </main>
   </div>
 
-  <!-- MODAL: ADD VISIT (WITH SELECTABLE ENGINEER & CLIENT DROPDOWNS) -->
+  <!-- MODALS -->
   <div id="visitModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
     <div class="bg-white rounded-2xl max-w-lg w-full p-6 space-y-4">
-      <div class="flex items-center justify-between border-b pb-2">
-        <h3 class="font-bold text-lg text-slate-900">إضافة مأمورية جديدة</h3>
-        <span class="text-xs text-sky-700 bg-sky-50 px-2.5 py-1 rounded-full font-bold">اختيار سريع أو كتابة حرة</span>
-      </div>
+      <h3 class="font-bold text-lg">تسجيل مأمورية جديدة</h3>
       <div class="grid grid-cols-2 gap-3 text-sm">
-        <div>
-          <label class="font-bold">التاريخ</label>
-          <input id="vDate" type="date" class="w-full border rounded-lg p-2 mt-1 bg-slate-50">
-        </div>
-        <div>
-          <label class="font-bold">المنطقة</label>
-          <select id="vRegion" onchange="populateVisitSelectors()" class="w-full border rounded-lg p-2 mt-1 bg-slate-50">
-            <option value="المنطقة الشمالية">المنطقة الشمالية</option>
-            <option value="منطقة الدلتا">منطقة الدلتا</option>
-            <option value="القاهرة الكبرى">القاهرة الكبرى</option>
-            <option value="الصعيد">الصعيد</option>
-          </select>
-        </div>
-        <div>
-          <label class="font-bold text-sky-800">المهندس (اختر من القائمة)</label>
-          <select id="vEngSelect" onchange="onVisitEngChange()" class="w-full border border-sky-300 rounded-lg p-2 mt-1 bg-sky-50/50 font-semibold">
-          </select>
-          <input id="vEngCustom" type="text" placeholder="اكتب اسم المهندس..." class="hidden w-full border rounded-lg p-2 mt-1.5" />
-        </div>
-        <div>
-          <label class="font-bold text-sky-800">العميل / المعمل (اختر من القائمة)</label>
-          <select id="vClientSelect" onchange="onVisitClientChange()" class="w-full border border-sky-300 rounded-lg p-2 mt-1 bg-sky-50/50 font-semibold">
-          </select>
-          <input id="vClientCustom" type="text" placeholder="اكتب اسم العميل الجديد..." class="hidden w-full border rounded-lg p-2 mt-1.5" />
-        </div>
-        <div>
-          <label class="font-bold">الجهاز (تلقائي أو اختر)</label>
-          <select id="vDeviceSelect" onchange="onVisitDeviceChange()" class="w-full border rounded-lg p-2 mt-1 bg-slate-50">
-          </select>
-          <input id="vDeviceCustom" type="text" placeholder="اكتب موديل الجهاز..." class="hidden w-full border rounded-lg p-2 mt-1.5" />
-        </div>
-        <div>
-          <label class="font-bold">الرقم التسلسلي (S/N)</label>
-          <input id="vSn" type="text" placeholder="يمتلئ تلقائياً عند اختيار الجهاز" class="w-full border rounded-lg p-2 mt-1 bg-slate-50 font-mono text-xs">
-        </div>
-        <div>
-          <label class="font-bold">نوع الزيارة</label>
-          <select id="vType" class="w-full border rounded-lg p-2 mt-1 bg-slate-50">
-            <option>صيانة دورية</option>
-            <option>عطل طارئ</option>
-            <option>تركيب وتشغيل</option>
-            <option>معايرة</option>
-          </select>
-        </div>
-        <div>
-          <label class="font-bold">وصف العطل / المطلوب</label>
-          <input id="vDesc" type="text" placeholder="تفاصيل الزيارة..." class="w-full border rounded-lg p-2 mt-1">
-        </div>
+        <div><label class="font-bold">التاريخ</label><input id="vDate" type="date" class="w-full border rounded-lg p-2 mt-1"></div>
+        <div><label class="font-bold">المنطقة</label><select id="vRegion" class="w-full border rounded-lg p-2 mt-1"><option>المنطقة الشمالية</option><option>منطقة الدلتا</option><option>القاهرة الكبرى</option><option>الصعيد</option></select></div>
+        <div><label class="font-bold">العميل</label><input id="vClient" type="text" class="w-full border rounded-lg p-2 mt-1"></div>
+        <div><label class="font-bold">المدينة</label><input id="vCity" type="text" class="w-full border rounded-lg p-2 mt-1"></div>
+        <div><label class="font-bold">موديل الجهاز</label><input id="vDeviceModel" type="text" class="w-full border rounded-lg p-2 mt-1"></div>
+        <div><label class="font-bold">الرقم التسلسلي (S/N)</label><input id="vSerialNumber" type="text" class="w-full border rounded-lg p-2 mt-1"></div>
+        <div><label class="font-bold">نوع الزيارة</label><select id="vVisitType" class="w-full border rounded-lg p-2 mt-1"><option>صيانة دورية</option><option>عطل طارئ</option><option>تركيب وتشغيل</option><option>معايرة</option></select></div>
+        <div><label class="font-bold">وصف العطل / المطلوب</label><input id="vIssue" type="text" class="w-full border rounded-lg p-2 mt-1"></div>
       </div>
-      <div class="flex justify-end gap-2 pt-3 border-t">
+      <div class="flex justify-end gap-2 pt-3">
         <button onclick="closeModal('visitModal')" class="px-4 py-2 rounded-lg bg-slate-100 text-sm">إلغاء</button>
-        <button onclick="addVisit()" class="px-5 py-2 rounded-lg bg-sky-600 hover:bg-sky-700 text-white text-sm font-bold shadow">حفظ المأمورية</button>
+        <button onclick="submitMission()" class="px-5 py-2 rounded-lg bg-sky-600 text-white text-sm font-bold">حفظ وإرسال للشيت</button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL: ADD DEVICE -->
   <div id="deviceModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
     <div class="bg-white rounded-2xl max-w-lg w-full p-6 space-y-4">
-      <h3 class="font-bold text-lg">إضافة جهاز جديد</h3>
+      <h3 class="font-bold text-lg">إضافة / تحديث جهاز</h3>
       <div class="grid grid-cols-2 gap-3 text-sm">
-        <div><label class="font-bold">كود الجهاز</label><input id="dCode" type="text" placeholder="DEV-1005" class="w-full border rounded-lg p-2 mt-1"></div>
-        <div><label class="font-bold">موديل الجهاز</label><input id="dModel" type="text" placeholder="Sysmex XN-550" class="w-full border rounded-lg p-2 mt-1"></div>
-        <div><label class="font-bold">الرقم التسلسلي (S/N)</label><input id="dSn" type="text" class="w-full border rounded-lg p-2 mt-1"></div>
-        <div><label class="font-bold">العميل / المعمل</label><input id="dClient" type="text" class="w-full border rounded-lg p-2 mt-1"></div>
+        <div><label class="font-bold">كود الجهاز</label><input id="dCode" type="text" class="w-full border rounded-lg p-2 mt-1"></div>
+        <div><label class="font-bold">الموديل</label><input id="dModel" type="text" class="w-full border rounded-lg p-2 mt-1"></div>
+        <div><label class="font-bold">الشركة المصنعة</label><input id="dManufacturer" type="text" class="w-full border rounded-lg p-2 mt-1"></div>
+        <div><label class="font-bold">التصنيف</label><input id="dCategory" type="text" class="w-full border rounded-lg p-2 mt-1"></div>
+        <div><label class="font-bold">الرقم التسلسلي (S/N)</label><input id="dSerialNumber" type="text" class="w-full border rounded-lg p-2 mt-1"></div>
+        <div><label class="font-bold">اسم العميل</label><input id="dClientName" type="text" class="w-full border rounded-lg p-2 mt-1"></div>
         <div><label class="font-bold">المنطقة</label><select id="dRegion" class="w-full border rounded-lg p-2 mt-1"><option>المنطقة الشمالية</option><option>منطقة الدلتا</option><option>القاهرة الكبرى</option><option>الصعيد</option></select></div>
         <div><label class="font-bold">المدينة</label><input id="dCity" type="text" class="w-full border rounded-lg p-2 mt-1"></div>
-        <div><label class="font-bold">نوع التعاقد</label><select id="dContract" class="w-full border rounded-lg p-2 mt-1"><option>عقد صيانة شامل</option><option>ضمان</option><option>عقد زيارات</option><option>بدون عقد</option></select></div>
-        <div><label class="font-bold text-sky-700">تاريخ آخر زيارة</label><input id="dLastVisit" type="date" class="w-full border border-sky-300 rounded-lg p-2 mt-1 bg-sky-50"></div>
+        <div><label class="font-bold">نوع العقد</label><input id="dContractType" type="text" class="w-full border rounded-lg p-2 mt-1" value="عقد صيانة شامل"></div>
+        <div><label class="font-bold">تاريخ آخر زيارة</label><input id="dWarrantyEnd" type="date" class="w-full border rounded-lg p-2 mt-1"></div>
       </div>
-      <div class="flex justify-end gap-2 pt-2">
+      <div class="flex justify-end gap-2 pt-3">
         <button onclick="closeModal('deviceModal')" class="px-4 py-2 rounded-lg bg-slate-100 text-sm">إلغاء</button>
-        <button onclick="addDevice()" class="px-4 py-2 rounded-lg bg-sky-600 text-white text-sm font-bold">حفظ الجهاز</button>
+        <button onclick="submitDevice()" class="px-5 py-2 rounded-lg bg-sky-600 text-white text-sm font-bold">حفظ الجهاز للشيت</button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL: ADD PART -->
   <div id="partModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
     <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4">
       <h3 class="font-bold text-lg">طلب قطعة غيار</h3>
       <div class="space-y-3 text-sm">
-        <div>
-          <label class="font-bold">العميل / المعمل (اختر أو اكتب)</label>
-          <input id="pClient" list="clientsDataList" type="text" placeholder="اختر العميل أو اكتبه..." class="w-full border rounded-lg p-2 mt-1">
-        </div>
-        <div>
-          <label class="font-bold">موديل الجهاز</label>
-          <input id="pDevice" list="devicesDataList" type="text" placeholder="اختر الجهاز أو اكتبه..." class="w-full border rounded-lg p-2 mt-1">
-        </div>
-        <div><label class="font-bold">اسم / كود قطعة الغيار</label><input id="pName" type="text" class="w-full border rounded-lg p-2 mt-1"></div>
-        <div><label class="font-bold">الكمية</label><input id="pQty" type="number" value="1" class="w-full border rounded-lg p-2 mt-1"></div>
+        <div><label class="font-bold">كود القطعة</label><input id="pPartCode" type="text" class="w-full border rounded-lg p-2 mt-1"></div>
+        <div><label class="font-bold">اسم القطعة</label><input id="pPartName" type="text" class="w-full border rounded-lg p-2 mt-1"></div>
+        <div><label class="font-bold">موديل الجهاز</label><input id="pDeviceModel" type="text" class="w-full border rounded-lg p-2 mt-1"></div>
+        <div><label class="font-bold">الكمية</label><input id="pQuantity" type="number" value="1" class="w-full border rounded-lg p-2 mt-1"></div>
+        <div><label class="font-bold">اسم العميل</label><input id="pClientName" type="text" class="w-full border rounded-lg p-2 mt-1"></div>
+        <div><label class="font-bold">ملاحظات</label><input id="pNotes" type="text" class="w-full border rounded-lg p-2 mt-1"></div>
       </div>
-      <div class="flex justify-end gap-2 pt-2">
+      <div class="flex justify-end gap-2 pt-3">
         <button onclick="closeModal('partModal')" class="px-4 py-2 rounded-lg bg-slate-100 text-sm">إلغاء</button>
-        <button onclick="addPart()" class="px-4 py-2 rounded-lg bg-sky-600 text-white text-sm font-bold">إرسال الطلب</button>
+        <button onclick="submitSparePart()" class="px-5 py-2 rounded-lg bg-sky-600 text-white text-sm font-bold">إرسال الطلب</button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL: ADD LEAVE -->
   <div id="leaveModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
     <div class="bg-white rounded-2xl max-w-md w-full p-6 space-y-4">
-      <h3 class="font-bold text-lg">تقديم طلب إجازة</h3>
+      <h3 class="font-bold text-lg">طلب إجازة جديد</h3>
       <div class="space-y-3 text-sm">
-        <div><label class="font-bold">من تاريخ</label><input id="lFrom" type="date" class="w-full border rounded-lg p-2 mt-1"></div>
-        <div><label class="font-bold">إلى تاريخ</label><input id="lTo" type="date" class="w-full border rounded-lg p-2 mt-1"></div>
-        <div><label class="font-bold">السبب / النوع</label><input id="lReason" type="text" placeholder="إجازة اعتيادية / عارضة" class="w-full border rounded-lg p-2 mt-1"></div>
+        <div><label class="font-bold">من تاريخ</label><input id="lStartDate" type="date" class="w-full border rounded-lg p-2 mt-1"></div>
+        <div><label class="font-bold">إلى تاريخ</label><input id="lEndDate" type="date" class="w-full border rounded-lg p-2 mt-1"></div>
+        <div><label class="font-bold">نوع الإجازة</label><select id="lType" class="w-full border rounded-lg p-2 mt-1"><option>اعتيادية</option><option>عارضة</option><option>مرضية</option></select></div>
+        <div><label class="font-bold">ملاحظات / السبب</label><input id="lNotes" type="text" class="w-full border rounded-lg p-2 mt-1"></div>
       </div>
-      <div class="flex justify-end gap-2 pt-2">
+      <div class="flex justify-end gap-2 pt-3">
         <button onclick="closeModal('leaveModal')" class="px-4 py-2 rounded-lg bg-slate-100 text-sm">إلغاء</button>
-        <button onclick="addLeave()" class="px-4 py-2 rounded-lg bg-sky-600 text-white text-sm font-bold">إرسال الطلب</button>
+        <button onclick="submitLeave()" class="px-5 py-2 rounded-lg bg-sky-600 text-white text-sm font-bold">تقديم الطلب</button>
       </div>
     </div>
   </div>
 
-  <datalist id="clientsDataList"></datalist>
-  <datalist id="devicesDataList"></datalist>
-
   <script>
-    const GOOGLE_SCRIPT_URL = "{web_app_url}";
     const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwEZSQGiYW3F20SgLUCjE_GT2AtY3jCopZcVc_5ZSCZhbPVqSs0V5g_2OSP9TLvljzU0Q/exec";
 
-    let deferredPrompt;
-    window.addEventListener('beforeinstallprompt', (e) => {{
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      const btn = document.getElementById('installPwaBtn');
-      if (btn) btn.classList.remove('hidden');
-    }});
-    });
-
-    async function triggerInstallPWA() {{
-    async function triggerInstallPWA() {
-      if (!deferredPrompt) return;
-      deferredPrompt.prompt();
-      const {{ outcome }} = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') {{
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') {
-        document.getElementById('installPwaBtn').classList.add('hidden');
-      }}
-      }
-      deferredPrompt = null;
-    }}
-    }
-
-    function computeVisitSchedule(lastVisitStr) {{
-      if (!lastVisitStr || String(lastVisitStr).trim() === "" || lastVisitStr === "undefined") {{
-        return {{ nextDate: "-", daysLeft: null, status: "none", badge: `<span class="px-2 py-1 rounded-full text-xs bg-slate-100 text-slate-500">غير محدد</span>` }};
-      }}
-    function computeVisitSchedule(lastVisitStr) {
-      if (!lastVisitStr || String(lastVisitStr).trim() === "" || lastVisitStr === "undefined") {
-        return { nextDate: "-", daysLeft: null, status: "none", badge: `<span class="px-2 py-1 rounded-full text-xs bg-slate-100 text-slate-500">غير محدد</span>` };
-      }
-      const parsed = new Date(lastVisitStr);
-      if (isNaN(parsed.getTime())) {{
-        return {{ nextDate: String(lastVisitStr), daysLeft: null, status: "none", badge: `<span class="px-2 py-1 rounded-full text-xs bg-slate-100 text-slate-500">تاريخ غير صالح</span>` }};
-      }}
-      if (isNaN(parsed.getTime())) {
-        return { nextDate: String(lastVisitStr), daysLeft: null, status: "none", badge: `<span class="px-2 py-1 rounded-full text-xs bg-slate-100 text-slate-500">تاريخ غير صالح</span>` };
-      }
-      const nextDateObj = new Date(parsed);
-      nextDateObj.setDate(nextDateObj.getDate() + 30);
-      const nextDateStr = nextDateObj.toISOString().slice(0, 10);
-
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const target = new Date(nextDateStr);
-      target.setHours(0, 0, 0, 0);
-
-      const diffDays = Math.round((target - today) / (1000 * 60 * 60 * 24));
-
-      if (diffDays < 0) {{
-        return {{
-      if (diffDays < 0) {
-        return {
-          nextDate: nextDateStr,
-          daysLeft: diffDays,
-          status: "overdue",
-          badge: `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800 border border-red-200">🔴 متأخرة بـ ${{Math.abs(diffDays)}} يوم</span>`
-        }};
-      }} else if (diffDays === 0) {{
-        return {{
-          badge: `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800 border border-red-200">🔴 متأخرة بـ ${Math.abs(diffDays)} يوم</span>`
-        };
-      } else if (diffDays === 0) {
-        return {
-          nextDate: nextDateStr,
-          daysLeft: 0,
-          status: "warning",
-          badge: `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300 animate-pulse">⚠️ موعدها اليوم!</span>`
-        }};
-      }} else if (diffDays <= 7) {{
-        return {{
-        };
-      } else if (diffDays <= 7) {
-        return {
-          nextDate: nextDateStr,
-          daysLeft: diffDays,
-          status: "warning",
-          badge: `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300">⚠️ تحذير: متبقي ${{diffDays}} يوم</span>`
-        }};
-      }} else {{
-        return {{
-          badge: `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300">⚠️ تحذير: متبقي ${diffDays} يوم</span>`
-        };
-      } else {
-        return {
-          nextDate: nextDateStr,
-          daysLeft: diffDays,
-          status: "ok",
-          badge: `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700">🟢 متبقي ${{diffDays}} يوم</span>`
-        }};
-      }}
-    }}
-          badge: `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700">🟢 متبقي ${diffDays} يوم</span>`
-        };
-      }
-    }
-
-    function normalizeDateString(val) {{
-    function normalizeDateString(val) {
-      if (!val) return "";
-      const s = String(val).trim();
-      if (/^\\d{{4}}-\\d{{2}}-\\d{{2}}$/.test(s)) return s;
-      if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
-      const d = new Date(s);
-      if (!isNaN(d.getTime())) return d.toISOString().slice(0, 10);
-      return s;
-    }}
-    }
-
-    const DEFAULT_DATA = {{
-    const DEFAULT_DATA = {
-      users: [
-        {{ id: "ENG-00", name: "د. أحمد العيسوي", region: "الكل", role: "مدير عام", pin: "1111" }},
-        {{ id: "ENG-01", name: "م. خالد الضوي", region: "المنطقة الشمالية", role: "مشرف منطقة", pin: "2222" }},
-        {{ id: "ENG-02", name: "م. إسلام ماهر", region: "القاهرة الكبرى", role: "مشرف منطقة", pin: "3333" }},
-        {{ id: "ENG-03", name: "م. مينا فوزي", region: "الصعيد", role: "مشرف منطقة", pin: "4444" }},
-        {{ id: "ENG-04", name: "م. أحمد رضا", region: "منطقة الدلتا", role: "مشرف منطقة", pin: "5555" }},
-        {{ id: "ENG-05", name: "م. بهجت أيمن", region: "منطقة الدلتا", role: "مهندس صيانة", pin: "1234" }},
-        {{ id: "ENG-06", name: "م. مهند أيمن", region: "منطقة الدلتا", role: "مهندس صيانة", pin: "1234" }},
-        {{ id: "ENG-07", name: "م. محمد صلاح", region: "منطقة الدلتا", role: "مهندس صيانة", pin: "1234" }}
-        { id: "ENG-00", name: "د. أحمد العيسوي", region: "الكل", role: "مدير عام", pin: "1111" },
-        { id: "ENG-01", name: "م. خالد الضوي", region: "المنطقة الشمالية", role: "مشرف منطقة", pin: "2222" },
-        { id: "ENG-02", name: "م. إسلام ماهر", region: "القاهرة الكبرى", role: "مشرف منطقة", pin: "3333" },
-        { id: "ENG-03", name: "م. مينا فوزي", region: "الصعيد", role: "مشرف منطقة", pin: "4444" },
-        { id: "ENG-04", name: "م. أحمد رضا", region: "منطقة الدلتا", role: "مشرف منطقة", pin: "5555" },
-        { id: "ENG-05", name: "م. بهجت أيمن", region: "منطقة الدلتا", role: "مهندس صيانة", pin: "1234" },
-        { id: "ENG-06", name: "م. مهند أيمن", region: "منطقة الدلتا", role: "مهندس صيانة", pin: "1234" },
-        { id: "ENG-07", name: "م. محمد صلاح", region: "منطقة الدلتا", role: "مهندس صيانة", pin: "1234" }
-      ],
-      visits: [],
+    let appData = {
+      users: [],
       devices: [],
-      parts: [],
+      missions: [],
+      spareParts: [],
       leaves: []
-    }};
     };
-
-    let appData = JSON.parse(localStorage.getItem("medtech_fsm_data")) || DEFAULT_DATA;
     let currentUser = null;
-    let pendingImportRows = [];
 
-    function updateSyncUI(state, msg) {{
-    function updateSyncUI(state, msg) {
-      const loginBadge = document.getElementById("syncBadgeLogin");
-      const headerStatus = document.getElementById("syncStatusText");
-      if (loginBadge) {{
-        if (state === "syncing") {{
-      if (loginBadge) {
-        if (state === "syncing") {
-          loginBadge.className = "inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 mb-5";
-          loginBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span><span>${{msg}}</span>`;
-        }} else if (state === "ok") {{
-          loginBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span><span>${msg}</span>`;
-        } else if (state === "ok") {
-          loginBadge.className = "inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 mb-5";
-          loginBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span><span>${{msg}}</span>`;
-        }} else {{
-          loginBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-500"></span><span>${msg}</span>`;
-        } else {
-          loginBadge.className = "inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200 mb-5";
-          loginBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-slate-400"></span><span>${{msg}}</span>`;
-        }}
-      }}
-          loginBadge.innerHTML = `<span class="w-2 h-2 rounded-full bg-slate-400"></span><span>${msg}</span>`;
+    // 1. جلب كافة البيانات من الشيت (Initial Sync عبر doGet مع action=getAll)
+    async function syncAllData(showAlert = false) {
+      updateSyncUI("syncing", "جاري المزامنة مع الشيت...");
+      try {
+        const res = await fetch(`${GOOGLE_SCRIPT_URL}?action=getAll`);
+        const json = await res.json();
+        if (json.status === "success") {
+          appData.devices = json.devices || [];
+          appData.users = json.engineers || [];
+          appData.missions = json.missions || [];
+          appData.spareParts = json.spareParts || [];
+          appData.leaves = json.leaves || [];
+          
+          localStorage.setItem("medtech_cached_data", JSON.stringify(appData));
+          initLogin();
+          if (currentUser) renderAll();
+          updateSyncUI("ok", "متصل بـ Google Sheets ✓");
+          if (showAlert) alert("تم تحديث كافة البيانات من Google Sheets بنجاح!");
         }
+      } catch (e) {
+        const cached = localStorage.getItem("medtech_cached_data");
+        if (cached) {
+          appData = JSON.parse(cached);
+          initLogin();
+          if (currentUser) renderAll();
+        }
+        updateSyncUI("offline", "يعمل أوفلاين (من التخزين المحلي)");
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", () => syncAllData(false));
+
+    function updateSyncUI(state, msg) {
+      const badge = document.getElementById("syncBadgeLogin");
+      const headerStatus = document.getElementById("syncStatusText");
+      if (badge) {
+        badge.className = state === "ok" 
+          ? "inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 mb-5"
+          : "inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 mb-5";
+        badge.innerHTML = `<span class="w-2 h-2 rounded-full ${state === 'ok' ? 'bg-emerald-500' : 'bg-amber-500 animate-pulse'}"></span><span>${msg}</span>`;
       }
       if (headerStatus) headerStatus.textContent = msg;
-    }}
     }
 
-    async function syncFromGoogleSheets(showAlert = false) {{
-    async function syncFromGoogleSheets(showAlert = false) {
-      if (!GOOGLE_SCRIPT_URL) return;
-      updateSyncUI("syncing", "جاري التحديث من الشيت...");
-      try {{
-      try {
-        const res = await fetch(GOOGLE_SCRIPT_URL);
-        const cloudData = await res.json();
-        if (cloudData.users && cloudData.users.length > 0) appData.users = cloudData.users;
-        if (cloudData.devices) {{
-          appData.devices = cloudData.devices.map(d => ({{
-        if (cloudData.devices) {
-          appData.devices = cloudData.devices.map(d => ({
-            ...d,
-            lastVisit: normalizeDateString(d.lastVisit || "")
-          }}));
-        }}
-          }));
-        }
-        if (cloudData.visits) appData.visits = cloudData.visits;
-        if (cloudData.parts) appData.parts = cloudData.parts;
-        if (cloudData.leaves) appData.leaves = cloudData.leaves;
-        localStorage.setItem("medtech_fsm_data", JSON.stringify(appData));
-        initLogin();
-        if (currentUser) renderAll();
-        updateSyncUI("ok", "متصل بـ Google Sheets ✓");
-        if (showAlert) alert("تم تحديث كافة البيانات من ملف Google Sheets بنجاح!");
-      }} catch (e) {{
-      } catch (e) {
-        updateSyncUI("offline", "يعمل أوفلاين (نسخة محلية)");
-      }}
-    }}
-      }
-    }
-
-    async function saveData() {{
-      const payloadToSend = {{
-    async function saveData() {
-      const payloadToSend = {
-        ...appData,
-        devices: appData.devices.map(d => {{
-        devices: appData.devices.map(d => {
-          const sched = computeVisitSchedule(d.lastVisit);
-          return {{ ...d, nextVisit: sched.nextDate !== "-" ? sched.nextDate : "" }};
-        }})
-      }};
-          return { ...d, nextVisit: sched.nextDate !== "-" ? sched.nextDate : "" };
-        })
-      };
-      localStorage.setItem("medtech_fsm_data", JSON.stringify(appData));
-      if (!GOOGLE_SCRIPT_URL) return;
-      updateSyncUI("syncing", "جاري الرفع للشيت...");
-      try {{
-        await fetch(GOOGLE_SCRIPT_URL, {{
-      try {
-        await fetch(GOOGLE_SCRIPT_URL, {
-          method: "POST",
-          mode: "no-cors",
-          headers: {{ "Content-Type": "application/json" }},
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payloadToSend)
-        }});
-        });
-        updateSyncUI("ok", "تم الحفظ في الشيت ✓");
-      }} catch (e) {{
-      } catch (e) {
-        updateSyncUI("offline", "حفظ محلي (في انتظار الإنترنت)");
-      }}
-    }}
-      }
-    }
-
-    function initLogin() {{
     function initLogin() {
       const sel = document.getElementById("userSelect");
-      const currentVal = sel.value;
-      sel.innerHTML = appData.users.map((u, idx) => `<option value="${{idx}}">${{u.name}} (${{u.role}} - ${{u.region}})</option>`).join("");
+      if (!sel) return;
+      if (appData.users.length === 0) {
+        appData.users = [
+          { code: "ENG-00", name: "د. أحمد العيسوي", region: "الكل", role: "مدير عام", pin: "1111" },
+          { code: "ENG-01", name: "م. بهجت أيمن", region: "منطقة الدلتا", role: "مهندس صيانة", pin: "1234" }
+        ];
+      }
       sel.innerHTML = appData.users.map((u, idx) => `<option value="${idx}">${u.name} (${u.role} - ${u.region})</option>`).join("");
-      if (currentVal && sel.options[currentVal]) sel.value = currentVal;
-    }}
     }
-    initLogin();
-    window.addEventListener("DOMContentLoaded", () => syncFromGoogleSheets(false));
 
-    function handleLogin() {{
-    function handleLogin() {
+    // 2. تسجيل الدخول عبر الـ Backend (action=login)
+    async function handleLogin() {
       const idx = document.getElementById("userSelect").value;
       const pin = document.getElementById("pinInput").value.trim();
-      const user = appData.users[idx];
-      if (user && String(user.pin) === pin) {{
-      if (user && String(user.pin) === pin) {
-        currentUser = user;
-        document.getElementById("loginError").classList.add("hidden");
-        document.getElementById("loginScreen").classList.add("hidden");
-        document.getElementById("mainApp").classList.remove("hidden");
-        document.getElementById("currentUserName").textContent = user.name;
-        document.getElementById("currentUserRole").textContent = `${{user.role}} | ${{user.region}}`;
-        document.getElementById("currentUserRole").textContent = `${user.role} | ${user.region}`;
-        renderAll();
-      }} else {{
-      } else {
-        document.getElementById("loginError").classList.remove("hidden");
-      }}
-    }}
+      const selectedUser = appData.users[idx];
+
+      if (!selectedUser) return;
+
+      try {
+        const res = await fetch(GOOGLE_SCRIPT_URL, {
+          method: "POST",
+          body: JSON.stringify({ action: "login", username: selectedUser.name, pin: pin })
+        });
+        const json = await res.json();
+        
+        if (json.status === "success") {
+          currentUser = json.user;
+          document.getElementById("loginError").classList.add("hidden");
+          document.getElementById("loginScreen").classList.add("hidden");
+          document.getElementById("mainApp").classList.remove("hidden");
+          document.getElementById("currentUserName").textContent = currentUser.name;
+          document.getElementById("currentUserRole").textContent = `${currentUser.role} | ${currentUser.region}`;
+          renderAll();
+        } else {
+          document.getElementById("loginError").classList.remove("hidden");
+        }
+      } catch (e) {
+        if (String(selectedUser.pin) === pin) {
+          currentUser = { code: selectedUser.code, name: selectedUser.name, region: selectedUser.region, role: selectedUser.role };
+          document.getElementById("loginScreen").classList.add("hidden");
+          document.getElementById("mainApp").classList.remove("hidden");
+          document.getElementById("currentUserName").textContent = currentUser.name;
+          document.getElementById("currentUserRole").textContent = `${currentUser.role} | ${currentUser.region}`;
+          renderAll();
+        } else {
+          document.getElementById("loginError").classList.remove("hidden");
+        }
       }
     }
 
-    function logout() {{
     function logout() {
       currentUser = null;
       document.getElementById("pinInput").value = "";
       document.getElementById("mainApp").classList.add("hidden");
       document.getElementById("loginScreen").classList.remove("hidden");
-    }}
     }
 
-    function filterByPermission(items, engField = "engineer", regionField = "region") {{
-    function filterByPermission(items, engField = "engineer", regionField = "region") {
+    function switchTab(tab) {
+      ["dashboard", "visits", "devices", "parts", "leaves"].forEach(t => {
+        document.getElementById("view-" + t).classList.add("hidden");
+        document.getElementById("tab-" + t).classList.remove("tab-active");
+      });
+      document.getElementById("view-" + tab).classList.remove("hidden");
+      document.getElementById("tab-" + tab).classList.add("tab-active");
+    }
+
+    function computeVisitSchedule(lastVisitStr) {
+      if (!lastVisitStr || String(lastVisitStr).trim() === "") {
+        return { nextDate: "-", daysLeft: null, status: "none", badge: `<span class="px-2 py-1 rounded-full text-xs bg-slate-100 text-slate-500">غير محدد</span>` };
+      }
+      const parsed = new Date(lastVisitStr);
+      if (isNaN(parsed.getTime())) return { nextDate: "-", daysLeft: null, status: "none", badge: `<span class="px-2 py-1 rounded-full text-xs">تاريخ غير صالح</span>` };
+
+      const nextDateObj = new Date(parsed);
+      nextDateObj.setDate(nextDateObj.getDate() + 30);
+      const nextDateStr = nextDateObj.toISOString().slice(0, 10);
+
+      const today = new Date(); today.setHours(0,0,0,0);
+      const target = new Date(nextDateStr); target.setHours(0,0,0,0);
+      const diffDays = Math.round((target - today) / (1000 * 60 * 60 * 24));
+
+      if (diffDays < 0) {
+        return { nextDate: nextDateStr, daysLeft: diffDays, status: "overdue", badge: `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800">🔴 متأخرة ${Math.abs(diffDays)} يوم</span>` };
+      } else if (diffDays <= 7) {
+        return { nextDate: nextDateStr, daysLeft: diffDays, status: "warning", badge: `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-900 animate-pulse">⚠️ متبقي ${diffDays} يوم</span>` };
+      } else {
+        return { nextDate: nextDateStr, daysLeft: diffDays, status: "ok", badge: `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700">🟢 متبقي ${diffDays} يوم</span>` };
+      }
+    }
+
+    function filterByPermission(items, engField = "engineerName", regionField = "region") {
       if (!currentUser) return [];
       if (currentUser.role === "مدير عام") return items;
       if (currentUser.role === "مشرف منطقة") return items.filter(i => i[regionField] === currentUser.region);
       return items.filter(i => i[engField] === currentUser.name);
-    }}
     }
 
-    function switchTab(tab) {{
-      ["dashboard", "visits", "devices", "parts", "leaves", "excel"].forEach(t => {{
-    function switchTab(tab) {
-      ["dashboard", "visits", "devices", "parts", "leaves", "excel"].forEach(t => {
-        document.getElementById("view-" + t).classList.add("hidden");
-        document.getElementById("tab-" + t).classList.remove("tab-active");
-      }});
-      });
-      document.getElementById("view-" + tab).classList.remove("hidden");
-      document.getElementById("tab-" + tab).classList.add("tab-active");
-    }}
-    }
-
-    function renderAll() {{
     function renderAll() {
-      const myVisits = filterByPermission(appData.visits);
+      const myMissions = filterByPermission(appData.missions);
       const myDevices = currentUser.role === "مدير عام" ? appData.devices : appData.devices.filter(d => d.region === currentUser.region);
-      const myParts = filterByPermission(appData.parts);
+      const myParts = filterByPermission(appData.spareParts);
       const myLeaves = filterByPermission(appData.leaves);
 
-      const alertDevices = myDevices.map(d => ({{ ...d, sched: computeVisitSchedule(d.lastVisit) }}))
-      const alertDevices = myDevices.map(d => ({ ...d, sched: computeVisitSchedule(d.lastVisit) }))
+      const alertDevices = myDevices.map(d => ({ ...d, sched: computeVisitSchedule(d.lastVisit || d.warrantyEnd) }))
         .filter(d => d.sched.status === "warning" || d.sched.status === "overdue");
 
       document.getElementById("kpiCards").innerHTML = `
-        <div class="bg-white p-5 rounded-xl border shadow-sm"><p class="text-xs text-slate-500">إجمالي المأموريات</p><p class="text-2xl font-extrabold text-sky-600 mt-1">${{myVisits.length}}</p></div>
-        <div class="bg-white p-5 rounded-xl border shadow-sm"><p class="text-xs text-slate-500">الأجهزة المسجلة</p><p class="text-2xl font-extrabold text-indigo-600 mt-1">${{myDevices.length}}</p></div>
-        <div class="bg-white p-5 rounded-xl border ${{alertDevices.length > 0 ? 'border-amber-400 bg-amber-50/40' : ''}} shadow-sm"><p class="text-xs text-slate-500">تنبيهات الزيارة الدورية</p><p class="text-2xl font-extrabold ${{alertDevices.length > 0 ? 'text-amber-600' : 'text-slate-600'}} mt-1">${{alertDevices.length}}</p></div>
-        <div class="bg-white p-5 rounded-xl border shadow-sm"><p class="text-xs text-slate-500">طلبات قطع الغيار</p><p class="text-2xl font-extrabold text-amber-600 mt-1">${{myParts.length}}</p></div>
-        <div class="bg-white p-5 rounded-xl border shadow-sm"><p class="text-xs text-slate-500">طلبات الإجازات</p><p class="text-2xl font-extrabold text-emerald-600 mt-1">${{myLeaves.length}}</p></div>
-        <div class="bg-white p-5 rounded-xl border shadow-sm"><p class="text-xs text-slate-500">إجمالي المأموريات</p><p class="text-2xl font-extrabold text-sky-600 mt-1">${myVisits.length}</p></div>
+        <div class="bg-white p-5 rounded-xl border shadow-sm"><p class="text-xs text-slate-500">إجمالي المأموريات</p><p class="text-2xl font-extrabold text-sky-600 mt-1">${myMissions.length}</p></div>
         <div class="bg-white p-5 rounded-xl border shadow-sm"><p class="text-xs text-slate-500">الأجهزة المسجلة</p><p class="text-2xl font-extrabold text-indigo-600 mt-1">${myDevices.length}</p></div>
         <div class="bg-white p-5 rounded-xl border ${alertDevices.length > 0 ? 'border-amber-400 bg-amber-50/40' : ''} shadow-sm"><p class="text-xs text-slate-500">تنبيهات الزيارة الدورية</p><p class="text-2xl font-extrabold ${alertDevices.length > 0 ? 'text-amber-600' : 'text-slate-600'} mt-1">${alertDevices.length}</p></div>
         <div class="bg-white p-5 rounded-xl border shadow-sm"><p class="text-xs text-slate-500">طلبات قطع الغيار</p><p class="text-2xl font-extrabold text-amber-600 mt-1">${myParts.length}</p></div>
@@ -825,621 +525,217 @@ updated_html_v5 = f"""<!DOCTYPE html>
       `;
 
       const alertsBox = document.getElementById("pmAlertsBox");
-      if (alertDevices.length > 0) {{
       if (alertDevices.length > 0) {
         alertsBox.classList.remove("hidden");
         document.getElementById("pmAlertsCount").textContent = alertDevices.length;
         document.getElementById("pmAlertsBody").innerHTML = alertDevices.map(d => `
           <tr>
-            <td class="p-2.5 font-bold">${{d.client}}</td>
-            <td class="p-2.5">${{d.model}} (${{d.sn || "-"}})</td>
-            <td class="p-2.5">${{d.region}}</td>
-            <td class="p-2.5 font-mono">${{d.lastVisit}}</td>
-            <td class="p-2.5 font-mono font-bold text-sky-800">${{d.sched.nextDate}}</td>
-            <td class="p-2.5">${{d.sched.badge}}</td>
-            <td class="p-2.5 font-bold">${d.client}</td>
-            <td class="p-2.5">${d.model} (${d.sn || "-"})</td>
+            <td class="p-2.5 font-bold">${d.clientName || d.client}</td>
+            <td class="p-2.5">${d.model} (${d.serialNumber || d.sn || "-"})</td>
             <td class="p-2.5">${d.region}</td>
-            <td class="p-2.5 font-mono">${d.lastVisit}</td>
+            <td class="p-2.5 font-mono">${d.lastVisit || d.warrantyEnd || "-"}</td>
             <td class="p-2.5 font-mono font-bold text-sky-800">${d.sched.nextDate}</td>
             <td class="p-2.5">${d.sched.badge}</td>
           </tr>
         `).join("");
-      }} else {{
       } else {
         alertsBox.classList.add("hidden");
-      }}
       }
 
-      document.getElementById("dashboardVisitsBody").innerHTML = myVisits.slice(0, 5).map(v => `
-        <tr><td class="p-3">${{v.date}}</td><td class="p-3 font-bold">${{v.engineer}}</td><td class="p-3">${{v.client}}</td><td class="p-3">${{v.device}}</td><td class="p-3">${{v.type}}</td><td class="p-3"><span class="px-2 py-1 rounded-full text-xs bg-sky-100 text-sky-800">${{v.status}}</span></td></tr>
-        <tr><td class="p-3">${v.date}</td><td class="p-3 font-bold">${v.engineer}</td><td class="p-3">${v.client}</td><td class="p-3">${v.device}</td><td class="p-3">${v.type}</td><td class="p-3"><span class="px-2 py-1 rounded-full text-xs bg-sky-100 text-sky-800">${v.status}</span></td></tr>
+      document.getElementById("dashboardVisitsBody").innerHTML = myMissions.slice(0, 5).map(m => `
+        <tr>
+          <td class="p-3">${m.date}</td>
+          <td class="p-3 font-bold">${m.engineerName}</td>
+          <td class="p-3">${m.clientName}</td>
+          <td class="p-3">${m.deviceModel}</td>
+          <td class="p-3">${m.visitType}</td>
+          <td class="p-3"><span class="px-2 py-1 rounded-full text-xs bg-sky-100 text-sky-800">${m.status}</span></td>
+        </tr>
       `).join("");
 
-      populateVisitFilters(myVisits);
       renderVisits();
       renderDevices();
 
-      document.getElementById("partsTableBody").innerHTML = myParts.map((p, i) => `
+      document.getElementById("partsTableBody").innerHTML = myParts.map(p => `
         <tr>
-          <td class="p-3">${{p.date}}</td><td class="p-3 font-bold">${{p.engineer}}</td><td class="p-3">${{p.client}}</td>
-          <td class="p-3">${{p.device}}</td><td class="p-3">${{p.part}}</td><td class="p-3">${{p.qty}}</td>
-          <td class="p-3">${{p.status}}</td>
-          <td class="p-3">${{currentUser.role !== "مهندس صيانة" ? `<button onclick="approvePart(${{i}})" class="text-xs bg-emerald-600 text-white px-2 py-1 rounded">اعتماد</button>` : "-"}}</td>
-          <td class="p-3">${p.date}</td><td class="p-3 font-bold">${p.engineer}</td><td class="p-3">${p.client}</td>
-          <td class="p-3">${p.device}</td><td class="p-3">${p.part}</td><td class="p-3">${p.qty}</td>
-          <td class="p-3">${p.status}</td>
-          <td class="p-3">${currentUser.role !== "مهندس صيانة" ? `<button onclick="approvePart(${i})" class="text-xs bg-emerald-600 text-white px-2 py-1 rounded">اعتماد</button>` : "-"}</td>
+          <td class="p-3">${p.date}</td>
+          <td class="p-3 font-mono">${p.partCode}</td>
+          <td class="p-3 font-bold">${p.partName}</td>
+          <td class="p-3">${p.deviceModel}</td>
+          <td class="p-3">${p.quantity}</td>
+          <td class="p-3">${p.engineerName}</td>
+          <td class="p-3">${p.clientName}</td>
+          <td class="p-3">${p.notes || "-"}</td>
         </tr>
       `).join("");
 
-      document.getElementById("leavesTableBody").innerHTML = myLeaves.map((l, i) => `
+      document.getElementById("leavesTableBody").innerHTML = myLeaves.map(l => `
         <tr>
-          <td class="p-3 font-bold">${{l.engineer}}</td><td class="p-3">${{l.region}}</td><td class="p-3">${{l.from}}</td>
-          <td class="p-3">${{l.to}}</td><td class="p-3">${{l.reason}}</td><td class="p-3">${{l.status}}</td>
-          <td class="p-3">${{currentUser.role !== "مهندس صيانة" ? `<button onclick="approveLeave(${{i}})" class="text-xs bg-emerald-600 text-white px-2 py-1 rounded">موافقة</button>` : "-"}}</td>
-          <td class="p-3 font-bold">${l.engineer}</td><td class="p-3">${l.region}</td><td class="p-3">${l.from}</td>
-          <td class="p-3">${l.to}</td><td class="p-3">${l.reason}</td><td class="p-3">${l.status}</td>
-          <td class="p-3">${currentUser.role !== "مهندس صيانة" ? `<button onclick="approveLeave(${i})" class="text-xs bg-emerald-600 text-white px-2 py-1 rounded">موافقة</button>` : "-"}</td>
+          <td class="p-3 font-bold">${l.engineerName}</td>
+          <td class="p-3 font-mono">${l.startDate}</td>
+          <td class="p-3 font-mono">${l.endDate}</td>
+          <td class="p-3">${l.type}</td>
+          <td class="p-3"><span class="px-2 py-1 rounded-full text-xs bg-amber-100 text-amber-800">${l.status}</span></td>
+          <td class="p-3">${l.notes || "-"}</td>
         </tr>
       `).join("");
-    }}
-    }
 
-    // Populate filter dropdowns on Visits tab (Engineer & Client)
-    function populateVisitFilters(myVisits) {{
-    function populateVisitFilters(myVisits) {
       const engFilter = document.getElementById("visitEngFilter");
-      const clientFilter = document.getElementById("visitClientFilter");
-      if (!engFilter || !clientFilter) return;
-
-      const prevEng = engFilter.value;
-      const prevClient = clientFilter.value;
-
-      const uniqueEngs = [...new Set([...appData.users.map(u => u.name), ...myVisits.map(v => v.engineer)].filter(Boolean))];
-      const uniqueClients = [...new Set([...appData.devices.map(d => d.client), ...myVisits.map(v => v.client)].filter(Boolean))];
-
-      engFilter.innerHTML = `<option value="all">كل المهندسين</option>` + uniqueEngs.map(e => `<option value="${{e}}">${{e}}</option>`).join("");
-      clientFilter.innerHTML = `<option value="all">كل العملاء / المعامل</option>` + uniqueClients.map(c => `<option value="${{c}}">${{c}}</option>`).join("");
-      engFilter.innerHTML = `<option value="all">كل المهندسين</option>` + uniqueEngs.map(e => `<option value="${e}">${e}</option>`).join("");
-      clientFilter.innerHTML = `<option value="all">كل العملاء / المعامل</option>` + uniqueClients.map(c => `<option value="${c}">${c}</option>`).join("");
-
-      if (uniqueEngs.includes(prevEng)) engFilter.value = prevEng;
-      if (uniqueClients.includes(prevClient)) clientFilter.value = prevClient;
-    }}
+      if (engFilter) {
+        const uniqueEngs = [...new Set(appData.missions.map(m => m.engineerName).filter(Boolean))];
+        engFilter.innerHTML = `<option value="all">كل المهندسين</option>` + uniqueEngs.map(e => `<option value="${e}">${e}</option>`).join("");
+      }
     }
 
-    function renderVisits() {{
     function renderVisits() {
-      const myVisits = filterByPermission(appData.visits);
+      const myMissions = filterByPermission(appData.missions);
       const engVal = document.getElementById("visitEngFilter")?.value || "all";
-      const clientVal = document.getElementById("visitClientFilter")?.value || "all";
+      const filtered = myMissions.filter(m => engVal === "all" || m.engineerName === engVal);
 
-      const filtered = myVisits.filter(v => (engVal === "all" || v.engineer === engVal) && (clientVal === "all" || v.client === clientVal));
-
-      document.getElementById("visitsTableBody").innerHTML = filtered.map(v => {{
-      document.getElementById("visitsTableBody").innerHTML = filtered.map(v => {
-        const globalIdx = appData.visits.indexOf(v);
-        return `
+      document.getElementById("visitsTableBody").innerHTML = filtered.map(m => `
         <tr>
-          <td class="p-3">${{v.date}}</td><td class="p-3">${{v.region}}</td><td class="p-3 font-bold">${{v.engineer}}</td>
-          <td class="p-3">${{v.client}}</td><td class="p-3">${{v.device}} (${{v.sn || "-"}})</td><td class="p-3">${{v.type}}</td>
-          <td class="p-3">${{v.desc}}</td><td class="p-3"><span class="px-2 py-1 rounded-full text-xs bg-emerald-100 text-emerald-800">${{v.status}}</span></td>
-          <td class="p-3"><button onclick="completeVisit(${{globalIdx}})" class="text-xs text-sky-600 underline">إتمام</button></td>
-          <td class="p-3">${v.date}</td><td class="p-3">${v.region}</td><td class="p-3 font-bold">${v.engineer}</td>
-          <td class="p-3">${v.client}</td><td class="p-3">${v.device} (${v.sn || "-"})</td><td class="p-3">${v.type}</td>
-          <td class="p-3">${v.desc}</td><td class="p-3"><span class="px-2 py-1 rounded-full text-xs bg-emerald-100 text-emerald-800">${v.status}</span></td>
-          <td class="p-3"><button onclick="completeVisit(${globalIdx})" class="text-xs text-sky-600 underline">إتمام</button></td>
+          <td class="p-3">${m.date}</td>
+          <td class="p-3">${m.region}</td>
+          <td class="p-3 font-bold">${m.engineerName}</td>
+          <td class="p-3">${m.clientName}</td>
+          <td class="p-3">${m.deviceModel} (${m.serialNumber || "-"})</td>
+          <td class="p-3">${m.visitType}</td>
+          <td class="p-3">${m.issue}</td>
+          <td class="p-3"><span class="px-2 py-1 rounded-full text-xs bg-emerald-100 text-emerald-800">${m.status}</span></td>
         </tr>
-      `;
-      }}).join("");
-    }}
+      `).join("");
+    }
+
+    function renderDevices() {
+      const q = (document.getElementById("deviceSearch")?.value || "").toLowerCase();
+      const baseList = currentUser.role === "مدير عام" ? appData.devices : appData.devices.filter(d => d.region === currentUser.region);
+      const list = baseList.filter(d => JSON.stringify(d).toLowerCase().includes(q));
+
+      document.getElementById("devicesTableBody").innerHTML = list.map((d, idx) => {
+        const sched = computeVisitSchedule(d.lastVisit || d.warrantyEnd);
+        return `
+          <tr class="${sched.status === 'overdue' ? 'bg-red-50/40' : (sched.status === 'warning' ? 'bg-amber-50/40' : '')}">
+            <td class="p-3 font-mono text-xs">${d.code || d[Object.keys(d)[0]]}</td>
+            <td class="p-3 font-bold">${d.model}</td>
+            <td class="p-3 font-mono text-xs">${d.serialNumber || d.sn}</td>
+            <td class="p-3">${d.clientName || d.client}</td>
+            <td class="p-3">${d.region} - ${d.city}</td>
+            <td class="p-3 font-mono text-xs">${d.lastVisit || d.warrantyEnd || "-"}</td>
+            <td class="p-3 font-mono font-bold text-sky-800">${sched.nextDate}</td>
+            <td class="p-3">${sched.badge}</td>
+            <td class="p-3">
+              <button onclick="quickCompleteVisit('${d.clientName || d.client}', '${d.model}', '${d.serialNumber || d.sn}', '${d.region}')" class="text-xs bg-sky-100 hover:bg-sky-600 hover:text-white text-sky-800 font-bold px-2.5 py-1 rounded-lg transition">✓ تسجيل زيارة اليوم</button>
+            </td>
+          </tr>
+        `;
       }).join("");
     }
 
-    function renderDevices() {{
-    function renderDevices() {
-      const q = (document.getElementById("deviceSearch")?.value || "").toLowerCase();
-      const filterVal = document.getElementById("pmFilterSelect")?.value || "all";
-      const baseList = currentUser.role === "مدير عام" ? appData.devices : appData.devices.filter(d => d.region === currentUser.region);
-
-      const list = baseList.map(d => ({{ ...d, _idx: appData.devices.indexOf(d), sched: computeVisitSchedule(d.lastVisit) }}))
-      const list = baseList.map(d => ({ ...d, _idx: appData.devices.indexOf(d), sched: computeVisitSchedule(d.lastVisit) }))
-        .filter(d => JSON.stringify(d).toLowerCase().includes(q))
-        .filter(d => {{
-        .filter(d => {
-          if (filterVal === "all") return true;
-          if (filterVal === "warning") return d.sched.status === "warning" || d.sched.status === "overdue";
-          return d.sched.status === filterVal;
-        }});
-        });
-
-      document.getElementById("devicesTableBody").innerHTML = list.map(d => `
-        <tr class="${{d.sched.status === 'overdue' ? 'bg-red-50/40' : (d.sched.status === 'warning' ? 'bg-amber-50/40' : '')}}">
-          <td class="p-3 font-mono text-xs">${{d.code}}</td>
-          <td class="p-3 font-bold">${{d.model}}</td>
-          <td class="p-3 font-mono text-xs">${{d.sn}}</td>
-          <td class="p-3">${{d.client}}</td>
-          <td class="p-3">${{d.region}} - ${{d.city}}</td>
-        <tr class="${d.sched.status === 'overdue' ? 'bg-red-50/40' : (d.sched.status === 'warning' ? 'bg-amber-50/40' : '')}">
-          <td class="p-3 font-mono text-xs">${d.code}</td>
-          <td class="p-3 font-bold">${d.model}</td>
-          <td class="p-3 font-mono text-xs">${d.sn}</td>
-          <td class="p-3">${d.client}</td>
-          <td class="p-3">${d.region} - ${d.city}</td>
-          <td class="p-3">
-            <input type="date" value="${{d.lastVisit || ''}}" onchange="updateDeviceLastVisit(${{d._idx}}, this.value)" class="border border-slate-300 rounded-lg px-2 py-1 text-xs font-mono bg-white" />
-            <input type="date" value="${d.lastVisit || ''}" onchange="updateDeviceLastVisit(${d._idx}, this.value)" class="border border-slate-300 rounded-lg px-2 py-1 text-xs font-mono bg-white" />
-          </td>
-          <td class="p-3 font-mono font-bold text-sky-800">${{d.sched.nextDate}}</td>
-          <td class="p-3">${{d.sched.badge}}</td>
-          <td class="p-3 font-mono font-bold text-sky-800">${d.sched.nextDate}</td>
-          <td class="p-3">${d.sched.badge}</td>
-          <td class="p-3">
-            <button onclick="setDeviceVisitedToday(${{d._idx}})" title="تسجيل زيارة اليوم وإعادة ضبط الـ 30 يوم" class="text-xs bg-sky-100 hover:bg-sky-600 hover:text-white text-sky-800 font-bold px-2.5 py-1 rounded-lg transition">✓ تمت اليوم</button>
-            <button onclick="setDeviceVisitedToday(${d._idx})" title="تسجيل زيارة اليوم وإعادة ضبط الـ 30 يوم" class="text-xs bg-sky-100 hover:bg-sky-600 hover:text-white text-sky-800 font-bold px-2.5 py-1 rounded-lg transition">✓ تمت اليوم</button>
-          </td>
-        </tr>
-      `).join("");
-    }}
-    }
-
-    function updateDeviceLastVisit(globalIdx, newDate) {{
-      if (appData.devices[globalIdx]) {{
-    function updateDeviceLastVisit(globalIdx, newDate) {
-      if (appData.devices[globalIdx]) {
-        appData.devices[globalIdx].lastVisit = newDate;
-        saveData();
-        renderAll();
-      }}
-    }}
-      }
-    }
-
-    function setDeviceVisitedToday(globalIdx) {{
-    function setDeviceVisitedToday(globalIdx) {
-      const todayStr = new Date().toISOString().slice(0, 10);
-      updateDeviceLastVisit(globalIdx, todayStr);
-    }}
-    }
-
-    function openModal(id) {{ document.getElementById(id).classList.remove("hidden"); }}
-    function closeModal(id) {{ document.getElementById(id).classList.add("hidden"); }}
     function openModal(id) { document.getElementById(id).classList.remove("hidden"); }
     function closeModal(id) { document.getElementById(id).classList.add("hidden"); }
-
-    // --- SMART VISIT MODAL SELECTORS (ENGINEER + CLIENT + DEVICE) ---
-    function openVisitModal() {{
     function openVisitModal() {
       document.getElementById("vDate").value = new Date().toISOString().slice(0, 10);
-      if (currentUser && currentUser.region !== "الكل") {{
-      if (currentUser && currentUser.region !== "الكل") {
-        document.getElementById("vRegion").value = currentUser.region;
-      }}
-      }
-      populateVisitSelectors();
-      openModal("visitModal");
-    }}
+      if (currentUser && currentUser.region !== "الكل") document.getElementById("vRegion").value = currentUser.region;
+      openModal('visitModal');
     }
 
-    function populateVisitSelectors() {{
-    function populateVisitSelectors() {
-      const selectedRegion = document.getElementById("vRegion").value;
-
-      // 1. Engineers dropdown (filtered by region or all)
-      const engSel = document.getElementById("vEngSelect");
-      const engs = appData.users.filter(u => u.region === selectedRegion || u.region === "الكل");
-      const allEngs = engs.length > 0 ? engs : appData.users;
-      engSel.innerHTML = allEngs.map(u => `<option value="${{u.name}}">${{u.name}} (${{u.role}})</option>`).join("")
-      engSel.innerHTML = allEngs.map(u => `<option value="${u.name}">${u.name} (${u.role})</option>`).join("")
-        + `<option value="__custom__">✍️ كتابة اسم مهندس آخر يدوياً...</option>`;
-      if (currentUser && allEngs.some(u => u.name === currentUser.name)) {{
-      if (currentUser && allEngs.some(u => u.name === currentUser.name)) {
-        engSel.value = currentUser.name;
-      }}
-      }
-      onVisitEngChange();
-
-      // 2. Clients dropdown (from Devices & previous Visits)
-      const clientSel = document.getElementById("vClientSelect");
-      const regionClients = [...new Set([
-        ...appData.devices.filter(d => d.region === selectedRegion).map(d => d.client),
-        ...appData.visits.filter(v => v.region === selectedRegion).map(v => v.client)
-      ].filter(Boolean))];
-      const otherClients = [...new Set([
-        ...appData.devices.map(d => d.client),
-        ...appData.visits.map(v => v.client)
-      ].filter(c => c && !regionClients.includes(c)))];
-
-      let clientOptions = "";
-      if (regionClients.length > 0) {{
-        clientOptions += `<optgroup label="عملاء ${{selectedRegion}}">` + regionClients.map(c => `<option value="${{c}}">${{c}}</option>`).join("") + `</optgroup>`;
-      }}
-      if (otherClients.length > 0) {{
-        clientOptions += `<optgroup label="مناطق أخرى">` + otherClients.map(c => `<option value="${{c}}">${{c}}</option>`).join("") + `</optgroup>`;
-      }}
-      if (regionClients.length > 0) {
-        clientOptions += `<optgroup label="عملاء ${selectedRegion}">` + regionClients.map(c => `<option value="${c}">${c}</option>`).join("") + `</optgroup>`;
-      }
-      if (otherClients.length > 0) {
-        clientOptions += `<optgroup label="مناطق أخرى">` + otherClients.map(c => `<option value="${c}">${c}</option>`).join("") + `</optgroup>`;
-      }
-      clientOptions += `<option value="__custom__">✍️ إضافة / كتابة اسم عميل جديد يدوياً...</option>`;
-      clientSel.innerHTML = clientOptions;
-      onVisitClientChange();
-    }}
-    }
-
-    function onVisitEngChange() {{
-    function onVisitEngChange() {
-      const val = document.getElementById("vEngSelect").value;
-      const customInp = document.getElementById("vEngCustom");
-      if (val === "__custom__") {{
-      if (val === "__custom__") {
-        customInp.classList.remove("hidden");
-        customInp.focus();
-      }} else {{
-      } else {
-        customInp.classList.add("hidden");
-      }}
-    }}
+    // 3. إرسال البيانات للـ Backend عبر POST بدقة مطابقة للـ Apps Script
+    async function sendPostAction(actionName, dataObj) {
+      updateSyncUI("syncing", "جاري الحفظ في Google Sheets...");
+      try {
+        await fetch(GOOGLE_SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: actionName, data: dataObj })
+        });
+        updateSyncUI("ok", "تم الحفظ في الشيت بنجاح ✓");
+        setTimeout(() => syncAllData(false), 1500);
+      } catch (e) {
+        updateSyncUI("offline", "خطأ في الاتصال للشيت");
       }
     }
 
-    function onVisitClientChange() {{
-    function onVisitClientChange() {
-      const val = document.getElementById("vClientSelect").value;
-      const customInp = document.getElementById("vClientCustom");
-      const devSel = document.getElementById("vDeviceSelect");
-
-      if (val === "__custom__") {{
-      if (val === "__custom__") {
-        customInp.classList.remove("hidden");
-        customInp.focus();
-        devSel.innerHTML = `<option value="__custom__">✍️ كتابة موديل الجهاز يدوياً...</option>`;
-        onVisitDeviceChange();
-      }} else {{
-      } else {
-        customInp.classList.add("hidden");
-        // Filter devices belonging to this client
-        const clientDevs = appData.devices.filter(d => d.client === val);
-        if (clientDevs.length > 0) {{
-          devSel.innerHTML = clientDevs.map((d, i) => `<option value="${{d.model}}" data-sn="${{d.sn || ''}}">${{d.model}} (S/N: ${{d.sn || 'بدون'}})</option>`).join("")
-        if (clientDevs.length > 0) {
-          devSel.innerHTML = clientDevs.map((d, i) => `<option value="${d.model}" data-sn="${d.sn || ''}">${d.model} (S/N: ${d.sn || 'بدون'})</option>`).join("")
-            + `<option value="__custom__">✍️ جهاز آخر (كتابة يدوية)...</option>`;
-        }} else {{
-        } else {
-          devSel.innerHTML = `<option value="__custom__">✍️ كتابة موديل الجهاز يدوياً...</option>`;
-        }}
-        }
-        onVisitDeviceChange();
-      }}
-    }}
-      }
+    function submitMission() {
+      const data = {
+        date: document.getElementById("vDate").value,
+        region: document.getElementById("vRegion").value,
+        engineerName: currentUser.name,
+        clientName: document.getElementById("vClient").value,
+        city: document.getElementById("vCity").value,
+        deviceModel: document.getElementById("vDeviceModel").value,
+        serialNumber: document.getElementById("vSerialNumber").value,
+        visitType: document.getElementById("vVisitType").value,
+        issue: document.getElementById("vIssue").value,
+        status: "تمت",
+        notes: ""
+      };
+      sendPostAction("saveMission", data);
+      closeModal('visitModal');
     }
 
-    function onVisitDeviceChange() {{
-    function onVisitDeviceChange() {
-      const devSel = document.getElementById("vDeviceSelect");
-      const customDevInp = document.getElementById("vDeviceCustom");
-      const snInp = document.getElementById("vSn");
-
-      if (devSel.value === "__custom__") {{
-      if (devSel.value === "__custom__") {
-        customDevInp.classList.remove("hidden");
-        snInp.value = "";
-      }} else {{
-      } else {
-        customDevInp.classList.add("hidden");
-        const selectedOpt = devSel.options[devSel.selectedIndex];
-        snInp.value = selectedOpt ? (selectedOpt.getAttribute("data-sn") || "") : "";
-      }}
-    }}
-      }
+    function quickCompleteVisit(client, model, sn, region) {
+      const data = {
+        date: new Date().toISOString().slice(0, 10),
+        region: region,
+        engineerName: currentUser.name,
+        clientName: client,
+        city: "",
+        deviceModel: model,
+        serialNumber: sn,
+        visitType: "صيانة دورية",
+        issue: "صيانة دورية مجدولة",
+        status: "تمت",
+        notes: "تم تسجيل الزيارة بنجاح وإعادة ضبط دورة الـ 30 يوم"
+      };
+      sendPostAction("saveMission", data);
     }
 
-    function openPartModal() {{
-    function openPartModal() {
-      const uniqueClients = [...new Set(appData.devices.map(d => d.client).filter(Boolean))];
-      const uniqueModels = [...new Set(appData.devices.map(d => d.model).filter(Boolean))];
-      document.getElementById("clientsDataList").innerHTML = uniqueClients.map(c => `<option value="${{c}}">`).join("");
-      document.getElementById("devicesDataList").innerHTML = uniqueModels.map(m => `<option value="${{m}}">`).join("");
-      document.getElementById("clientsDataList").innerHTML = uniqueClients.map(c => `<option value="${c}">`).join("");
-      document.getElementById("devicesDataList").innerHTML = uniqueModels.map(m => `<option value="${m}">`).join("");
-      openModal("partModal");
-    }}
-    }
-
-    function addDevice() {{
-      appData.devices.unshift({{
-    function addDevice() {
-      appData.devices.unshift({
-        code: document.getElementById("dCode").value || "DEV-" + Math.floor(Math.random()*9000+1000),
+    function submitDevice() {
+      const data = {
+        code: document.getElementById("dCode").value,
         model: document.getElementById("dModel").value,
-        vendor: "",
-        category: "",
-        sn: document.getElementById("dSn").value,
-        client: document.getElementById("dClient").value,
+        manufacturer: document.getElementById("dManufacturer").value,
+        category: document.getElementById("dCategory").value,
+        serialNumber: document.getElementById("dSerialNumber").value,
+        clientName: document.getElementById("dClientName").value,
         region: document.getElementById("dRegion").value,
         city: document.getElementById("dCity").value,
-        contract: document.getElementById("dContract").value,
-        expiry: "",
-        status: "يعمل بكفاءة",
-        lastVisit: document.getElementById("dLastVisit").value || ""
-      }});
-      });
-      saveData(); closeModal("deviceModal"); renderAll();
-    }}
-    }
-
-    function addVisit() {{
-    function addVisit() {
-      const vDate = document.getElementById("vDate").value || new Date().toISOString().slice(0,10);
-      const engSelVal = document.getElementById("vEngSelect").value;
-      const vEng = engSelVal === "__custom__" ? document.getElementById("vEngCustom").value.trim() : engSelVal;
-
-      const clientSelVal = document.getElementById("vClientSelect").value;
-      const vClient = clientSelVal === "__custom__" ? document.getElementById("vClientCustom").value.trim() : clientSelVal;
-
-      const devSelVal = document.getElementById("vDeviceSelect").value;
-      const vDevice = devSelVal === "__custom__" ? document.getElementById("vDeviceCustom").value.trim() : devSelVal;
-
-      const vSn = document.getElementById("vSn").value.trim();
-
-      if (!vClient) {{
-      if (!vClient) {
-        alert("يرجى اختيار أو كتابة اسم العميل / المعمل أولاً.");
-        return;
-      }}
-      }
-
-      appData.visits.unshift({{
-      appData.visits.unshift({
-        date: vDate,
-        region: document.getElementById("vRegion").value,
-        engineer: vEng || currentUser.name,
-        client: vClient,
-        city: "",
-        device: vDevice,
-        sn: vSn,
-        type: document.getElementById("vType").value,
-        desc: document.getElementById("vDesc").value,
-        status: "مجدولة",
-        notes: ""
-      }});
-      });
-
-      const matchedDev = appData.devices.find(d => (vSn && d.sn === vSn) || (d.client === vClient && d.model === vDevice));
-      if (matchedDev) {{
-      if (matchedDev) {
-        matchedDev.lastVisit = vDate;
-      }}
-      }
-
-      saveData(); closeModal("visitModal"); renderAll();
-    }}
-    }
-
-    function completeVisit(globalIdx) {{
-    function completeVisit(globalIdx) {
-      const target = appData.visits[globalIdx];
-      if (target) {{
-      if (target) {
-        target.status = "مكتملة";
-        const matchedDev = appData.devices.find(d => (target.sn && d.sn === target.sn) || (d.client === target.client && d.model === target.device));
-        if (matchedDev && target.date) matchedDev.lastVisit = target.date;
-      }}
-      }
-      saveData(); renderAll();
-    }}
-    }
-
-    function addPart() {{
-      appData.parts.unshift({{
-    function addPart() {
-      appData.parts.unshift({
-        date: new Date().toISOString().slice(0,10),
-        engineer: currentUser.name,
-        region: currentUser.region,
-        client: document.getElementById("pClient").value,
-        device: document.getElementById("pDevice").value,
-        part: document.getElementById("pName").value,
-        qty: document.getElementById("pQty").value,
-        status: "قيد المراجعة"
-      }});
-      });
-      saveData(); closeModal("partModal"); renderAll();
-    }}
-    }
-
-    function approvePart(idx) {{
-    function approvePart(idx) {
-      const myParts = filterByPermission(appData.parts);
-      if (myParts[idx]) myParts[idx].status = "تم الاعتماد";
-      saveData(); renderAll();
-    }}
-    }
-
-    function addLeave() {{
-      appData.leaves.unshift({{
-    function addLeave() {
-      appData.leaves.unshift({
-        engineer: currentUser.name,
-        region: currentUser.region,
-        from: document.getElementById("lFrom").value,
-        to: document.getElementById("lTo").value,
-        reason: document.getElementById("lReason").value,
-        status: "قيد المراجعة"
-      }});
-      });
-      saveData(); closeModal("leaveModal"); renderAll();
-    }}
-    }
-
-    function approveLeave(idx) {{
-    function approveLeave(idx) {
-      const myLeaves = filterByPermission(appData.leaves);
-      if (myLeaves[idx]) myLeaves[idx].status = "مقبولة";
-      saveData(); renderAll();
-    }}
-    }
-
-    function previewExcelFile(e) {{
-    function previewExcelFile(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function(evt) {{
-        const wb = XLSX.read(evt.target.result, {{ type: "binary" }});
-      reader.onload = function(evt) {
-        const wb = XLSX.read(evt.target.result, { type: "binary" });
-        const type = document.getElementById("importType").value;
-        const sheetMap = {{ visits: "المأموريات", devices: "الأجهزة والعملاء", engineers: "المهندسين" }};
-        const sheetMap = { visits: "المأموريات", devices: "الأجهزة والعملاء", engineers: "المهندسين" };
-        const targetSheetName = wb.SheetNames.includes(sheetMap[type]) ? sheetMap[type] : wb.SheetNames[0];
-        const rows = XLSX.utils.sheet_to_json(wb.Sheets[targetSheetName], {{ defval: "" }});
-        const rows = XLSX.utils.sheet_to_json(wb.Sheets[targetSheetName], { defval: "" });
-        pendingImportRows = rows;
-        if (rows.length > 0) {{
-        if (rows.length > 0) {
-          const cols = Object.keys(rows[0]);
-          document.getElementById("previewThead").innerHTML = "<tr>" + cols.map(c => `<th class="p-2 border">${{c}}</th>`).join("") + "</tr>";
-          document.getElementById("previewTbody").innerHTML = rows.map(r => "<tr>" + cols.map(c => `<td class="p-2 border">${{r[c]}}</td>`).join("") + "</tr>").join("");
-          document.getElementById("previewThead").innerHTML = "<tr>" + cols.map(c => `<th class="p-2 border">${c}</th>`).join("") + "</tr>";
-          document.getElementById("previewTbody").innerHTML = rows.map(r => "<tr>" + cols.map(c => `<td class="p-2 border">${r[c]}</td>`).join("") + "</tr>").join("");
-          document.getElementById("previewCount").textContent = rows.length;
-          document.getElementById("excelPreviewContainer").classList.remove("hidden");
-          document.getElementById("confirmImportBtn").classList.remove("hidden");
-        }}
-      }};
-        }
+        contractType: document.getElementById("dContractType").value,
+        warrantyEnd: document.getElementById("dWarrantyEnd").value,
+        status: "يعمل بكفاءة"
       };
-      reader.readAsBinaryString(file);
-    }}
+      sendPostAction("saveDevice", data);
+      closeModal('deviceModal');
     }
 
-    function commitExcelImport() {{
-    function commitExcelImport() {
-      const type = document.getElementById("importType").value;
-      if (type === "visits") {{
-        pendingImportRows.forEach(r => {{
-          appData.visits.unshift({{
-      if (type === "visits") {
-        pendingImportRows.forEach(r => {
-          appData.visits.unshift({
-            date: normalizeDateString(r["التاريخ"]),
-            region: r["المنطقة"] || "منطقة الدلتا",
-            engineer: r["اسم المهندس"] || "",
-            client: r["اسم العميل / المعمل"] || "",
-            city: r["المحافظة / المدينة"] || "",
-            device: r["موديل الجهاز"] || "",
-            sn: r["الرقم التسلسلي (S/N)"] || "",
-            type: r["نوع الزيارة"] || "صيانة دورية",
-            desc: r["وصف العطل / المطلوب"] || "",
-            status: r["الحالة"] || "مجدولة",
-            notes: r["ملاحظات"] || ""
-          }});
-        }});
-      }} else if (type === "devices") {{
-        pendingImportRows.forEach(r => {{
-          appData.devices.unshift({{
-          });
-        });
-      } else if (type === "devices") {
-        pendingImportRows.forEach(r => {
-          appData.devices.unshift({
-            code: r["كود الجهاز"] || "DEV-" + Math.floor(Math.random()*9000+1000),
-            model: r["اسم الجهاز / الموديل"] || "",
-            vendor: r["الشركة المصنعة"] || "",
-            category: r["التصنيف"] || "",
-            sn: r["الرقم التسلسلي (S/N)"] || "",
-            client: r["اسم العميل / المعمل"] || "",
-            region: r["المنطقة"] || "",
-            city: r["المحافظة / المدينة"] || "",
-            contract: r["نوع العقد"] || "",
-            expiry: normalizeDateString(r["تاريخ انتهاء الضمان / العقد"]),
-            status: r["حالة الجهاز"] || "يعمل بكفاءة",
-            lastVisit: normalizeDateString(r["تاريخ آخر زيارة"] || r["آخر زيارة"] || "")
-          }});
-        }});
-      }} else if (type === "engineers") {{
-        pendingImportRows.forEach(r => {{
-          appData.users.push({{
-          });
-        });
-      } else if (type === "engineers") {
-        pendingImportRows.forEach(r => {
-          appData.users.push({
-            id: r["كود المهندس"] || "ENG-" + Math.floor(Math.random()*90+10),
-            name: r["الاسم بالكامل"] || "",
-            region: r["المنطقة"] || "منطقة الدلتا",
-            role: r["الدور / الصلاحية"] || "مهندس صيانة",
-            pin: String(r["كود الدخول (PIN)"] || "1234")
-          }});
-        }});
-          });
-        });
-        initLogin();
-      }}
-      }
-      saveData();
-      renderAll();
-      alert(`تم استيراد وحفظ ${{pendingImportRows.length}} سجل ومزامنتها مع Google Sheets بنجاح!`);
-      alert(`تم استيراد وحفظ ${pendingImportRows.length} سجل ومزامنتها مع Google Sheets بنجاح!`);
-      document.getElementById("excelPreviewContainer").classList.add("hidden");
-      document.getElementById("confirmImportBtn").classList.add("hidden");
-    }}
+    function submitSparePart() {
+      const data = {
+        date: new Date().toISOString().slice(0, 10),
+        partCode: document.getElementById("pPartCode").value,
+        partName: document.getElementById("pPartName").value,
+        deviceModel: document.getElementById("pDeviceModel").value,
+        quantity: document.getElementById("pQuantity").value,
+        engineerName: currentUser.name,
+        clientName: document.getElementById("pClientName").value,
+        notes: document.getElementById("pNotes").value
+      };
+      sendPostAction("saveSparePart", data);
+      closeModal('partModal');
     }
 
-    function downloadTemplate() {{
-    function downloadTemplate() {
-      const wb = XLSX.utils.book_new();
-      const ws1 = XLSX.utils.json_to_sheet([{{ "التاريخ": "2026-11-17", "المنطقة": "منطقة الدلتا", "اسم المهندس": "م. بهجت أيمن", "اسم العميل / المعمل": "معمل المختبر", "المحافظة / المدينة": "طنطا", "موديل الجهاز": "Sysmex XN-550", "الرقم التسلسلي (S/N)": "SN-884920", "نوع الزيارة": "صيانة دورية", "وصف العطل / المطلوب": "معايرة", "الحالة": "مجدولة", "ملاحظات": "" }}]);
-      const ws2 = XLSX.utils.json_to_sheet([{{ "كود الجهاز": "DEV-1001", "اسم الجهاز / الموديل": "Sysmex XN-550", "الشركة المصنعة": "Sysmex", "التصنيف": "أمراض دم", "الرقم التسلسلي (S/N)": "SN-884920", "اسم العميل / المعمل": "معمل المختبر", "المنطقة": "منطقة الدلتا", "المحافظة / المدينة": "طنطا", "نوع العقد": "عقد صيانة شامل", "تاريخ انتهاء الضمان / العقد": "2027-06-30", "حالة الجهاز": "يعمل بكفاءة", "تاريخ آخر زيارة": "2026-11-10" }}]);
-      const ws1 = XLSX.utils.json_to_sheet([{ "التاريخ": "2026-11-17", "المنطقة": "منطقة الدلتا", "اسم المهندس": "م. بهجت أيمن", "اسم العميل / المعمل": "معمل المختبر", "المحافظة / المدينة": "طنطا", "موديل الجهاز": "Sysmex XN-550", "الرقم التسلسلي (S/N)": "SN-884920", "نوع الزيارة": "صيانة دورية", "وصف العطل / المطلوب": "معايرة", "الحالة": "مجدولة", "ملاحظات": "" }]);
-      const ws2 = XLSX.utils.json_to_sheet([{ "كود الجهاز": "DEV-1001", "اسم الجهاز / الموديل": "Sysmex XN-550", "الشركة المصنعة": "Sysmex", "التصنيف": "أمراض دم", "الرقم التسلسلي (S/N)": "SN-884920", "اسم العميل / المعمل": "معمل المختبر", "المنطقة": "منطقة الدلتا", "المحافظة / المدينة": "طنطا", "نوع العقد": "عقد صيانة شامل", "تاريخ انتهاء الضمان / العقد": "2027-06-30", "حالة الجهاز": "يعمل بكفاءة", "تاريخ آخر زيارة": "2026-11-10" }]);
-      XLSX.utils.book_append_sheet(wb, ws1, "المأموريات");
-      XLSX.utils.book_append_sheet(wb, ws2, "الأجهزة والعملاء");
-      XLSX.writeFile(wb, "MedTech_FSM_Template.xlsx");
-    }}
-    }
-
-    function exportAllToExcel() {{
-    function exportAllToExcel() {
-      const wb = XLSX.utils.book_new();
-      const exportDevices = appData.devices.map(d => {{
-      const exportDevices = appData.devices.map(d => {
-        const sched = computeVisitSchedule(d.lastVisit);
-        return {{
-        return {
-          "كود الجهاز": d.code,
-          "اسم الجهاز / الموديل": d.model,
-          "الرقم التسلسلي (S/N)": d.sn,
-          "اسم العميل / المعمل": d.client,
-          "المنطقة": d.region,
-          "المدينة": d.city,
-          "نوع العقد": d.contract,
-          "تاريخ آخر زيارة": d.lastVisit || "",
-          "الزيارة القادمة (+30 يوم)": sched.nextDate,
-          "الأيام المتبقية": sched.daysLeft !== null ? sched.daysLeft : ""
-        }};
-      }});
-        };
-      });
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(appData.visits), "المأموريات");
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(exportDevices), "الأجهزة والعملاء");
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(appData.parts), "قطع الغيار");
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(appData.leaves), "الإجازات");
-      XLSX.writeFile(wb, "MedTech_FSM_Full_Report.xlsx");
-    }}
+    function submitLeave() {
+      const data = {
+        engineerName: currentUser.name,
+        startDate: document.getElementById("lStartDate").value,
+        endDate: document.getElementById("lEndDate").value,
+        type: document.getElementById("lType").value,
+        status: "معلق",
+        notes: document.getElementById("lNotes").value
+      };
+      sendPostAction("saveLeave", data);
+      closeModal('leaveModal');
     }
   </script>
 </body>
 </html>
-"""
-
-with open("index.html", "w", encoding="utf-8") as f:
-    f.write(updated_html_v5)
-
-print("Generated index.html v5 with selectable Engineer, Client, and Device dropdowns in Visits.")
