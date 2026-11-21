@@ -4,10 +4,16 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#0284c7" />
+  <meta name="application-name" content="elmohandeskhana" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-  <meta name="apple-mobile-web-app-title" content="MedTech FSM" />
-  <title>MedTech FSM - إدارة الخدمة الميدانية</title>
+  <meta name="apple-mobile-web-app-title" content="elmohandeskhana" />
+  <title>elmohandeskhana - إدارة الخدمة الميدانية</title>
+
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" type="image/svg+xml" href="./icon.svg" />
+  <link rel="apple-touch-icon" id="appleTouchIcon" sizes="180x180" href="./icon.svg" />
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -38,35 +44,52 @@
     header {
       background: var(--primary);
       color: white;
-      padding: 12px 16px;
+      padding: 12px 14px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 6px;
       position: sticky;
       top: 0;
       z-index: 50;
       box-shadow: 0 2px 8px rgba(2, 132, 199, 0.2);
     }
 
-    .brand { display: flex; align-items: center; gap: 8px; font-size: 1.1rem; font-weight: 700; }
-    .header-actions { display: flex; align-items: center; gap: 10px; }
+    .brand { display: flex; align-items: center; gap: 7px; font-size: 1rem; font-weight: 800; letter-spacing: 0.2px; }
+    .header-actions { display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; }
+
+    .header-install-btn {
+      background: #ffffff;
+      color: var(--primary-dark);
+      border: none;
+      border-radius: 20px;
+      padding: 4px 9px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      white-space: nowrap;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+    }
 
     .sync-status-indicator {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
       background: rgba(255, 255, 255, 0.2);
-      padding: 4px 10px;
+      padding: 4px 8px;
       border-radius: 20px;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: 600;
       cursor: pointer;
       user-select: none;
     }
 
     .status-dot {
-      width: 9px;
-      height: 9px;
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
       background-color: #22c55e;
       box-shadow: 0 0 6px rgba(34, 197, 94, 0.8);
@@ -83,14 +106,15 @@
       border: none;
       color: white;
       cursor: pointer;
-      font-size: 0.95rem;
+      font-size: 0.88rem;
       display: flex;
       align-items: center;
       justify-content: center;
     }
     .sync-btn.rotating i { animation: spin 0.8s linear infinite; }
 
-    .user-pill { background: rgba(255,255,255,0.18); padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; display: flex; align-items: center; gap: 6px; }
+    .user-pill { background: rgba(255,255,255,0.18); padding: 4px 8px; border-radius: 20px; font-size: 0.72rem; display: flex; align-items: center; gap: 5px; max-width: 130px; }
+    .user-pill span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
     main { flex: 1; padding: 14px; padding-bottom: 95px; }
 
@@ -167,11 +191,16 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
+      transition: opacity 0.15s ease;
     }
+    .btn:active { opacity: 0.88; }
     .btn-accent { background: var(--accent); }
     .btn-danger { background: var(--danger); }
+    .btn-warning { background: var(--warning); }
+    .btn-outline { background: white; color: var(--primary-dark); border: 1.5px solid var(--primary); }
+    .btn-sm { padding: 8px 12px; font-size: 0.82rem; border-radius: 9px; }
 
-    .device-card, .mission-card, .issue-card, .part-card {
+    .device-card, .mission-card, .issue-card, .part-card, .install-card {
       background: white;
       border: 1px solid var(--border);
       border-radius: 14px;
@@ -185,13 +214,26 @@
       transition: all 0.2s ease;
       box-shadow: 0 2px 6px rgba(0,0,0,0.03);
     }
-    .device-card:active, .mission-card:active, .issue-card:active, .part-card:active {
-      transform: scale(0.98);
+    .device-card:active, .mission-card:active, .issue-card:active, .part-card:active, .install-card:active {
+      transform: scale(0.99);
       background-color: #f8fafc;
     }
+    .device-card.visit-overdue {
+      border-right-color: var(--danger);
+      background: #fff5f5;
+      border-color: #fecaca;
+    }
+    .device-card.visit-soon {
+      border-right-color: var(--warning);
+      background: #fffbeb;
+      border-color: #fde68a;
+    }
 
-    .issue-card { border-right-color: var(--danger); }
-    .part-card { border-right-color: #8b5cf6; }
+    .issue-card { border-right-color: var(--danger); cursor: default; }
+    .issue-card.pending-approval { border-right-color: var(--warning); background: #fffbeb; }
+    .part-card { border-right-color: #8b5cf6; cursor: default; }
+    .mission-card { cursor: default; }
+    .install-card { border-right-color: var(--accent); cursor: default; background: #f0fdf4; border-color: #bbf7d0; }
 
     .badge { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: 700; }
     .badge-primary { background: var(--primary-light); color: var(--primary-dark); }
@@ -200,9 +242,63 @@
     .badge-danger { background: #fee2e2; color: #991b1b; }
     .badge-purple { background: #ede9fe; color: #6d28d9; }
 
+    /* تنبيه وفلاتر الزيارات الدورية */
+    .visit-alert-banner {
+      background: linear-gradient(135deg, #fef2f2 0%, #fffbeb 100%);
+      border: 1.5px solid #fca5a5;
+      border-radius: 14px;
+      padding: 11px 13px;
+      margin-bottom: 12px;
+      display: none;
+    }
+    .visit-filter-chips {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 7px;
+      margin-bottom: 12px;
+    }
+    .visit-chip {
+      padding: 8px 10px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: white;
+      color: var(--text);
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      transition: all 0.15s ease;
+    }
+    .visit-chip.active-all { border-color: var(--primary); background: var(--primary-light); color: var(--primary-dark); }
+    .visit-chip.active-overdue { border-color: var(--danger); background: #fee2e2; color: #991b1b; }
+    .visit-chip.active-soon { border-color: var(--warning); background: #fef3c7; color: #92400e; }
+    .visit-chip.active-urgent { border-color: #7c3aed; background: #ede9fe; color: #5b21b6; }
+    .chip-count {
+      padding: 1px 7px;
+      border-radius: 12px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      background: rgba(15, 23, 42, 0.08);
+    }
+
     .search-box { position: relative; margin-bottom: 12px; }
     .search-box i { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
     .search-box input { padding-right: 40px; background: white; }
+
+    .combo-wrap { position: relative; }
+    .combo-wrap input { padding-left: 34px; background: white; }
+    .combo-chevron {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+      font-size: 0.8rem;
+    }
 
     .autocomplete-list {
       position: absolute;
@@ -215,8 +311,8 @@
       margin-top: 4px;
       max-height: 220px;
       overflow-y: auto;
-      z-index: 80;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+      z-index: 90;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.12);
       display: none;
     }
     .autocomplete-item {
@@ -280,7 +376,7 @@
       max-width: 520px;
       border-radius: 24px 24px 0 0;
       padding: 22px 20px 30px;
-      max-height: 85vh;
+      max-height: 90vh;
       overflow-y: auto;
       animation: slideUp 0.25s ease-out;
     }
@@ -309,24 +405,48 @@
     .detail-label { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; margin-bottom: 2px; }
     .detail-val { font-size: 0.88rem; font-weight: 700; color: var(--text); word-break: break-word; }
 
+    .action-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .action-row .btn { flex: 1; min-width: 110px; }
+
+    .pending-box {
+      background: #fffbeb;
+      border: 1.5px solid #fcd34d;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
     .install-bar { display: flex; gap: 10px; margin-top: 18px; justify-content: center; }
     .install-btn {
-      flex: 1; padding: 10px; border-radius: 10px; border: 1px solid var(--border);
-      background: white; color: var(--text); font-size: 0.8rem; font-weight: 600;
+      flex: 1; padding: 11px 10px; border-radius: 10px; border: 1.5px solid var(--border);
+      background: white; color: var(--text); font-size: 0.82rem; font-weight: 700;
       display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer;
+      transition: all 0.2s ease;
     }
-    .install-btn.android i { color: #22c55e; }
-    .install-btn.ios i { color: #0f172a; }
+    .install-btn.android i { color: #16a34a; font-size: 1rem; }
+    .install-btn.android.ready { background: #dcfce7; border-color: #22c55e; color: #166534; }
+    .install-btn.ios i { color: #0f172a; font-size: 1rem; }
 
     .modal-overlay {
       display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
       background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; padding: 20px;
     }
-    .modal-card { background: white; border-radius: 18px; padding: 22px; max-width: 380px; width: 100%; text-align: center; }
+    .modal-card { background: white; border-radius: 18px; padding: 22px; max-width: 390px; width: 100%; text-align: center; }
+    .ios-step-box {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      text-align: right;
+      font-size: 0.85rem;
+      color: #334155;
+      line-height: 1.5;
+    }
 
     #loadingOverlay {
       display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(15, 23, 42, 0.5); z-index: 999; justify-content: center; align-items: center;
+      background: rgba(15, 23, 42, 0.5); z-index: 1200; justify-content: center; align-items: center;
       color: white; flex-direction: column; gap: 12px; font-weight: 600;
     }
     .spinner {
@@ -356,6 +476,22 @@
         </button>
       </div>
 
+      <!-- تنبيه طلب تعديل معلق على هذا الجهاز -->
+      <div id="modalPendingEditBox" class="pending-box" style="display:none;">
+        <div style="font-size:0.84rem; font-weight:800; color:#92400e; margin-bottom:6px;">
+          <i class="fa-solid fa-clock"></i> يوجد طلب تعديل بانتظار موافقة المشرف/المدير
+        </div>
+        <div id="modalPendingEditDetails" style="font-size:0.8rem; color:#78350f; margin-bottom:8px; line-height:1.5;"></div>
+        <div id="modalPendingEditActions" class="action-row" style="display:none;">
+          <button class="btn btn-accent btn-sm" onclick="reviewCurrentDeviceEdit('approve')">
+            <i class="fa-solid fa-check"></i> موافقة وتحديث الشيت
+          </button>
+          <button class="btn btn-danger btn-sm" onclick="reviewCurrentDeviceEdit('reject')">
+            <i class="fa-solid fa-xmark"></i> رفض التعديل
+          </button>
+        </div>
+      </div>
+
       <div class="details-grid">
         <div class="detail-item"><div class="detail-label"><i class="fa-solid fa-hashtag"></i> كود الجهاز</div><div class="detail-val" id="modalDevCode">-</div></div>
         <div class="detail-item"><div class="detail-label"><i class="fa-solid fa-barcode"></i> الرقم التسلسلي (S/N)</div><div class="detail-val" id="modalDevSerial">-</div></div>
@@ -364,7 +500,9 @@
         <div class="detail-item"><div class="detail-label"><i class="fa-solid fa-map-location-dot"></i> المنطقة</div><div class="detail-val" id="modalDevRegion">-</div></div>
         <div class="detail-item"><div class="detail-label"><i class="fa-solid fa-city"></i> المحافظة / المدينة</div><div class="detail-val" id="modalDevCity">-</div></div>
         <div class="detail-item"><div class="detail-label"><i class="fa-solid fa-file-contract"></i> نوع العقد</div><div class="detail-val" id="modalDevContract">-</div></div>
+        <div class="detail-item"><div class="detail-label"><i class="fa-regular fa-calendar-check"></i> تاريخ التركيب</div><div class="detail-val" id="modalDevInstallDate">-</div></div>
         <div class="detail-item"><div class="detail-label"><i class="fa-regular fa-calendar-xmark"></i> انتهاء الضمان</div><div class="detail-val" id="modalDevWarranty">-</div></div>
+        <div class="detail-item"><div class="detail-label"><i class="fa-solid fa-calendar-day"></i> الزيارة الدورية القادمة</div><div class="detail-val" id="modalDevNextVisit" style="color:var(--primary-dark);">-</div></div>
         <div class="detail-item" style="grid-column: span 2;">
           <div class="detail-label"><i class="fa-solid fa-heart-pulse"></i> حالة الجهاز</div>
           <div class="detail-val" id="modalDevStatus">-</div>
@@ -375,25 +513,118 @@
         </div>
       </div>
 
-      <div style="display:flex; gap:10px;">
-        <button class="btn" id="btnDeviceModalMission" style="flex:1;" onclick="startMissionForThisDevice()">
+      <!-- نموذج طلب تعديل اسم العميل أو السيريال -->
+      <div id="deviceEditRequestBox" class="card" style="display:none; background:#f8fafc; border-color:var(--warning); margin-bottom:14px;">
+        <h4 style="font-size:0.9rem; color:#92400e; margin-bottom:8px;">
+          <i class="fa-solid fa-pen-to-square"></i> طلب تعديل بيانات العميل / السيريال
+        </h4>
+        <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:10px;">
+          لن يتغير الشيت إلا بعد موافقة المشرف أو المدير على الطلب.
+        </p>
+        <div class="form-group">
+          <label>اسم العميل / المعمل الجديد</label>
+          <input type="text" id="reqEditClientName" />
+        </div>
+        <div class="form-group">
+          <label>الرقم التسلسلي الجديد (S/N)</label>
+          <input type="text" id="reqEditSerial" />
+        </div>
+        <div class="action-row">
+          <button class="btn btn-warning btn-sm" onclick="submitDeviceEditRequest()">
+            <i class="fa-solid fa-paper-plane"></i> إرسال للموافقة
+          </button>
+          <button class="btn btn-outline btn-sm" onclick="toggleDeviceEditRequestBox(false)">
+            إلغاء
+          </button>
+        </div>
+      </div>
+
+      <!-- زر استكمال التركيب لو الجهاز قيد التركيب -->
+      <div id="modalCompleteInstallWrap" style="display:none; margin-bottom:10px;">
+        <button class="btn btn-accent" onclick="openCompleteInstallFromDevice()">
+          <i class="fa-solid fa-screwdriver-wrench"></i> استكمال بيانات الجهاز بعد التركيب
+        </button>
+      </div>
+
+      <div class="action-row">
+        <button class="btn btn-sm" id="btnDeviceModalMission" onclick="startMissionForThisDevice()">
           <i class="fa-solid fa-route"></i> مأمورية للجهاز
         </button>
-        <button class="btn btn-danger" style="flex:1;" onclick="reportIssueForThisDevice()">
+        <button class="btn btn-danger btn-sm" onclick="reportIssueForThisDevice()">
           <i class="fa-solid fa-triangle-exclamation"></i> إبلاغ عن عطل
+        </button>
+        <button class="btn btn-warning btn-sm" onclick="toggleDeviceEditRequestBox(true)">
+          <i class="fa-solid fa-pen-to-square"></i> طلب تعديل
         </button>
       </div>
     </div>
   </div>
 
+  <!-- نافذة استكمال بيانات التركيب -->
+  <div id="completeInstallModal" class="details-modal" onclick="closeCompleteInstallModal(event)">
+    <div class="details-sheet" onclick="event.stopPropagation()">
+      <div class="details-header">
+        <div>
+          <h3 style="font-size: 1.05rem; font-weight: 800; color: var(--accent);">استكمال بيانات التركيب</h3>
+          <span id="compInstSubtitle" class="badge badge-success">تحديث نفس الصف بالشيت</span>
+        </div>
+        <button onclick="closeCompleteInstallModalDirect()" style="background:none; border:none; font-size: 1.4rem; color: var(--text-muted); cursor:pointer;">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="form-group"><label>كود الجهاز (حرف P = ضمان عامين / حرف G = ضمان عام)</label><input type="text" id="compInstCode" /></div>
+      <div class="form-group"><label>اسم العميل / المعمل</label><input type="text" id="compInstClient" /></div>
+      <div class="form-group"><label>اسم الجهاز / الموديل</label><input type="text" id="compInstModel" /></div>
+      <div class="form-group"><label>الرقم التسلسلي (S/N) *</label><input type="text" id="compInstSerial" placeholder="أدخل السيريال الفعلي للجهاز..." /></div>
+      <div class="form-group"><label>الشركة المصنعة</label><input type="text" id="compInstMaker" placeholder="URIT / DYMIND / YHLO / NEO MEDICA..." /></div>
+      <div class="form-group"><label>التصنيف</label><input type="text" id="compInstCategory" placeholder="AUTO CHEMISTRY / HEMATOLOGY / IMMUNOLOGY" /></div>
+      <div class="form-group"><label>نوع العقد</label><input type="text" id="compInstContract" placeholder="ضمان / عقد شامل / بيع" /></div>
+      <div class="form-group"><label>تاريخ التركيب الفعلي</label><input type="date" id="compInstDate" /></div>
+
+      <button class="btn btn-accent" onclick="submitCompleteInstallation()">
+        <i class="fa-solid fa-check-double"></i> حفظ وتفعيل الجهاز وحساب الضمان والزيارة القادمة
+      </button>
+    </div>
+  </div>
+
   <!-- نافذة تثبيت iPhone -->
-  <div id="iosModal" class="modal-overlay">
+  <div id="iosModal" class="modal-overlay" onclick="if(event.target.id==='iosModal') closeIosModal()">
     <div class="modal-card">
-      <i class="fa-brands fa-apple" style="font-size: 2.2rem; color: #0f172a; margin-bottom: 10px;"></i>
-      <h3 style="font-size:1.1rem; margin-bottom:10px;">تثبيت التطبيق على iPhone</h3>
-      <p style="font-size:0.88rem; color:#475569; margin-bottom:8px;">1. اضغط على زر <b>المشاركة (Share)</b> في Safari.</p>
-      <p style="font-size:0.88rem; color:#475569; margin-bottom:14px;">2. اختر <b>إضافة إلى الشاشة الرئيسية</b>.</p>
-      <button class="btn" onclick="closeIosModal()">فهمت ذلك</button>
+      <i class="fa-brands fa-apple" style="font-size: 2.3rem; color: #0f172a; margin-bottom: 8px;"></i>
+      <h3 style="font-size:1.1rem; font-weight:800; margin-bottom:6px;">تثبيت elmohandeskhana على iPhone</h3>
+      <p id="iosBrowserHint" style="font-size:0.78rem; color:#b45309; background:#fef3c7; padding:8px; border-radius:8px; margin-bottom:10px; display:none;">
+        <i class="fa-solid fa-circle-info"></i> تأكد من فتح الرابط في متصفح <b>Safari</b> (أبل لا تسمح بالتثبيت التلقائي بضغطة زر على iOS).
+      </p>
+      <div class="ios-step-box">
+        <b>1.</b> اضغط على زر <b>المشاركة (Share)</b> <i class="fa-solid fa-arrow-up-from-bracket" style="color:var(--primary);"></i> أسفل شاشة Safari.
+      </div>
+      <div class="ios-step-box">
+        <b>2.</b> مرر للأسفل واختر <b>إضافة إلى الشاشة الرئيسية (Add to Home Screen)</b> <i class="fa-regular fa-square-plus" style="color:var(--accent);"></i>.
+      </div>
+      <div class="ios-step-box">
+        <b>3.</b> اضغط <b>إضافة (Add)</b> أعلى الشاشة، وسيظهر تطبيق <b>elmohandeskhana</b> بأيقونته المستقلة على شاشتك.
+      </div>
+      <button class="btn" style="margin-top:10px;" onclick="closeIosModal()">فهمت ذلك</button>
+    </div>
+  </div>
+
+  <!-- نافذة التثبيت اليدوي الاحتياطية لأندرويد (تظهر فقط لو المتصفح لم يطلق النافذة المباشرة) -->
+  <div id="androidFallbackModal" class="modal-overlay" onclick="if(event.target.id==='androidFallbackModal') closeAndroidFallbackModal()">
+    <div class="modal-card">
+      <i class="fa-brands fa-android" style="font-size: 2.3rem; color: #16a34a; margin-bottom: 8px;"></i>
+      <h3 style="font-size:1.1rem; font-weight:800; margin-bottom:8px;">تثبيت elmohandeskhana على Android</h3>
+      <p id="androidFallbackHint" style="font-size:0.82rem; color:#475569; margin-bottom:10px; line-height:1.5;"></p>
+      <div class="ios-step-box">
+        <b>1.</b> افتح الرابط في متصفح <b>Google Chrome</b>.
+      </div>
+      <div class="ios-step-box">
+        <b>2.</b> اضغط على قائمة النقاط الثلاث <b>(⋮)</b> أعلى يسار أو يمين الشاشة.
+      </div>
+      <div class="ios-step-box">
+        <b>3.</b> اختر <b>تثبيت التطبيق (Install app)</b> أو <b>الإضافة إلى الشاشة الرئيسية</b> ثم اضغط <b>تثبيت</b>.
+      </div>
+      <button class="btn btn-accent" style="margin-top:10px;" onclick="closeAndroidFallbackModal()">حسناً</button>
     </div>
   </div>
 
@@ -402,10 +633,15 @@
     <header>
       <div class="brand">
         <i class="fa-solid fa-notes-medical"></i>
-        <span>MedTech FSM</span>
+        <span>elmohandeskhana</span>
       </div>
       
       <div class="header-actions">
+        <button id="headerInstallBtn" class="header-install-btn" onclick="smartInstallApp()" title="تثبيت التطبيق على الهاتف">
+          <i class="fa-solid fa-download"></i>
+          <span>تثبيت</span>
+        </button>
+
         <div class="sync-status-indicator" onclick="triggerManualSync()" title="حالة الاتصال والمزامنة (اضغط للتحديث)">
           <div class="status-dot" id="syncStatusDot"></div>
           <span id="syncStatusText">متزامن</span>
@@ -424,7 +660,7 @@
       <!-- 1. شاشة تسجيل الدخول -->
       <section id="viewLogin" class="view-section active">
         <div style="text-align: center; margin: 25px 0 15px;">
-          <h2 style="font-size: 1.3rem; font-weight: 800;">تسجيل دخول النظام</h2>
+          <h2 style="font-size: 1.35rem; font-weight: 800; color: var(--primary-dark);">elmohandeskhana</h2>
           <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 4px;">اختر اسم المهندس وأدخل كود الدخول</p>
         </div>
 
@@ -446,15 +682,18 @@
             <span>دخول النظام</span>
           </button>
 
-          <div class="install-bar">
-            <button class="install-btn android" id="androidInstallBtn" onclick="installAndroidApp()">
+          <div class="install-bar" id="loginInstallBar">
+            <button type="button" class="install-btn android" id="androidInstallBtn" onclick="installAndroidApp()">
               <i class="fa-brands fa-android"></i>
-              <span>تثبيت Android</span>
+              <span id="androidInstallText">تثبيت Android</span>
             </button>
-            <button class="install-btn ios" onclick="showIosInstallModal()">
+            <button type="button" class="install-btn ios" id="iosInstallBtn" onclick="showIosInstallModal()">
               <i class="fa-brands fa-apple"></i>
               <span>تثبيت iPhone</span>
             </button>
+          </div>
+          <div id="alreadyInstalledMsg" style="display:none; text-align:center; margin-top:14px; font-size:0.8rem; color:var(--accent); font-weight:700;">
+            <i class="fa-solid fa-circle-check"></i> تطبيق elmohandeskhana مثبت ويعمل كتطبيق مستقل
           </div>
         </div>
       </section>
@@ -468,11 +707,35 @@
           </button>
         </div>
 
+        <!-- تنبيه الزيارات الدورية المتأخرة والقريبة -->
+        <div id="visitAlertBanner" class="visit-alert-banner">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
+            <div style="font-size:0.82rem; font-weight:700; color:#991b1b; line-height:1.45;">
+              <i class="fa-solid fa-bell-concierge" style="color:var(--danger);"></i>
+              <span id="visitAlertText">تنبيه الزيارات الدورية</span>
+            </div>
+            <button class="btn btn-danger btn-sm" style="width:auto; white-space:nowrap; padding:6px 10px; font-size:0.74rem;" onclick="setPeriodicVisitFilter('urgent')">
+              عرض الآن
+            </button>
+          </div>
+        </div>
+
+        <!-- صندوق طلبات التعديل المعلقة (يظهر للمشرفين والمديرين عند وجود طلبات) -->
+        <div id="pendingEditsPanel" class="pending-box" style="display:none;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <strong style="font-size:0.88rem; color:#92400e;">
+              <i class="fa-solid fa-bell"></i> طلبات تعديل بيانات بانتظار موافقتك (<span id="pendingEditsCount">0</span>)
+            </strong>
+          </div>
+          <div id="pendingEditsList"></div>
+        </div>
+
         <div id="addDeviceCard" class="card" style="display: none; border-color: var(--accent);">
           <h3 style="font-size: 0.95rem; margin-bottom: 10px; color: var(--accent);">إضافة جهاز جديد للشيت</h3>
+          <div class="form-group"><label>كود الجهاز (اختياري - حرف P ضمان عامين / G ضمان عام)</label><input type="text" id="devCode" placeholder="مثال: CSP-001 أو CSGEQ-150" /></div>
           <div class="form-group"><label>اسم العميل / المعمل</label><input type="text" id="devClient" /></div>
           <div class="form-group"><label>اسم الجهاز / الموديل</label><input type="text" id="devModel" /></div>
-          <div class="form-group"><label>الشركة المصنعة</label><input type="text" id="devMaker" placeholder="A.M.S / NEO MEDICA / HUMAN GMBH" /></div>
+          <div class="form-group"><label>الشركة المصنعة</label><input type="text" id="devMaker" placeholder="A.M.S / NEO MEDICA / URIT / DYMIND" /></div>
           <div class="form-group"><label>التصنيف</label><input type="text" id="devCategory" placeholder="AUTO CHEMISTRY / HEMATOLOGY / MANUAL CHEM." /></div>
           <div class="form-group"><label>الرقم التسلسلي (S/N)</label><input type="text" id="devSerial" /></div>
           <div class="form-group">
@@ -486,6 +749,7 @@
           </div>
           <div class="form-group"><label>المحافظة / المدينة</label><input type="text" id="devCity" /></div>
           <div class="form-group"><label>نوع العقد</label><input type="text" id="devContract" placeholder="ضمان / عقد شامل" /></div>
+          <div class="form-group"><label>تاريخ تركيب الجهاز</label><input type="date" id="devInstallDate" /></div>
           <button class="btn btn-accent" onclick="submitNewDevice()">حفظ في الشيت</button>
         </div>
 
@@ -508,6 +772,26 @@
               <option value="IMMUNOLOGY">Immunology</option>
             </select>
           </div>
+        </div>
+
+        <!-- أزرار فلترة مواعيد الزيارات الدورية -->
+        <div class="visit-filter-chips">
+          <button type="button" class="visit-chip active-all" id="chipVisitAll" onclick="setPeriodicVisitFilter('all')">
+            <span><i class="fa-solid fa-layer-group"></i> كل الأجهزة</span>
+            <span class="chip-count" id="chipCountAll">0</span>
+          </button>
+          <button type="button" class="visit-chip" id="chipVisitUrgent" onclick="setPeriodicVisitFilter('urgent')">
+            <span><i class="fa-solid fa-fire"></i> المتأخرة + القريبة</span>
+            <span class="chip-count" id="chipCountUrgent">0</span>
+          </button>
+          <button type="button" class="visit-chip" id="chipVisitOverdue" onclick="setPeriodicVisitFilter('overdue')">
+            <span style="color:var(--danger);"><i class="fa-solid fa-circle-exclamation"></i> زيارات متأخرة</span>
+            <span class="chip-count" id="chipCountOverdue" style="background:#fee2e2; color:#991b1b;">0</span>
+          </button>
+          <button type="button" class="visit-chip" id="chipVisitSoon" onclick="setPeriodicVisitFilter('soon')">
+            <span style="color:var(--warning);"><i class="fa-solid fa-clock"></i> خلال 7 أيام</span>
+            <span class="chip-count" id="chipCountSoon" style="background:#fef3c7; color:#92400e;">0</span>
+          </button>
         </div>
 
         <div class="search-box">
@@ -533,22 +817,27 @@
         <div id="devicesListContainer"></div>
       </section>
 
-      <!-- 3. شاشة تسجيل وتوزيع المأموريات (مشرفين ومديرين فقط) -->
+      <!-- 3. شاشة المأمورية وطلب تركيب جهاز -->
       <section id="viewMissions" class="view-section">
-        <h2 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 12px;">تسجيل وتوزيع مأمورية</h2>
-        
-        <div id="engineerMissionRestrictedAlert" class="card" style="display:none; background:#fef2f2; border-color:#fecaca; text-align:center;">
-          <i class="fa-solid fa-lock" style="font-size:1.8rem; color:var(--danger); margin-bottom:8px;"></i>
-          <h3 style="font-size:1rem; color:var(--danger); margin-bottom:4px;">صلاحية خاصة بالمشرفين والمديرين</h3>
-          <p style="font-size:0.82rem; color:#7f1d1d;">تسجيل وتوزيع المأموريات متاح للمشرفين والمديرين فقط. يمكنك استعراض مأمورياتك اليومية من الشاشة المخصصة.</p>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
+          <h2 style="font-size: 1.15rem; font-weight: 700;">المأموريات والتركيبات</h2>
         </div>
 
+        <div class="action-row" style="margin-bottom:12px;">
+          <button class="btn btn-sm" id="tabBtnMissionMode" onclick="setMissionViewMode('mission')">
+            <i class="fa-solid fa-route"></i> عمل مأمورية
+          </button>
+          <button class="btn btn-outline btn-sm" id="tabBtnInstallMode" onclick="setMissionViewMode('install')">
+            <i class="fa-solid fa-screwdriver-wrench"></i> طلب تركيب جهاز
+          </button>
+        </div>
+
+        <!-- نموذج عمل مأمورية -->
         <div id="missionFormContainer" class="card">
           <div class="form-group"><label>التاريخ</label><input type="date" id="msDate" /></div>
           
-          <!-- قائمة مهندسي المنطقة للمشرف أو كل المهندسين للمدير -->
           <div class="form-group">
-            <label>المهندس المسؤول (مهندسي منطقتك فقط)</label>
+            <label id="msEngineerLabel">المهندس المسؤول</label>
             <select id="msEngineerSelect"></select>
           </div>
 
@@ -575,20 +864,96 @@
               <option value="معايرة وفحص">معايرة وفحص</option>
             </select>
           </div>
-          <div class="form-group"><label>وصف العطل / المطلوب</label><textarea id="msIssue" rows="3" placeholder="تقرير الصيانة..."></textarea></div>
-          <div class="form-group">
-            <label>الحالة</label>
-            <select id="msStatus">
-              <option value="تمت بنجاح">تمت بنجاح (سيتم تحديث الجهاز ليعمل بكفاءة)</option>
-              <option value="يحتاج قطع غيار">يحتاج قطع غيار (سيتم تحديث الجهاز ليحتاج صيانة)</option>
-              <option value="معلق">معلق</option>
-            </select>
+          <div class="form-group"><label>وصف العطل / المطلوب</label><textarea id="msIssue" rows="3" placeholder="تقرير الصيانة أو المطلوب..."></textarea></div>
+          <div class="form-group"><label>ملاحظات</label><input type="text" id="msNotes" placeholder="ملاحظات إضافية..." /></div>
+
+          <div class="action-row">
+            <button class="btn" onclick="submitMission()">
+              <i class="fa-solid fa-paper-plane"></i>
+              <span>عمل مأمورية</span>
+            </button>
+            <button class="btn btn-accent" onclick="setMissionViewMode('install')">
+              <i class="fa-solid fa-screwdriver-wrench"></i>
+              <span>طلب تركيب جهاز</span>
+            </button>
           </div>
-          <div class="form-group"><label>ملاحظات</label><input type="text" id="msNotes" /></div>
-          <button class="btn" onclick="submitMission()">
-            <i class="fa-solid fa-paper-plane"></i>
-            <span>حفظ المأمورية والتحديث بالشيت</span>
+        </div>
+
+        <!-- نموذج طلب تركيب جهاز -->
+        <div id="installFormContainer" class="card" style="display:none; border-color: var(--accent);">
+          <h3 style="font-size:0.98rem; color:var(--accent); margin-bottom:10px;">
+            <i class="fa-solid fa-screwdriver-wrench"></i> تسجيل طلب تركيب جهاز جديد
+          </h3>
+          <p style="font-size:0.76rem; color:var(--text-muted); margin-bottom:12px;">
+            يُضاف الطلب مباشرة في ورقة "الأجهزة والعملاء"، ويمكن ترك السيريال فارغاً واستكماله بعد التركيب.
+          </p>
+
+          <div class="form-group">
+            <label>اسم العميل / المعمل (منسدل وقابل للبحث)</label>
+            <div class="combo-wrap">
+              <input type="text" id="instClientInput" placeholder="ابحث أو اختر اسم العميل أو اكتب اسماً جديداً..." oninput="openInstallCombo('client')" onfocus="openInstallCombo('client')" autocomplete="off" />
+              <i class="fa-solid fa-chevron-down combo-chevron"></i>
+              <div id="instClientList" class="autocomplete-list"></div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>المكان (المحافظة / المدينة - منسدل وقابل للبحث)</label>
+            <div class="combo-wrap">
+              <input type="text" id="instCityInput" placeholder="ابحث أو اختر المحافظة / المدينة..." oninput="openInstallCombo('city')" onfocus="openInstallCombo('city')" autocomplete="off" />
+              <i class="fa-solid fa-chevron-down combo-chevron"></i>
+              <div id="instCityList" class="autocomplete-list"></div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>المنطقة الجغرافية (منسدل وقابل للبحث)</label>
+            <div class="combo-wrap">
+              <input type="text" id="instRegionInput" placeholder="اختر المنطقة الجغرافية..." oninput="openInstallCombo('region')" onfocus="openInstallCombo('region')" autocomplete="off" />
+              <i class="fa-solid fa-chevron-down combo-chevron"></i>
+              <div id="instRegionList" class="autocomplete-list"></div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>اسم الجهاز / الموديل (منسدل وقابل للبحث)</label>
+            <div class="combo-wrap">
+              <input type="text" id="instModelInput" placeholder="ابحث أو اختر موديل الجهاز..." oninput="openInstallCombo('model')" onfocus="openInstallCombo('model')" autocomplete="off" />
+              <i class="fa-solid fa-chevron-down combo-chevron"></i>
+              <div id="instModelList" class="autocomplete-list"></div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>كود الجهاز (اختياري - حرف P ضمان عامين / G ضمان عام)</label>
+            <div class="combo-wrap">
+              <input type="text" id="instCodeInput" placeholder="مثال: CSP-015 أو CSGEQ-200..." oninput="openInstallCombo('codePrefix')" onfocus="openInstallCombo('codePrefix')" autocomplete="off" />
+              <i class="fa-solid fa-chevron-down combo-chevron"></i>
+              <div id="instCodeList" class="autocomplete-list"></div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>تاريخ التركيب</label>
+            <input type="date" id="instDateInput" />
+          </div>
+
+          <div class="form-group">
+            <label>الرقم التسلسلي (S/N) — اختياري (يمكن للمهندس استكماله بعد التركيب)</label>
+            <input type="text" id="instSerialInput" placeholder="اتركه فارغاً إذا لم يتوفر الآن..." />
+          </div>
+
+          <button class="btn btn-accent" onclick="submitInstallationRequest()">
+            <i class="fa-solid fa-check"></i> حفظ طلب التركيب بالشيت
           </button>
+        </div>
+
+        <!-- قائمة التركيبات الجارية -->
+        <div id="pendingInstallationsSection" style="margin-top:14px;">
+          <h3 style="font-size:0.95rem; font-weight:700; color:var(--accent); margin-bottom:8px;">
+            <i class="fa-solid fa-list-check"></i> التركيبات الجارية في نطاقك (<span id="pendingInstCount">0</span>)
+          </h3>
+          <div id="pendingInstallationsList"></div>
         </div>
       </section>
 
@@ -622,7 +987,7 @@
         <div id="dailyMissionsContainer"></div>
       </section>
 
-      <!-- 5. قسم الأعطال المعلقة والمفتوحة (مفلترة للمنطقة وللمدير الكل) -->
+      <!-- 5. قسم الأعطال المعلقة والمفتوحة -->
       <section id="viewIssues" class="view-section">
         <div style="display:flex; justify-content: space-between; align-items:center; margin-bottom: 12px;">
           <h2 style="font-size: 1.15rem; font-weight: 700; color: var(--danger);">
@@ -736,11 +1101,18 @@
       <section id="viewLeaves" class="view-section">
         <h2 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 12px;">طلب إجازة</h2>
         <div class="card">
+          <div class="form-group">
+            <label>اسم المهندس</label>
+            <select id="lvEngineerSelect"></select>
+          </div>
           <div class="form-group"><label>من تاريخ</label><input type="date" id="lvStart" /></div>
           <div class="form-group"><label>إلى تاريخ</label><input type="date" id="lvEnd" /></div>
           <div class="form-group"><label>السبب</label><textarea id="lvReason" rows="3" placeholder="سبب الإجازة..."></textarea></div>
           <button class="btn" onclick="submitLeave()">إرسال الطلب</button>
         </div>
+
+        <h3 style="font-size:0.95rem; font-weight:700; margin-bottom:8px;">سجل الإجازات في نطاقك</h3>
+        <div id="leavesListContainer"></div>
       </section>
 
     </main>
@@ -776,24 +1148,240 @@
   </div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbwBlW8jNNp-RLwU10xp4sfZ5wjuj5MrfnQIsPubeITkxM-396LGXCW6M5LISv-X1lgj/exec";
+    const API_URL = "https://script.google.com/macros/s/AKfycbxVzguUJ6pDKSM2pu-IVwyCgjt27N5UuSx7BjnTj6UjYypYFi5Gj7lfsVSmiPNiNUTKsg/exec";
+
+    const DEFAULT_REGIONS = ["منطقة الدلتا", "المنطقة الشمالية", "القاهرة الكبرى", "الصعيد"];
+    const CODE_PREFIX_SUGGESTIONS = ["CSP-", "CP-", "IP-", "HP-", "CSGEQ-", "CGEQ-", "IGEQ-", "HGEQ-"];
+    const SOON_THRESHOLD_DAYS = 7;
 
     let cachedDevices = [];
     let cachedEngineers = [];
     let cachedMissions = [];
     let cachedIssues = [];
     let cachedParts = [];
+    let cachedLeaves = [];
     let activeUser = null;
     let deferredPrompt = null;
     let selectedDeviceForMission = null;
+    let selectedDeviceForInstallComplete = null;
+    let periodicVisitFilter = "all";
 
     let isOnline = navigator.onLine;
     let isSyncing = false;
 
+    // ================= محرك تثبيت التطبيق PWA (أندرويد + آيفون) =================
+    function isIOSDevice() {
+      return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+        (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    }
+
+    function isInAppBrowser() {
+      const ua = navigator.userAgent || "";
+      return /FBAN|FBAV|Instagram|Line|WhatsApp|Snapchat|Twitter|wv\)/i.test(ua);
+    }
+
+    function isRunningStandalone() {
+      return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+    }
+
+    function generateAppleTouchIcon() {
+      try {
+        const canvas = document.createElement("canvas");
+        canvas.width = 180;
+        canvas.height = 180;
+        const ctx = canvas.getContext("2d");
+
+        const grad = ctx.createLinearGradient(0, 0, 180, 180);
+        grad.addColorStop(0, "#0284c7");
+        grad.addColorStop(1, "#0369a1");
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, 180, 180);
+
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(76, 30, 28, 72);
+        ctx.fillRect(54, 52, 72, 28);
+
+        ctx.fillStyle = "#0284c7";
+        ctx.beginPath();
+        ctx.arc(90, 66, 8, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "800 28px Arial, sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("EK", 90, 144);
+
+        const iconLink = document.getElementById("appleTouchIcon");
+        if (iconLink) iconLink.href = canvas.toDataURL("image/png");
+      } catch (e) {}
+    }
+
+    function updateInstallUI() {
+      const headerBtn = document.getElementById("headerInstallBtn");
+      const loginBar = document.getElementById("loginInstallBar");
+      const installedMsg = document.getElementById("alreadyInstalledMsg");
+      const androidBtn = document.getElementById("androidInstallBtn");
+      const androidTxt = document.getElementById("androidInstallText");
+
+      if (isRunningStandalone()) {
+        if (headerBtn) headerBtn.style.display = "none";
+        if (loginBar) loginBar.style.display = "none";
+        if (installedMsg) installedMsg.style.display = "block";
+        return;
+      }
+
+      if (headerBtn) headerBtn.style.display = "inline-flex";
+      if (deferredPrompt && androidBtn && androidTxt) {
+        androidBtn.classList.add("ready");
+        androidTxt.innerText = "تثبيت Android (جاهز)";
+      }
+    }
+
+    // تسجيل Service Worker لتفعيل التثبيت الفوري على أندرويد
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js").catch(() => {});
+      });
+    }
+
     window.addEventListener("beforeinstallprompt", (e) => {
       e.preventDefault();
       deferredPrompt = e;
+      updateInstallUI();
     });
+
+    window.addEventListener("appinstalled", () => {
+      deferredPrompt = null;
+      updateInstallUI();
+      alert("تم تثبيت تطبيق elmohandeskhana على هاتفك بنجاح!");
+    });
+
+    function smartInstallApp() {
+      if (isRunningStandalone()) {
+        alert("تطبيق elmohandeskhana مثبت بالفعل على جهازك.");
+        return;
+      }
+      if (isIOSDevice()) {
+        showIosInstallModal();
+      } else {
+        installAndroidApp();
+      }
+    }
+
+    async function installAndroidApp() {
+      if (isRunningStandalone()) {
+        alert("تطبيق elmohandeskhana مثبت بالفعل على جهازك.");
+        return;
+      }
+
+      if (isIOSDevice()) {
+        showIosInstallModal();
+        return;
+      }
+
+      if (deferredPrompt) {
+        try {
+          deferredPrompt.prompt();
+          const choice = await deferredPrompt.userChoice;
+          if (choice && choice.outcome === "accepted") {
+            deferredPrompt = null;
+            updateInstallUI();
+          }
+          return;
+        } catch (err) {}
+      }
+
+      const hintEl = document.getElementById("androidFallbackHint");
+      if (isInAppBrowser()) {
+        hintEl.innerHTML = "أنت فاتح الرابط من داخل تطبيق آخر (مثل واتساب). اضغط على <b>(⋮)</b> واختر <b>فتح في Chrome</b> ثم اضغط تثبيت.";
+      } else {
+        hintEl.innerHTML = "إذا لم تظهر نافذة التثبيت التلقائية، اتبع الخطوات السريعة التالية لتثبيت <b>elmohandeskhana</b>:";
+      }
+      document.getElementById("androidFallbackModal").style.display = "flex";
+    }
+
+    function closeAndroidFallbackModal() {
+      document.getElementById("androidFallbackModal").style.display = "none";
+    }
+
+    function showIosInstallModal() {
+      const hint = document.getElementById("iosBrowserHint");
+      const ua = navigator.userAgent || "";
+      const isSafari = /Safari/i.test(ua) && !/CriOS|FxiOS|EdgiOS|OPiOS/i.test(ua);
+      if (hint) {
+        hint.style.display = (!isSafari || isInAppBrowser()) ? "block" : "none";
+      }
+      document.getElementById("iosModal").style.display = "flex";
+    }
+
+    function closeIosModal() {
+      document.getElementById("iosModal").style.display = "none";
+    }
+
+    // ================= الدوال المساعدة الأساسية =================
+    function isManagerOrSupervisor() {
+      return activeUser && (activeUser.role === "مدير عام" || activeUser.role === "مشرف منطقة");
+    }
+
+    function parsePendingEdit(raw) {
+      if (!raw) return null;
+      if (typeof raw === "object") return raw;
+      try {
+        const obj = JSON.parse(raw);
+        return (obj && (obj.newClientName || obj.newSerialNumber)) ? obj : null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function getDeviceInstallDate(dev) {
+      return dev["تاريخ تركيب الجهاز"] || dev["تاريخ التركيب"] || "";
+    }
+
+    function getDeviceWarrantyEnd(dev) {
+      return dev["تاريخ انتهاء الضمان"] || dev["تاريخ انتهاء الضمان / العقد"] || "";
+    }
+
+    function getVisitStatus(nextVisitStr) {
+      const clean = String(nextVisitStr || "").trim().substring(0, 10);
+      const match = clean.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      if (!match) return { state: "none", diffDays: null, label: "", dateStr: "" };
+
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 12, 0, 0);
+      const target = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]), 12, 0, 0);
+      const diffDays = Math.round((target - today) / (1000 * 60 * 60 * 24));
+
+      if (diffDays < 0) {
+        const late = Math.abs(diffDays);
+        const dayText = late === 1 ? "يوم واحد" : (late === 2 ? "يومين" : `${late} أيام`);
+        return { state: "overdue", diffDays, label: `متأخرة منذ ${dayText} (${clean})`, dateStr: clean };
+      }
+      if (diffDays === 0) {
+        return { state: "soon", diffDays, label: `موعد الزيارة اليوم (${clean})`, dateStr: clean };
+      }
+      if (diffDays <= SOON_THRESHOLD_DAYS) {
+        const soonText = diffDays === 1 ? "غداً" : (diffDays === 2 ? "خلال يومين" : `خلال ${diffDays} أيام`);
+        return { state: "soon", diffDays, label: `زيارة قريبة ${soonText} (${clean})`, dateStr: clean };
+      }
+      return { state: "scheduled", diffDays, label: `الزيارة الدورية القادمة: ${clean}`, dateStr: clean };
+    }
+
+    function setPeriodicVisitFilter(mode) {
+      periodicVisitFilter = mode;
+      const chipMap = {
+        all: { id: "chipVisitAll", cls: "active-all" },
+        urgent: { id: "chipVisitUrgent", cls: "active-urgent" },
+        overdue: { id: "chipVisitOverdue", cls: "active-overdue" },
+        soon: { id: "chipVisitSoon", cls: "active-soon" }
+      };
+      Object.entries(chipMap).forEach(([key, cfg]) => {
+        const el = document.getElementById(cfg.id);
+        if (!el) return;
+        el.className = "visit-chip" + (key === mode ? ` ${cfg.cls}` : "");
+      });
+      handleDeviceFilters();
+    }
 
     window.addEventListener("online", () => {
       isOnline = true;
@@ -807,10 +1395,15 @@
     });
 
     window.addEventListener("DOMContentLoaded", () => {
+      generateAppleTouchIcon();
+      updateInstallUI();
+
       const today = new Date().toISOString().split("T")[0];
       const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split("T")[0];
 
       if (document.getElementById("msDate")) document.getElementById("msDate").value = today;
+      if (document.getElementById("instDateInput")) document.getElementById("instDateInput").value = today;
+      if (document.getElementById("devInstallDate")) document.getElementById("devInstallDate").value = today;
       if (document.getElementById("lvStart")) document.getElementById("lvStart").value = today;
       if (document.getElementById("lvEnd")) document.getElementById("lvEnd").value = today;
       if (document.getElementById("filterFromDate")) document.getElementById("filterFromDate").value = monthStart;
@@ -842,6 +1435,12 @@
         if (!e.target.closest("#spNameInput") && !e.target.closest("#spNameAutocomplete")) {
           document.getElementById("spNameAutocomplete").style.display = "none";
         }
+        if (!e.target.closest(".combo-wrap")) {
+          ["instClientList", "instCityList", "instRegionList", "instModelList", "instCodeList"].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.style.display = "none";
+          });
+        }
       });
     });
 
@@ -856,11 +1455,11 @@
 
       if (status === "syncing") {
         dot.classList.add("syncing");
-        txt.innerText = "جاري المزامنة...";
+        txt.innerText = "مزامنة...";
         icon.classList.add("rotating");
       } else if (status === "offline") {
         dot.classList.add("offline");
-        txt.innerText = "أوفلاين (كاش)";
+        txt.innerText = "أوفلاين";
       } else {
         txt.innerText = "متزامن";
       }
@@ -878,6 +1477,7 @@
       cachedMissions = JSON.parse(localStorage.getItem("medtech_cache_missions") || "[]");
       cachedIssues = JSON.parse(localStorage.getItem("medtech_cache_issues") || "[]");
       cachedParts = JSON.parse(localStorage.getItem("medtech_cache_parts") || "[]");
+      cachedLeaves = JSON.parse(localStorage.getItem("medtech_cache_leaves") || "[]");
 
       if (cachedDevices.length > 0) handleDeviceFilters();
     }
@@ -901,9 +1501,15 @@
           if (data.missions) { cachedMissions = data.missions; localStorage.setItem("medtech_cache_missions", JSON.stringify(cachedMissions)); }
           if (data.issues) { cachedIssues = data.issues; localStorage.setItem("medtech_cache_issues", JSON.stringify(cachedIssues)); }
           if (data.spareParts) { cachedParts = data.spareParts; localStorage.setItem("medtech_cache_parts", JSON.stringify(cachedParts)); }
+          if (data.leaves) { cachedLeaves = data.leaves; localStorage.setItem("medtech_cache_leaves", JSON.stringify(cachedLeaves)); }
 
           handleDeviceFilters();
           populateMissionDropdowns();
+          renderPendingInstallations();
+          applyAdvancedStatsFilter();
+          renderIssuesList();
+          renderPartsList();
+          renderLeavesList();
           setSyncStatus("online");
 
           if (isManual) processOfflineQueue();
@@ -946,11 +1552,6 @@
     }
 
     function switchTab(viewId, el) {
-      if (viewId === "viewMissions" && activeUser && activeUser.role === "مهندس صيانة") {
-        alert("عذراً، تسجيل وتوزيع المأموريات متاح للمشرفين والمديرين فقط.");
-        return;
-      }
-
       document.querySelectorAll(".view-section").forEach(s => s.classList.remove("active"));
       document.querySelectorAll(".nav-item").forEach(n => n.classList.remove("active"));
       document.getElementById(viewId).classList.add("active");
@@ -964,16 +1565,17 @@
         renderPartsList();
       } else if (viewId === "viewMissions") {
         populateMissionDropdowns();
+        renderPendingInstallations();
       } else if (viewId === "viewDevices") {
         handleDeviceFilters();
+      } else if (viewId === "viewLeaves") {
+        populateLeaveEngineers();
+        renderLeavesList();
       }
     }
 
     // ================= 1. تسجيل الدخول =================
     async function loadEngineersList() {
-      const select = document.getElementById("loginUserSelect");
-      const filterSelect = document.getElementById("filterEngineerSelect");
-
       if (cachedEngineers && cachedEngineers.length > 0) {
         populateEngDropdowns(cachedEngineers);
       }
@@ -985,6 +1587,10 @@
           cachedEngineers = data.engineers;
           localStorage.setItem("medtech_cache_engineers", JSON.stringify(cachedEngineers));
           populateEngDropdowns(cachedEngineers);
+          if (activeUser) {
+            populateMissionDropdowns();
+            populateLeaveEngineers();
+          }
         }
       } catch (e) {}
     }
@@ -1061,26 +1667,16 @@
       document.getElementById("viewDevices").classList.add("active");
       document.getElementById("bottomNav").style.display = "flex";
       document.getElementById("userBadge").style.display = "flex";
-      document.getElementById("userNameDisplay").innerText = `${activeUser.name} (${activeUser.role})`;
+      document.getElementById("userNameDisplay").innerText = `${activeUser.name}`;
 
-      const navMissions = document.getElementById("navItemMissions");
-      const btnDevMission = document.getElementById("btnDeviceModalMission");
-      const formContainer = document.getElementById("missionFormContainer");
-      const alertRestricted = document.getElementById("engineerMissionRestrictedAlert");
-
-      if (activeUser.role === "مهندس صيانة") {
-        if (navMissions) navMissions.style.display = "none";
-        if (btnDevMission) btnDevMission.style.display = "none";
-        if (formContainer) formContainer.style.display = "none";
-        if (alertRestricted) alertRestricted.style.display = "block";
-      } else {
-        if (navMissions) navMissions.style.display = "flex";
-        if (btnDevMission) btnDevMission.style.display = "block";
-        if (formContainer) formContainer.style.display = "block";
-        if (alertRestricted) alertRestricted.style.display = "none";
+      if (activeUser.role !== "مدير عام" && activeUser.region && activeUser.region !== "الكل") {
+        document.getElementById("instRegionInput").value = activeUser.region;
       }
 
       populateMissionDropdowns();
+      populateLeaveEngineers();
+      handleDeviceFilters();
+      renderPendingInstallations();
     }
 
     function logout() {
@@ -1090,46 +1686,81 @@
       }
     }
 
-    function installAndroidApp() {
-      if (deferredPrompt) {
-        deferredPrompt.prompt();
-        deferredPrompt.userChoice.then(() => { deferredPrompt = null; });
-      } else {
-        alert("لتثبيت التطبيق على أندرويد:\nاضغط على قائمة المتصفح (⋮) ثم اختر 'تثبيت التطبيق' أو 'إضافة إلى الشاشة الرئيسية'.");
-      }
-    }
-
-    function showIosInstallModal() { document.getElementById("iosModal").style.display = "flex"; }
-    function closeIosModal() { document.getElementById("iosModal").style.display = "none"; }
-
-    // ================= 2. الأجهزة والعملاء =================
+    // ================= 2. الأجهزة والعملاء وطلبات التعديل وتنبيه الزيارات الدورية =================
     function handleDeviceFilters() {
       const q = document.getElementById("deviceSearchInput").value.trim().toLowerCase();
       const selectedReg = document.getElementById("deviceRegionFilter").value;
       const selectedCat = document.getElementById("deviceCategoryFilter").value;
 
-      let filtered = cachedDevices;
+      let baseFiltered = cachedDevices;
 
       if (activeUser && activeUser.role !== "مدير عام" && activeUser.region && activeUser.region !== "الكل") {
-        filtered = filtered.filter(d => d["المنطقة"] === activeUser.region);
+        baseFiltered = baseFiltered.filter(d => d["المنطقة"] === activeUser.region);
       }
 
+      renderPendingEditsPanel(baseFiltered);
+
       if (selectedReg !== "الكل") {
-        filtered = filtered.filter(d => d["المنطقة"] === selectedReg);
+        baseFiltered = baseFiltered.filter(d => d["المنطقة"] === selectedReg);
       }
 
       if (selectedCat !== "الكل") {
-        filtered = filtered.filter(d => String(d["التصنيف"] || "").toUpperCase().includes(selectedCat.toUpperCase()));
+        baseFiltered = baseFiltered.filter(d => String(d["التصنيف"] || "").toUpperCase().includes(selectedCat.toUpperCase()));
       }
 
       if (q) {
-        filtered = filtered.filter(d => 
+        baseFiltered = baseFiltered.filter(d => 
           String(d["اسم الجهاز / الموديل"] || "").toLowerCase().includes(q) ||
           String(d["اسم العميل / المعمل"] || "").toLowerCase().includes(q) ||
           String(d["المحافظة / المدينة"] || "").toLowerCase().includes(q) ||
           String(d["المنطقة"] || "").toLowerCase().includes(q) ||
-          String(d["الرقم التسلسلي (S/N)"] || "").toLowerCase().includes(q)
+          String(d["الرقم التسلسلي (S/N)"] || "").toLowerCase().includes(q) ||
+          String(d["كود الجهاز"] || "").toLowerCase().includes(q)
         );
+      }
+
+      let overdueCount = 0;
+      let soonCount = 0;
+      baseFiltered.forEach(d => {
+        const vs = getVisitStatus(d["الزيارة الدورية القادمة"]);
+        if (vs.state === "overdue") overdueCount++;
+        else if (vs.state === "soon") soonCount++;
+      });
+
+      const urgentCount = overdueCount + soonCount;
+      document.getElementById("chipCountAll").innerText = baseFiltered.length;
+      document.getElementById("chipCountOverdue").innerText = overdueCount;
+      document.getElementById("chipCountSoon").innerText = soonCount;
+      document.getElementById("chipCountUrgent").innerText = urgentCount;
+
+      const alertBanner = document.getElementById("visitAlertBanner");
+      const alertText = document.getElementById("visitAlertText");
+      if (urgentCount > 0) {
+        const parts = [];
+        if (overdueCount > 0) parts.push(`${overdueCount} جهاز متأخر عن الدورية`);
+        if (soonCount > 0) parts.push(`${soonCount} جهاز زيارته خلال ${SOON_THRESHOLD_DAYS} أيام`);
+        alertText.innerText = `تنبيه الدورية: ${parts.join(" • ")}`;
+        alertBanner.style.display = "block";
+      } else {
+        alertBanner.style.display = "none";
+      }
+
+      let filtered = baseFiltered;
+      if (periodicVisitFilter === "overdue") {
+        filtered = baseFiltered
+          .filter(d => getVisitStatus(d["الزيارة الدورية القادمة"]).state === "overdue")
+          .sort((a, b) => getVisitStatus(a["الزيارة الدورية القادمة"]).diffDays - getVisitStatus(b["الزيارة الدورية القادمة"]).diffDays);
+      } else if (periodicVisitFilter === "soon") {
+        filtered = baseFiltered
+          .filter(d => getVisitStatus(d["الزيارة الدورية القادمة"]).state === "soon")
+          .sort((a, b) => getVisitStatus(a["الزيارة الدورية القادمة"]).diffDays - getVisitStatus(b["الزيارة الدورية القادمة"]).diffDays);
+      } else if (periodicVisitFilter === "urgent") {
+        filtered = baseFiltered
+          .filter(d => {
+            const st = getVisitStatus(d["الزيارة الدورية القادمة"]).state;
+            return st === "overdue" || st === "soon";
+          })
+          .sort((a, b) => getVisitStatus(a["الزيارة الدورية القادمة"]).diffDays - getVisitStatus(b["الزيارة الدورية القادمة"]).diffDays);
       }
 
       let autoChem = 0, manualChem = 0, hematology = 0, immunology = 0;
@@ -1147,10 +1778,64 @@
       document.getElementById("countImmunology").innerText = immunology;
       document.getElementById("deviceTotalCountBadge").innerText = filtered.length;
 
+      const filterSuffix = periodicVisitFilter === "overdue" ? " - المتأخرة"
+        : (periodicVisitFilter === "soon" ? " - خلال 7 أيام"
+        : (periodicVisitFilter === "urgent" ? " - المتأخرة والقريبة" : ""));
       const titleRegionText = selectedReg === "الكل" ? "كل المناطق" : selectedReg;
-      document.getElementById("deviceStatsTitle").innerText = `أجهزة (${titleRegionText}):`;
+      document.getElementById("deviceStatsTitle").innerText = `أجهزة (${titleRegionText}${filterSuffix}):`;
 
       renderDevices(filtered);
+    }
+
+    function renderPendingEditsPanel(scopedDevices) {
+      const panel = document.getElementById("pendingEditsPanel");
+      const listEl = document.getElementById("pendingEditsList");
+      const countEl = document.getElementById("pendingEditsCount");
+
+      if (!isManagerOrSupervisor()) {
+        panel.style.display = "none";
+        return;
+      }
+
+      const pendingDevices = scopedDevices.filter(d => parsePendingEdit(d["تعديل معلق"]) !== null);
+      if (pendingDevices.length === 0) {
+        panel.style.display = "none";
+        return;
+      }
+
+      countEl.innerText = pendingDevices.length;
+      listEl.innerHTML = "";
+      panel.style.display = "block";
+
+      pendingDevices.forEach(dev => {
+        const req = parsePendingEdit(dev["تعديل معلق"]);
+        const item = document.createElement("div");
+        item.style.cssText = "background:white; border:1px solid #fde68a; border-radius:10px; padding:10px; margin-bottom:8px; font-size:0.8rem;";
+
+        let changesHtml = "";
+        if (req.newClientName && req.newClientName !== dev["اسم العميل / المعمل"]) {
+          changesHtml += `<div><b>العميل:</b> ${dev["اسم العميل / المعمل"] || "-"} ← <span style="color:#059669; font-weight:800;">${req.newClientName}</span></div>`;
+        }
+        if (req.newSerialNumber && req.newSerialNumber !== dev["الرقم التسلسلي (S/N)"]) {
+          changesHtml += `<div><b>السيريال:</b> ${dev["الرقم التسلسلي (S/N)"] || "-"} ← <span style="color:#059669; font-weight:800;">${req.newSerialNumber}</span></div>`;
+        }
+
+        item.innerHTML = `
+          <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+            <strong style="color:var(--primary-dark);">${dev["اسم الجهاز / الموديل"] || ""} (${dev["كود الجهاز"] || ""})</strong>
+            <span class="badge badge-warning">${dev["المنطقة"] || ""}</span>
+          </div>
+          ${changesHtml}
+          <div style="color:var(--text-muted); font-size:0.74rem; margin:4px 0 8px;">مقدم الطلب: <b>${req.requestedBy || "-"}</b> | ${req.requestDate || ""}</div>
+          <div class="action-row">
+            <button class="btn btn-accent btn-sm btn-approve-edit"><i class="fa-solid fa-check"></i> موافقة</button>
+            <button class="btn btn-danger btn-sm btn-reject-edit"><i class="fa-solid fa-xmark"></i> رفض</button>
+          </div>
+        `;
+        item.querySelector(".btn-approve-edit").onclick = () => executeReviewDeviceEdit(dev, "approve");
+        item.querySelector(".btn-reject-edit").onclick = () => executeReviewDeviceEdit(dev, "reject");
+        listEl.appendChild(item);
+      });
     }
 
     function renderDevices(list) {
@@ -1158,27 +1843,49 @@
       container.innerHTML = "";
 
       if (list.length === 0) {
-        container.innerHTML = "<p style='text-align:center; padding:20px; color:#94a3b8;'>لا توجد أجهزة مطابقة للبحث</p>";
+        const emptyMsg = periodicVisitFilter !== "all"
+          ? "لا توجد أجهزة في هذه الفئة من الزيارات الدورية حالياً"
+          : "لا توجد أجهزة مطابقة للبحث";
+        container.innerHTML = `<p style='text-align:center; padding:20px; color:#94a3b8;'>${emptyMsg}</p>`;
         return;
       }
 
-      list.slice(0, 80).forEach((d) => {
+      list.slice(0, 100).forEach((d) => {
+        const pendingReq = parsePendingEdit(d["تعديل معلق"]);
+        const visitInfo = getVisitStatus(d["الزيارة الدورية القادمة"]);
+        const status = d["حالة الجهاز"] || "يعمل بكفاءة";
+        const statusClass = status === "يحتاج صيانة" ? "badge-danger" : (status === "قيد التركيب" ? "badge-warning" : "badge-success");
+
+        let visitLineHtml = "";
+        let extraCardClass = "";
+        if (visitInfo.state === "overdue") {
+          extraCardClass = " visit-overdue";
+          visitLineHtml = `<div style="margin-top:2px;"><span class="badge badge-danger"><i class="fa-solid fa-triangle-exclamation"></i> ${visitInfo.label}</span></div>`;
+        } else if (visitInfo.state === "soon") {
+          extraCardClass = " visit-soon";
+          visitLineHtml = `<div style="margin-top:2px;"><span class="badge badge-warning"><i class="fa-solid fa-clock"></i> ${visitInfo.label}</span></div>`;
+        } else if (visitInfo.state === "scheduled") {
+          visitLineHtml = `<div style="font-size:0.75rem; color:#0369a1; font-weight:600;"><i class="fa-solid fa-calendar-day"></i> ${visitInfo.label}</div>`;
+        }
+
         const card = document.createElement("div");
-        card.className = "device-card";
+        card.className = "device-card" + extraCardClass;
         card.onclick = () => showDeviceDetails(d);
         card.innerHTML = `
-          <div style="display:flex; justify-content:space-between; align-items:center;">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:6px;">
             <span style="font-weight:700; color:var(--text);">${d["اسم العميل / المعمل"] || "عميل غير محدد"}</span>
             <span class="badge badge-primary">${d["اسم الجهاز / الموديل"] || "جهاز"}</span>
           </div>
-          <div style="font-size:0.8rem; color:var(--text-muted); display:flex; flex-wrap:wrap; gap:12px; margin-top:4px;">
+          <div style="font-size:0.8rem; color:var(--text-muted); display:flex; flex-wrap:wrap; gap:10px; margin-top:4px;">
             <span><i class="fa-solid fa-barcode"></i> S/N: ${d["الرقم التسلسلي (S/N)"] || "غير مسجل"}</span>
             <span><i class="fa-solid fa-layer-group"></i> ${d["التصنيف"] || "عام"}</span>
             <span><i class="fa-solid fa-location-dot"></i> ${d["المنطقة"] || ""} - ${d["المحافظة / المدينة"] || ""}</span>
           </div>
+          ${visitLineHtml}
+          ${pendingReq ? `<div style="font-size:0.74rem; color:#b45309; font-weight:700;"><i class="fa-solid fa-clock"></i> يوجد طلب تعديل معلق بانتظار الموافقة</div>` : ""}
           <div style="display:flex; justify-content:space-between; align-items:center; margin-top:4px; font-size:0.75rem;">
-            <span style="color:#0284c7; font-weight:600;"><i class="fa-solid fa-circle-info"></i> اضغط لعرض التفاصيل الكاملة</span>
-            <span class="badge ${d["حالة الجهاز"] === "يحتاج صيانة" ? "badge-warning" : "badge-success"}">${d["حالة الجهاز"] || "يعمل بكفاءة"}</span>
+            <span style="color:#0284c7; font-weight:600;"><i class="fa-solid fa-circle-info"></i> اضغط للعمليات والتفاصيل</span>
+            <span class="badge ${statusClass}">${status}</span>
           </div>
         `;
         container.appendChild(card);
@@ -1187,6 +1894,7 @@
 
     function showDeviceDetails(device) {
       selectedDeviceForMission = device;
+      toggleDeviceEditRequestBox(false);
 
       document.getElementById("modalClientName").innerText = device["اسم العميل / المعمل"] || "غير محدد";
       document.getElementById("modalDeviceModelBadge").innerText = device["اسم الجهاز / الموديل"] || "موديل غير محدد";
@@ -1198,12 +1906,43 @@
       document.getElementById("modalDevRegion").innerText = device["المنطقة"] || "غير مسجل";
       document.getElementById("modalDevCity").innerText = device["المحافظة / المدينة"] || "غير مسجل";
       document.getElementById("modalDevContract").innerText = device["نوع العقد"] || "ضمان";
-      document.getElementById("modalDevWarranty").innerText = device["تاريخ انتهاء الضمان / العقد"] || "ساري";
+      document.getElementById("modalDevInstallDate").innerText = getDeviceInstallDate(device) || "غير مسجل";
+      document.getElementById("modalDevWarranty").innerText = getDeviceWarrantyEnd(device) || "غير محدد";
+
+      const nextVisitEl = document.getElementById("modalDevNextVisit");
+      const visitInfo = getVisitStatus(device["الزيارة الدورية القادمة"]);
+      if (visitInfo.state === "overdue") {
+        nextVisitEl.innerText = visitInfo.label;
+        nextVisitEl.style.color = "var(--danger)";
+      } else if (visitInfo.state === "soon") {
+        nextVisitEl.innerText = visitInfo.label;
+        nextVisitEl.style.color = "var(--warning)";
+      } else {
+        nextVisitEl.innerText = visitInfo.dateStr || "غير مجدولة بعد";
+        nextVisitEl.style.color = "var(--primary-dark)";
+      }
+
       document.getElementById("modalDevStatus").innerText = device["حالة الجهاز"] || "يعمل بكفاءة";
+
+      const pendingReq = parsePendingEdit(device["تعديل معلق"]);
+      const pendingBox = document.getElementById("modalPendingEditBox");
+      if (pendingReq) {
+        let info = "";
+        if (pendingReq.newClientName) info += `• الاسم المقترح: <b>${pendingReq.newClientName}</b><br>`;
+        if (pendingReq.newSerialNumber) info += `• السيريال المقترح: <b>${pendingReq.newSerialNumber}</b><br>`;
+        info += `• مقدم الطلب: ${pendingReq.requestedBy || "-"} (${pendingReq.requestDate || ""})`;
+        document.getElementById("modalPendingEditDetails").innerHTML = info;
+        document.getElementById("modalPendingEditActions").style.display = isManagerOrSupervisor() ? "flex" : "none";
+        pendingBox.style.display = "block";
+      } else {
+        pendingBox.style.display = "none";
+      }
+
+      const isPendingInstall = (device["حالة الجهاز"] === "قيد التركيب");
+      document.getElementById("modalCompleteInstallWrap").style.display = isPendingInstall ? "block" : "none";
 
       const serial = String(device["الرقم التسلسلي (S/N)"] || "").trim().toLowerCase();
       const client = String(device["اسم العميل / المعمل"] || "").trim().toLowerCase();
-
       let lastVisit = null;
       if (cachedMissions && cachedMissions.length > 0) {
         for (let i = cachedMissions.length - 1; i >= 0; i--) {
@@ -1218,7 +1957,6 @@
       }
 
       if (lastVisit) {
-
         document.getElementById("modalDevLastVisit").innerText = `بتاريخ: ${lastVisit["التاريخ"] || ""} | نوع الزيارة: ${lastVisit["نوع الزيارة"] || ""} (${lastVisit["الحالة"] || ""}) - المهندس: ${lastVisit["اسم المهندس"] || ""}`;
       } else {
         document.getElementById("modalDevLastVisit").innerText = "لا توجد زيارات مسجلة لهذا الجهاز مؤخراً في الشيت";
@@ -1230,16 +1968,88 @@
     function closeDeviceDetails(e) { if (e.target.id === "deviceModal") document.getElementById("deviceModal").style.display = "none"; }
     function closeDeviceModalDirect() { document.getElementById("deviceModal").style.display = "none"; }
 
-    function startMissionForThisDevice() {
+    function toggleDeviceEditRequestBox(show) {
+      const box = document.getElementById("deviceEditRequestBox");
+      if (show && selectedDeviceForMission) {
+        document.getElementById("reqEditClientName").value = selectedDeviceForMission["اسم العميل / المعمل"] || "";
+        document.getElementById("reqEditSerial").value = selectedDeviceForMission["الرقم التسلسلي (S/N)"] || "";
+        box.style.display = "block";
+      } else {
+        box.style.display = "none";
+      }
+    }
+
+    async function submitDeviceEditRequest() {
       if (!selectedDeviceForMission) return;
-      if (activeUser && activeUser.role === "مهندس صيانة") {
-        alert("تسجيل المأموريات متاح للمشرفين والمديرين فقط.");
+      const newClientName = document.getElementById("reqEditClientName").value.trim();
+      const newSerialNumber = document.getElementById("reqEditSerial").value.trim();
+
+      if (!newClientName && !newSerialNumber) {
+        alert("يرجى إدخال اسم العميل أو السيريال الجديد");
         return;
       }
+
+      const payload = {
+        rowNumber: selectedDeviceForMission._rowNumber,
+        code: selectedDeviceForMission["كود الجهاز"] || "",
+        oldSerialNumber: selectedDeviceForMission["الرقم التسلسلي (S/N)"] || "",
+        newClientName: newClientName,
+        newSerialNumber: newSerialNumber,
+        requestedBy: activeUser ? activeUser.name : ""
+      };
+
+      showLoading("جاري إرسال طلب التعديل للموافقة...");
+      const res = await executeRemote("requestDeviceEdit", payload);
+      hideLoading();
+
+      if (res && res.status === "success") {
+        alert(res.message || "تم إرسال طلب التعديل وبانتظار موافقة المشرف أو المدير.");
+        toggleDeviceEditRequestBox(false);
+        closeDeviceModalDirect();
+        syncAllData(true);
+      } else {
+        alert((res && res.message) || "تعذر إرسال طلب التعديل");
+      }
+    }
+
+    async function reviewCurrentDeviceEdit(decision) {
+      if (!selectedDeviceForMission) return;
+      await executeReviewDeviceEdit(selectedDeviceForMission, decision);
+      closeDeviceModalDirect();
+    }
+
+    async function executeReviewDeviceEdit(device, decision) {
+      const confirmMsg = decision === "approve"
+        ? "هل تؤكد الموافقة على التعديل وتحديث بيانات الجهاز في الشيت فوراً؟"
+        : "هل تريد رفض وإلغاء طلب التعديل؟";
+      if (!confirm(confirmMsg)) return;
+
+      const payload = {
+        rowNumber: device._rowNumber,
+        code: device["كود الجهاز"] || "",
+        serialNumber: device["الرقم التسلسلي (S/N)"] || "",
+        decision: decision
+      };
+
+      showLoading(decision === "approve" ? "جاري اعتماد التعديل وتحديث الشيت..." : "جاري رفض الطلب...");
+      const res = await executeRemote("reviewDeviceEdit", payload);
+      hideLoading();
+
+      if (res && res.status === "success") {
+        alert(res.message || "تمت العملية بنجاح");
+        syncAllData(true);
+      } else {
+        alert((res && res.message) || "تعذر تنفيذ العملية");
+      }
+    }
+
+    function startMissionForThisDevice() {
+      if (!selectedDeviceForMission) return;
       closeDeviceModalDirect();
 
       const missionTabNav = document.querySelectorAll(".nav-item")[1];
       switchTab("viewMissions", missionTabNav);
+      setMissionViewMode("mission");
 
       document.getElementById("msClientInput").value = selectedDeviceForMission["اسم العميل / المعمل"] || "";
       document.getElementById("msModel").value = selectedDeviceForMission["اسم الجهاز / الموديل"] || "";
@@ -1270,6 +2080,7 @@
 
     async function submitNewDevice() {
       const payload = {
+        code: document.getElementById("devCode").value.trim(),
         clientName: document.getElementById("devClient").value.trim(),
         model: document.getElementById("devModel").value.trim(),
         manufacturer: document.getElementById("devMaker").value.trim(),
@@ -1278,6 +2089,7 @@
         region: document.getElementById("devRegion").value,
         city: document.getElementById("devCity").value.trim(),
         contractType: document.getElementById("devContract").value.trim() || "ضمان",
+        installDate: document.getElementById("devInstallDate").value,
         status: "يعمل بكفاءة"
       };
 
@@ -1287,36 +2099,69 @@
       }
 
       showLoading("جاري حفظ الجهاز...");
-      await executeRemote("saveDevice", payload);
+      const res = await executeRemote("saveDevice", payload);
       hideLoading();
-      toggleAddDeviceForm();
-      syncAllData(true);
+      if (res && res.status === "success") {
+        let msg = res.message || "تمت إضافة الجهاز بنجاح";
+        if (res.warrantyEnd) msg += `\nتاريخ انتهاء الضمان المحسوب: ${res.warrantyEnd}`;
+        alert(msg);
+        toggleAddDeviceForm();
+        syncAllData(true);
+      }
     }
 
-    // ================= 3. المأموريات (مهندسي المنطقة للمشرف فقط) =================
+    // ================= 3. المأموريات وطلبات التركيب =================
+    function setMissionViewMode(mode) {
+      const mForm = document.getElementById("missionFormContainer");
+      const iForm = document.getElementById("installFormContainer");
+      const btnM = document.getElementById("tabBtnMissionMode");
+      const btnI = document.getElementById("tabBtnInstallMode");
+
+      if (mode === "install") {
+        mForm.style.display = "none";
+        iForm.style.display = "block";
+        btnM.className = "btn btn-outline btn-sm";
+        btnI.className = "btn btn-accent btn-sm";
+      } else {
+        mForm.style.display = "block";
+        iForm.style.display = "none";
+        btnM.className = "btn btn-sm";
+        btnI.className = "btn btn-outline btn-sm";
+      }
+    }
+
     function populateMissionDropdowns() {
-      if (!activeUser || activeUser.role === "مهندس صيانة") return;
+      if (!activeUser) return;
 
       const engSelect = document.getElementById("msEngineerSelect");
+      const engLabel = document.getElementById("msEngineerLabel");
       engSelect.innerHTML = "";
 
-      let eligibleEngineers = [];
+      if (activeUser.role === "مهندس صيانة") {
+        engLabel.innerText = "المهندس المسؤول";
+        const opt = document.createElement("option");
+        opt.value = activeUser.name;
+        opt.innerText = `${activeUser.name} (${activeUser.region})`;
+        engSelect.appendChild(opt);
+        return;
+      }
 
+      let eligibleEngineers = [];
       if (activeUser.role === "مشرف منطقة") {
-        // حصر الاختيارات بمهندسي صيانة نفس المنطقة فقط
+        engLabel.innerText = "المهندس المسؤول (مهندسي منطقتك فقط)";
         eligibleEngineers = cachedEngineers.filter(e => 
           e["المنطقة"] === activeUser.region && 
           e["الدور / الصلاحية"] === "مهندس صيانة"
         );
       } else if (activeUser.role === "مدير عام") {
-        // المدير العام يرى مهندسي الصيانة والمشرفين في كافة المناطق
+        engLabel.innerText = "المهندس المسؤول (كافة المناطق)";
         eligibleEngineers = cachedEngineers.filter(e => e["الدور / الصلاحية"] !== "مدير عام");
       }
 
       if (eligibleEngineers.length === 0) {
         const opt = document.createElement("option");
-        opt.value = "";
-        opt.innerText = "-- لا يوجد مهندسين متاحين بمنطقتك --";
+        opt.value = activeUser.name;
+        opt.innerText = `${activeUser.name} (${activeUser.region})`;
         engSelect.appendChild(opt);
         return;
       }
@@ -1375,11 +2220,6 @@
     }
 
     async function submitMission() {
-      if (activeUser && activeUser.role === "مهندس صيانة") {
-        alert("تسجيل وتوزيع المأموريات متاح للمشرفين والمديرين فقط.");
-        return;
-      }
-
       const engName = document.getElementById("msEngineerSelect").value;
       const clientName = document.getElementById("msClientInput").value.trim();
 
@@ -1399,16 +2239,16 @@
         serialNumber: document.getElementById("msSerial").value.trim(),
         visitType: document.getElementById("msVisitType").value,
         issue: document.getElementById("msIssue").value.trim(),
-        status: document.getElementById("msStatus").value,
+        status: "مفتوحة",
         notes: document.getElementById("msNotes").value.trim()
       };
 
-      showLoading("جاري تسجيل المأمورية والتحديث...");
-      const ok = await executeRemote("saveMission", payload);
+      showLoading("جاري تسجيل المأمورية...");
+      const res = await executeRemote("saveMission", payload);
       hideLoading();
 
-      if (ok) {
-        alert("تم تسجيل المأمورية بنجاح!");
+      if (res && res.status === "success") {
+        alert("تم تسجيل المأمورية بنجاح! ستظهر في المأموريات لحين تأكيد إتمامها من المهندس.");
         document.getElementById("msClientInput").value = "";
         document.getElementById("msCity").value = "";
         document.getElementById("msModel").value = "";
@@ -1416,6 +2256,233 @@
         document.getElementById("msIssue").value = "";
         document.getElementById("msNotes").value = "";
         syncAllData(true);
+      }
+    }
+
+    function openInstallCombo(type) {
+      const map = {
+        client: { inputId: "instClientInput", listId: "instClientList" },
+        city: { inputId: "instCityInput", listId: "instCityList" },
+        region: { inputId: "instRegionInput", listId: "instRegionList" },
+        model: { inputId: "instModelInput", listId: "instModelList" },
+        codePrefix: { inputId: "instCodeInput", listId: "instCodeList" }
+      };
+
+      Object.values(map).forEach(m => {
+        const el = document.getElementById(m.listId);
+        if (el) el.style.display = "none";
+      });
+
+      const cfg = map[type];
+      const inputEl = document.getElementById(cfg.inputId);
+      const listEl = document.getElementById(cfg.listId);
+      const q = inputEl.value.trim().toLowerCase();
+
+      let scopedDevices = cachedDevices;
+      if (activeUser && activeUser.role !== "مدير عام" && activeUser.region && activeUser.region !== "الكل") {
+        scopedDevices = cachedDevices.filter(d => d["المنطقة"] === activeUser.region);
+      }
+
+      let options = [];
+      if (type === "client") {
+        options = [...new Set(scopedDevices.map(d => String(d["اسم العميل / المعمل"] || "").trim()).filter(Boolean))];
+      } else if (type === "city") {
+        options = [...new Set(cachedDevices.map(d => String(d["المحافظة / المدينة"] || "").trim()).filter(Boolean))];
+      } else if (type === "region") {
+        if (activeUser && activeUser.role !== "مدير عام" && activeUser.region && activeUser.region !== "الكل") {
+          options = [activeUser.region];
+        } else {
+          const fromSheet = cachedDevices.map(d => String(d["المنطقة"] || "").trim()).filter(Boolean);
+          options = [...new Set([...DEFAULT_REGIONS, ...fromSheet])];
+        }
+      } else if (type === "model") {
+        options = [...new Set(cachedDevices.map(d => String(d["اسم الجهاز / الموديل"] || "").trim()).filter(Boolean))];
+      } else if (type === "codePrefix") {
+        options = CODE_PREFIX_SUGGESTIONS;
+      }
+
+      const filtered = q ? options.filter(o => o.toLowerCase().includes(q)) : options;
+      listEl.innerHTML = "";
+
+      if (filtered.length === 0) {
+        listEl.style.display = "none";
+        return;
+      }
+
+      filtered.slice(0, 25).forEach(val => {
+        const item = document.createElement("div");
+        item.className = "autocomplete-item";
+        item.innerHTML = `<span>${val}</span><small style="color:var(--primary);">اختيار</small>`;
+        item.onclick = () => {
+          inputEl.value = val;
+          listEl.style.display = "none";
+          if (type === "client") {
+            const found = scopedDevices.find(d => String(d["اسم العميل / المعمل"] || "").trim() === val);
+            if (found) {
+              if (!document.getElementById("instCityInput").value.trim() && found["المحافظة / المدينة"]) {
+                document.getElementById("instCityInput").value = found["المحافظة / المدينة"];
+              }
+              if (found["المنطقة"]) {
+                document.getElementById("instRegionInput").value = found["المنطقة"];
+              }
+            }
+          }
+        };
+        listEl.appendChild(item);
+      });
+
+      listEl.style.display = "block";
+    }
+
+    async function submitInstallationRequest() {
+      const clientName = document.getElementById("instClientInput").value.trim();
+      const city = document.getElementById("instCityInput").value.trim();
+      let region = document.getElementById("instRegionInput").value.trim();
+      const model = document.getElementById("instModelInput").value.trim();
+      const code = document.getElementById("instCodeInput").value.trim();
+      const installDate = document.getElementById("instDateInput").value;
+      const serialNumber = document.getElementById("instSerialInput").value.trim();
+
+      if (activeUser && activeUser.role !== "مدير عام" && activeUser.region && activeUser.region !== "الكل") {
+        region = activeUser.region;
+      }
+
+      if (!clientName || !region) {
+        alert("يرجى إدخال اسم العميل والمنطقة الجغرافية");
+        return;
+      }
+
+      const payload = {
+        code: code,
+        clientName: clientName,
+        city: city,
+        region: region,
+        model: model,
+        installDate: installDate,
+        serialNumber: serialNumber,
+        status: "قيد التركيب"
+      };
+
+      showLoading("جاري حفظ طلب التركيب في ورقة الأجهزة...");
+      const res = await executeRemote("saveInstallation", payload);
+      hideLoading();
+
+      if (res && res.status === "success") {
+        let msg = res.message || "تم تسجيل طلب التركيب بنجاح!";
+        if (res.warrantyEnd) msg += `\nتاريخ انتهاء الضمان المبدئي: ${res.warrantyEnd}`;
+        alert(msg);
+        document.getElementById("instClientInput").value = "";
+        document.getElementById("instCityInput").value = "";
+        document.getElementById("instModelInput").value = "";
+        document.getElementById("instCodeInput").value = "";
+        document.getElementById("instSerialInput").value = "";
+        syncAllData(true);
+      } else {
+        alert((res && res.message) || "تعذر حفظ طلب التركيب");
+      }
+    }
+
+    function renderPendingInstallations() {
+      const listEl = document.getElementById("pendingInstallationsList");
+      const countEl = document.getElementById("pendingInstCount");
+      if (!listEl || !activeUser) return;
+
+      let installs = cachedDevices.filter(d => d["حالة الجهاز"] === "قيد التركيب");
+
+      if (activeUser.role !== "مدير عام" && activeUser.region && activeUser.region !== "الكل") {
+        installs = installs.filter(d => d["المنطقة"] === activeUser.region);
+      }
+
+      countEl.innerText = installs.length;
+      listEl.innerHTML = "";
+
+      if (installs.length === 0) {
+        listEl.innerHTML = "<p style='text-align:center; padding:14px; color:#94a3b8; font-size:0.82rem;'>لا توجد طلبات تركيب جارية في منطقتك حالياً</p>";
+        return;
+      }
+
+      installs.forEach(dev => {
+        const card = document.createElement("div");
+        card.className = "install-card";
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong style="color:var(--text); font-size:0.92rem;">${dev["اسم العميل / المعمل"] || "عميل غير محدد"}</strong>
+            <span class="badge badge-warning">قيد التركيب</span>
+          </div>
+          <div style="font-size:0.78rem; color:var(--text-muted); display:flex; flex-wrap:wrap; gap:10px; margin:4px 0;">
+            <span><i class="fa-solid fa-stethoscope"></i> ${dev["اسم الجهاز / الموديل"] || "لم يحدد بعد"}</span>
+            <span><i class="fa-solid fa-location-dot"></i> ${dev["المنطقة"] || ""} - ${dev["المحافظة / المدينة"] || ""}</span>
+            <span><i class="fa-regular fa-calendar"></i> تاريخ التركيب: ${getDeviceInstallDate(dev) || "-"}</span>
+            <span><i class="fa-solid fa-barcode"></i> S/N: ${dev["الرقم التسلسلي (S/N)"] || "ناقص"}</span>
+          </div>
+          <button class="btn btn-accent btn-sm btn-complete-inst" style="margin-top:4px;">
+            <i class="fa-solid fa-screwdriver-wrench"></i> استكمال السيريال وبيانات التركيب
+          </button>
+        `;
+        card.querySelector(".btn-complete-inst").onclick = () => openCompleteInstallModal(dev);
+        listEl.appendChild(card);
+      });
+    }
+
+    function openCompleteInstallFromDevice() {
+      if (!selectedDeviceForMission) return;
+      const dev = selectedDeviceForMission;
+      closeDeviceModalDirect();
+      openCompleteInstallModal(dev);
+    }
+
+    function openCompleteInstallModal(dev) {
+      selectedDeviceForInstallComplete = dev;
+      document.getElementById("compInstSubtitle").innerText = `${dev["اسم العميل / المعمل"] || ""} (${dev["المنطقة"] || ""})`;
+      document.getElementById("compInstCode").value = dev["كود الجهاز"] || "";
+      document.getElementById("compInstClient").value = dev["اسم العميل / المعمل"] || "";
+      document.getElementById("compInstModel").value = dev["اسم الجهاز / الموديل"] || "";
+      document.getElementById("compInstSerial").value = dev["الرقم التسلسلي (S/N)"] || "";
+      document.getElementById("compInstMaker").value = dev["الشركة المصنعة"] || "";
+      document.getElementById("compInstCategory").value = dev["التصنيف"] || "";
+      document.getElementById("compInstContract").value = dev["نوع العقد"] || "ضمان";
+      document.getElementById("compInstDate").value = getDeviceInstallDate(dev) || new Date().toISOString().split("T")[0];
+      document.getElementById("completeInstallModal").style.display = "flex";
+    }
+
+    function closeCompleteInstallModal(e) { if (e.target.id === "completeInstallModal") document.getElementById("completeInstallModal").style.display = "none"; }
+    function closeCompleteInstallModalDirect() { document.getElementById("completeInstallModal").style.display = "none"; }
+
+    async function submitCompleteInstallation() {
+      if (!selectedDeviceForInstallComplete) return;
+      const serial = document.getElementById("compInstSerial").value.trim();
+      if (!serial) {
+        alert("يرجى إدخال الرقم التسلسلي (S/N) للجهاز لإتمام التركيب");
+        return;
+      }
+
+      const payload = {
+        rowNumber: selectedDeviceForInstallComplete._rowNumber,
+        code: document.getElementById("compInstCode").value.trim(),
+        clientName: document.getElementById("compInstClient").value.trim(),
+        model: document.getElementById("compInstModel").value.trim(),
+        serialNumber: serial,
+        manufacturer: document.getElementById("compInstMaker").value.trim(),
+        category: document.getElementById("compInstCategory").value.trim(),
+        contractType: document.getElementById("compInstContract").value.trim(),
+        installDate: document.getElementById("compInstDate").value,
+        region: selectedDeviceForInstallComplete["المنطقة"] || "",
+        city: selectedDeviceForInstallComplete["المحافظة / المدينة"] || ""
+      };
+
+      showLoading("جاري استكمال بيانات التركيب وتحديث الشيت...");
+      const res = await executeRemote("completeInstallation", payload);
+      hideLoading();
+
+      if (res && res.status === "success") {
+        let msg = res.message || "تم استكمال بيانات التركيب وتفعيل الجهاز بنجاح!";
+        if (res.warrantyEnd) msg += `\nانتهاء الضمان: ${res.warrantyEnd}`;
+        if (res.nextVisitDate) msg += `\nأول زيارة دورية قادمة: ${res.nextVisitDate}`;
+        alert(msg);
+        closeCompleteInstallModalDirect();
+        syncAllData(true);
+      } else {
+        alert((res && res.message) || "تعذر استكمال بيانات التركيب");
       }
     }
 
@@ -1476,26 +2543,64 @@
         return;
       }
 
-      filteredM.forEach(m => {
+      filteredM.slice().reverse().forEach(m => {
+        const isDone = (m["الحالة"] === "تمت بنجاح" || m["الحالة"] === "تمت");
+        const statusBadge = isDone
+          ? `<span class="badge badge-success">تمت بنجاح</span>`
+          : `<span class="badge badge-warning">${m["الحالة"] && m["الحالة"] !== "تمت بنجاح" ? m["الحالة"] : "قيد التنفيذ"}</span>`;
+
         const card = document.createElement("div");
         card.className = "mission-card";
         card.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <span style="font-weight:700; color:var(--text);">${m["اسم العميل / المعمل"] || "عميل غير محدد"}</span>
-            <span class="badge ${m["الحالة"] === "تمت بنجاح" ? "badge-success" : "badge-warning"}">${m["الحالة"] || "معلق"}</span>
+            ${statusBadge}
           </div>
           <div style="font-size:0.82rem; color:var(--text-muted); margin-top:4px; display:flex; flex-direction:column; gap:2px;">
             <span><i class="fa-solid fa-calendar-day"></i> التاريخ: <b>${String(m["التاريخ"]).substring(0,10)}</b></span>
             <span><i class="fa-solid fa-user-gear"></i> المهندس: <b>${m["اسم المهندس"] || ""}</b> (${m["المنطقة"] || ""})</span>
             <span><i class="fa-solid fa-stethoscope"></i> الجهاز: ${m["موديل الجهاز"] || ""} | S/N: ${m["الرقم التسلسلي (S/N)"] || "غير مسجل"}</span>
             <span><i class="fa-solid fa-clipboard-check"></i> نوع الزيارة: ${m["نوع الزيارة"] || ""}</span>
+            ${m["وصف العطل / المطلوب"] ? `<span><i class="fa-solid fa-file-lines"></i> المطلوب: ${m["وصف العطل / المطلوب"]}</span>` : ""}
           </div>
+          ${!isDone ? `<button class="btn btn-accent btn-sm btn-mark-mission-done" style="margin-top:8px;"><i class="fa-solid fa-check-circle"></i> تأكيد إتمام المأمورية (تمت)</button>` : ""}
         `;
+
+        if (!isDone) {
+          card.querySelector(".btn-mark-mission-done").onclick = () => confirmCompleteMission(m);
+        }
         container.appendChild(card);
       });
     }
 
-    // ================= 5. الأعطال المعلقة والمفتوحة =================
+    async function confirmCompleteMission(mission) {
+      const notes = prompt("هل تريد إضافة ملاحظات لإتمام المأمورية؟ (اتركه فارغاً للتأكيد مباشرة)", mission["ملاحظات"] || "");
+      if (notes === null) return;
+
+      const payload = {
+        rowNumber: mission._rowNumber,
+        clientName: mission["اسم العميل / المعمل"] || "",
+        deviceModel: mission["موديل الجهاز"] || "",
+        serialNumber: mission["الرقم التسلسلي (S/N)"] || "",
+        completionDate: new Date().toISOString().split("T")[0],
+        notes: notes.trim()
+      };
+
+      showLoading("جاري تأكيد إتمام المأمورية وحساب الزيارة القادمة...");
+      const res = await executeRemote("completeMission", payload);
+      hideLoading();
+
+      if (res && res.status === "success") {
+        let msg = "تم تأكيد إتمام المأمورية بنجاح!";
+        if (res.nextVisitDate) msg += `\nموعد الزيارة الدورية القادمة للجهاز: ${res.nextVisitDate}`;
+        alert(msg);
+        syncAllData(true);
+      } else {
+        alert((res && res.message) || "تعذر تحديث حالة المأمورية");
+      }
+    }
+
+    // ================= 5. الأعطال المعلقة والمفتوحة واعتماد الإصلاح =================
     function toggleAddIssueForm() {
       const card = document.getElementById("addIssueCard");
       card.style.display = card.style.display === "none" ? "block" : "none";
@@ -1570,10 +2675,10 @@
       };
 
       showLoading("جاري إرسال بلاغ العطل...");
-      const ok = await executeRemote("saveIssue", payload);
+      const res = await executeRemote("saveIssue", payload);
       hideLoading();
 
-      if (ok) {
+      if (res && res.status === "success") {
         alert("تم تسجيل بلاغ العطل بنجاح!");
         document.getElementById("issueClientInput").value = "";
         document.getElementById("issueDescription").value = "";
@@ -1582,7 +2687,6 @@
       }
     }
 
-    // عرض الأعطال المعلقة والمفتوحة فقط (طالما لم يتم الإصلاح)
     function renderIssuesList() {
       const container = document.getElementById("issuesListContainer");
       const q = document.getElementById("issueSearchInput").value.trim().toLowerCase();
@@ -1590,16 +2694,12 @@
 
       if (!activeUser) return;
 
-      // 1. استبعاد الأعطال التي تم إصلاحها، والتركيز على المعلقة والمفتوحة
       let filtered = cachedIssues.filter(i => i["الحالة"] !== "تم الإصلاح");
 
-      // 2. تطبيق نطاق الصلاحيات والمنطقة:
-      // المشرف ومهندس الصيانة يريان فقط أعطال منطقتهما، أما المدير العام فيرى كل المناطق
       if (activeUser.role !== "مدير عام" && activeUser.region && activeUser.region !== "الكل") {
         filtered = filtered.filter(i => i["المنطقة"] === activeUser.region);
       }
 
-      // 3. فلترة البحث اللحظي
       if (q) {
         filtered = filtered.filter(i => 
           String(i["اسم العميل / المعمل"] || "").toLowerCase().includes(q) ||
@@ -1610,7 +2710,7 @@
       }
 
       const scopeTitle = (activeUser.role === "مدير عام") ? "لكافة المناطق" : `لمنطقة (${activeUser.region})`;
-      document.getElementById("issuesSummaryText").innerText = `الأعطال المعلقة والمفتوحة ${scopeTitle}: ${filtered.length}`;
+      document.getElementById("issuesSummaryText").innerText = `الأعطال المعلقة وبانتظار الموافقة ${scopeTitle}: ${filtered.length}`;
 
       if (filtered.length === 0) {
         container.innerHTML = "<p style='text-align:center; padding:25px; color:#16a34a; font-weight:600;'><i class='fa-solid fa-circle-check'></i> لا توجد أعطال معلقة حالياً في نطاقك، كافة الأجهزة تعمل بكفاءة!</p>";
@@ -1618,12 +2718,37 @@
       }
 
       filtered.forEach(i => {
+        const isWaitingApproval = (i["الحالة"] === "بانتظار الموافقة");
         const card = document.createElement("div");
-        card.className = "issue-card";
+        card.className = "issue-card" + (isWaitingApproval ? " pending-approval" : "");
+
+        let buttonsHtml = "";
+        if (!isWaitingApproval) {
+          buttonsHtml = `
+            <button class="btn btn-accent btn-sm btn-eng-resolve" style="margin-top:8px;">
+              <i class="fa-solid fa-check"></i> تم (تم الإصلاح - إرسال للاعتماد)
+            </button>
+          `;
+        } else if (isManagerOrSupervisor()) {
+          buttonsHtml = `
+            <button class="btn btn-warning btn-sm btn-mgr-approve" style="margin-top:8px;">
+              <i class="fa-solid fa-shield-check"></i> موافقة المشرف/المدير وتحديث الشيت
+            </button>
+          `;
+        } else {
+          buttonsHtml = `
+            <div style="margin-top:8px; font-size:0.78rem; color:#92400e; font-weight:700; background:#fef3c7; padding:7px 10px; border-radius:8px; text-align:center;">
+              <i class="fa-solid fa-hourglass-half"></i> تم تسجيل الإصلاح — بانتظار موافقة المشرف أو المدير
+            </div>
+          `;
+        }
+
         card.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <strong style="color:var(--text); font-size:0.95rem;">${i["اسم العميل / المعمل"] || "عميل غير محدد"}</strong>
-            <span class="badge ${i["الأولوية"] && i["الأولوية"].includes("حرجة") ? "badge-danger" : "badge-warning"}">${i["الأولوية"] || "متوسطة"}</span>
+            <span class="badge ${isWaitingApproval ? "badge-warning" : (i["الأولوية"] && i["الأولوية"].includes("حرجة") ? "badge-danger" : "badge-warning")}">
+              ${isWaitingApproval ? "بانتظار الموافقة" : (i["الأولوية"] || "متوسطة")}
+            </span>
           </div>
           <div style="font-size:0.83rem; color:#b91c1c; margin-top:4px; font-weight:600;">
             <i class="fa-solid fa-wrench"></i> <b>وصف العطل:</b> ${i["تفاصيل العطل"] || "لا توجد تفاصيل"}
@@ -1632,11 +2757,58 @@
             <span><i class="fa-solid fa-stethoscope"></i> ${i["موديل الجهاز"] || ""} (S/N: ${i["الرقم التسلسلي (S/N)"] || "غير مسجل"})</span>
             <span><i class="fa-solid fa-location-dot"></i> ${i["المنطقة"] || ""} - ${i["المحافظة / المدينة"] || ""}</span>
             <span><i class="fa-solid fa-user"></i> المهندس المبلّغ: ${i["اسم المهندس"] || ""}</span>
-            <span><i class="fa-solid fa-clock"></i> الحالة: <b style="color:#d97706;">${i["الحالة"] || "معلق"}</b></span>
+            <span><i class="fa-solid fa-clock"></i> الحالة: <b style="color:#d97706;">${i["الحالة"] || "مفتوح"}</b></span>
           </div>
+          ${buttonsHtml}
         `;
+
+        const engBtn = card.querySelector(".btn-eng-resolve");
+        if (engBtn) engBtn.onclick = () => engineerMarkIssueDone(i);
+
+        const mgrBtn = card.querySelector(".btn-mgr-approve");
+        if (mgrBtn) mgrBtn.onclick = () => managerApproveIssue(i);
+
         container.appendChild(card);
       });
+    }
+
+    async function engineerMarkIssueDone(issue) {
+      if (!confirm("هل تؤكد الانتهاء من إصلاح العطل وإرساله لموافقة المشرف أو المدير؟")) return;
+
+      showLoading("جاري تسجيل الإصلاح وبانتظار الاعتماد...");
+      const res = await executeRemote("engineerResolveIssue", { rowNumber: issue._rowNumber });
+      hideLoading();
+
+      if (res && res.status === "success") {
+        alert(res.message || "تم تسجيل الإصلاح وسيظل العطل ظاهراً لحين موافقة المشرف أو المدير.");
+        syncAllData(true);
+      } else {
+        alert((res && res.message) || "تعذر تحديث حالة العطل");
+      }
+    }
+
+    async function managerApproveIssue(issue) {
+      if (!confirm("هل توافق على اعتماد إصلاح العطل وتحديث حالة الجهاز وحساب الزيارة الدورية القادمة تلقائياً؟")) return;
+
+      const payload = {
+        rowNumber: issue._rowNumber,
+        clientName: issue["اسم العميل / المعمل"] || "",
+        deviceModel: issue["موديل الجهاز"] || "",
+        serialNumber: issue["الرقم التسلسلي (S/N)"] || ""
+      };
+
+      showLoading("جاري الاعتماد وتحديث الشيت والزيارة القادمة...");
+      const res = await executeRemote("approveIssue", payload);
+      hideLoading();
+
+      if (res && res.status === "success") {
+        let msg = res.message || "تم اعتماد الإصلاح وتحديث الشيت بنجاح!";
+        if (res.nextVisitDate) msg += `\nموعد الزيارة الدورية القادمة: ${res.nextVisitDate}`;
+        alert(msg);
+        syncAllData(true);
+      } else {
+        alert((res && res.message) || "تعذر اعتماد الإصلاح");
+      }
     }
 
     // ================= 6. قطع الغيار =================
@@ -1740,10 +2912,10 @@
       };
 
       showLoading("جاري تسجيل حركة قطعة الغيار...");
-      const ok = await executeRemote("saveSparePart", payload);
+      const res = await executeRemote("saveSparePart", payload);
       hideLoading();
 
-      if (ok) {
+      if (res && res.status === "success") {
         alert("تم تسجيل حركة قطعة الغيار بنجاح!");
         document.getElementById("spNameInput").value = "";
         document.getElementById("spClientInput").value = "";
@@ -1808,10 +2980,74 @@
     }
 
     // ================= 7. الإجازات =================
+    function populateLeaveEngineers() {
+      const sel = document.getElementById("lvEngineerSelect");
+      if (!sel || !activeUser) return;
+      sel.innerHTML = "";
+
+      if (activeUser.role === "مهندس صيانة") {
+        const opt = document.createElement("option");
+        opt.value = activeUser.name;
+        opt.innerText = `${activeUser.name} (${activeUser.region})`;
+        sel.appendChild(opt);
+        return;
+      }
+
+      let list = cachedEngineers;
+      if (activeUser.role === "مشرف منطقة" && activeUser.region !== "الكل") {
+        list = cachedEngineers.filter(e => e["المنطقة"] === activeUser.region);
+      }
+
+      list.forEach(e => {
+        const opt = document.createElement("option");
+        opt.value = e["الاسم بالكامل"];
+        opt.innerText = `${e["الاسم بالكامل"]} (${e["المنطقة"]})`;
+        if (e["الاسم بالكامل"] === activeUser.name) opt.selected = true;
+        sel.appendChild(opt);
+      });
+    }
+
+    function renderLeavesList() {
+      const container = document.getElementById("leavesListContainer");
+      if (!container || !activeUser) return;
+
+      let filtered = cachedLeaves;
+      if (activeUser.role === "مهندس صيانة") {
+        filtered = cachedLeaves.filter(l => l["اسم المهندس"] === activeUser.name || l["المهندس"] === activeUser.name);
+      } else if (activeUser.role === "مشرف منطقة" && activeUser.region !== "الكل") {
+        filtered = cachedLeaves.filter(l => l["المنطقة"] === activeUser.region);
+      }
+
+      container.innerHTML = "";
+      if (filtered.length === 0) {
+        container.innerHTML = "<p style='text-align:center; padding:16px; color:#94a3b8; font-size:0.82rem;'>لا توجد إجازات مسجلة في نطاقك</p>";
+        return;
+      }
+
+      filtered.slice().reverse().forEach(l => {
+        const card = document.createElement("div");
+        card.className = "mission-card";
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>${l["اسم المهندس"] || l["المهندس"] || ""}</strong>
+            <span class="badge ${l["الحالة"] === "مقبول" ? "badge-success" : "badge-warning"}">${l["الحالة"] || "معلق"}</span>
+          </div>
+          <div style="font-size:0.8rem; color:var(--text-muted); margin-top:4px;">
+            <span>من: <b>${String(l["تاريخ البداية"] || l["من تاريخ"] || "").substring(0,10)}</b> إلى: <b>${String(l["تاريخ النهاية"] || l["إلى تاريخ"] || "").substring(0,10)}</b></span><br>
+            <span>المنطقة: ${l["المنطقة"] || ""} | السبب: ${l["السبب"] || "-"}</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
     async function submitLeave() {
+      const engName = document.getElementById("lvEngineerSelect").value || (activeUser ? activeUser.name : "");
+      const engObj = cachedEngineers.find(e => e["الاسم بالكامل"] === engName);
+
       const payload = {
-        engineerName: activeUser ? activeUser.name : "",
-        region: activeUser ? activeUser.region : "",
+        engineerName: engName,
+        region: engObj ? engObj["المنطقة"] : (activeUser ? activeUser.region : ""),
         startDate: document.getElementById("lvStart").value,
         endDate: document.getElementById("lvEnd").value,
         reason: document.getElementById("lvReason").value.trim(),
@@ -1819,11 +3055,12 @@
       };
 
       showLoading("جاري تسجيل طلب الإجازة...");
-      const ok = await executeRemote("saveLeave", payload);
+      const res = await executeRemote("saveLeave", payload);
       hideLoading();
-      if (ok) {
+      if (res && res.status === "success") {
         alert("تم تقديم طلب الإجازة بنجاح!");
         document.getElementById("lvReason").value = "";
+        syncAllData(true);
       }
     }
 
@@ -1835,21 +3072,20 @@
         localStorage.setItem("medtech_offline_queue", JSON.stringify(queue));
         setSyncStatus("syncing");
         alert("لا يوجد اتصال بالإنترنت، تم حفظ العملية محلياً وسيتم رفعها تلقائياً عند الاتصال.");
-        return true;
+        return { status: "success", offline: true };
       }
 
       try {
         const encoded = encodeURIComponent(JSON.stringify(dataObj));
         const res = await fetch(`${API_URL}?action=${action}&data=${encoded}`);
-        const json = await res.json();
-        return json.status === "success";
+        return await res.json();
       } catch (err) {
         const queue = JSON.parse(localStorage.getItem("medtech_offline_queue") || "[]");
         queue.push({ action: action, data: dataObj, timestamp: new Date().toISOString() });
         localStorage.setItem("medtech_offline_queue", JSON.stringify(queue));
         setSyncStatus("offline");
         alert("تم حفظ العملية في الهاتف لرفعها للشيت فور استقرار الاتصال.");
-        return true;
+        return { status: "success", offline: true };
       }
     }
   </script>
